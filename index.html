@@ -327,7 +327,7 @@ let sinceLong=0;
    시계 타이머는 화면이 잠겨 있어도 진동과 배너로 알려 줘요. 기기 설정이라 이 브라우저에만 저장해요. */
 const SCKEY="csnotes-shortcut-v1";
 let useShortcut=false; try{useShortcut=localStorage.getItem(SCKEY)==="1"}catch(e){}
-let scMode="fixed"; try{scMode=localStorage.getItem(SCKEY+"-mode")||"fixed"}catch(e){}
+let scMode="input"; try{scMode=localStorage.getItem(SCKEY+"-mode")||"input"}catch(e){}
 function clockTimer(min){ // fixed: 시간이 고정된 단축어 셋(CS 12분·CS 2분·CS 10분) / input: 분을 넘겨받는 단축어 하나(CS 타이머)
   if(!useShortcut) return;
   location.href = scMode==="input"
@@ -354,20 +354,21 @@ function timerHtml(){
     <p class="note">시작이 제일 어려워요. 첫 2분은 "이 회차 첫 단계의 ✅ 30초 체크 질문을 먼저 읽고 답을 예측하기"만 해요. 노션의 🏁 표시까지가 한 회차예요. 12분 뒤에는 방금 읽은 걸 한 문장으로 적고 쉬어요. 하루 최소 1블록이면 그날은 성공이에요.</p>
     <div class="bar"><select id="tim-ch" aria-label="장">${chOpts}</select><select id="tim-sess" aria-label="회차"></select></div><p class="note" id="tim-sess-note"></p>
     <label class="gate"><input type="checkbox" id="tim-sc" ${useShortcut?"checked":""}><span>아이폰: 시계 앱 타이머로 알림 받기 <span class="note">(노션을 보고 있어도 12분에 진동·배너가 와요)</span></span></label>
-    <details class="box" ${useShortcut?"":"open"}><summary>단축어 만드는 법 (한 번, 1~2분)</summary>
-      <p class="note">시간마다 단축어를 하나씩, <b>세 개</b> 만들어요. 각 단축어 안의 시간은 고정이라 헷갈릴 일이 없어요.</p>
+    <details class="box" ${useShortcut?"":"open"}><summary>단축어 "CS 타이머" 만드는 법 (한 번, 1분)</summary>
+      <p class="note">단축어 하나만 만들면 앱이 그때그때 시간을 넘겨줘요(읽기 12분, 쉬기 2분, 긴 휴식 10분). 핵심은 타이머의 시간 칸에 숫자를 직접 쓰지 않고 <b>파란 "숫자" 변수</b>를 넣는 거예요.</p>
       <ol class="note" style="padding-left:1.2em;display:flex;flex-direction:column;gap:6px;margin:8px 0">
-        <li><b>단축어</b> 앱 → 오른쪽 위 <b>+</b> → <b>동작 추가</b> → 검색 <b>타이머</b> → <b>타이머 시작</b>.</li>
-        <li>"30분"의 숫자를 눌러 <b>12</b>로 바꿔요(단위 분).</li>
-        <li>맨 위 이름을 <b>CS 12분</b>으로 바꾸고 완료.</li>
-        <li>같은 방법으로 <b>CS 2분</b>(2분), <b>CS 10분</b>(10분)도 만들어요. 이름의 띄어쓰기까지 똑같이 써요.</li>
-        <li>위의 "시계 앱 타이머로 알림 받기"를 켜고 <b>테스트</b>를 눌러요. "단축어를 열까요?"에는 <b>열기</b>. 시계 앱에 2분 타이머가 켜지면 성공이에요.</li>
+        <li><b>단축어</b> 앱 → 오른쪽 위 <b>+</b>.</li>
+        <li>검색창에 <b>숫자</b> → <b>입력에서 숫자 가져오기</b>를 추가해요. 동작에 "<b>단축어 입력</b>에서 숫자 가져오기"라고 보이면 맞아요. (다른 말이 보이면 그 칸을 눌러 <b>단축어 입력</b>을 골라요.)</li>
+        <li>그 아래에 <b>타이머 시작</b>을 추가해요(검색: 타이머).</li>
+        <li>"30분"의 <b>30</b>을 눌러요. 키보드 위 줄에 나오는 파란 <b>숫자</b>를 눌러서 30 자리에 파란 "숫자"가 들어가게 해요. 30이 남아 있으면 지워요. 단위는 <b>분</b>.</li>
+        <li>맨 위 이름을 <b>CS 타이머</b>로 바꾸고(띄어쓰기까지 똑같이) 완료.</li>
+        <li>위의 "시계 앱 타이머로 알림 받기"를 켜고 <b>테스트</b>를 눌러요. "단축어를 열까요?"에는 <b>열기</b>. 시계 앱에 <b>1분</b> 타이머가 켜지면 성공이에요.</li>
       </ol>
-      <p class="note">"단축어를 찾을 수 없음"이 뜨면 이름이 다른 거예요(예: "CS12분", "CS 12 분").</p>
-      <div class="bar"><button id="tim-test">테스트 (2분 타이머)</button></div>
-      <details style="margin-top:8px"><summary class="note">고급: 단축어 하나로 쓰기</summary>
-        <p class="note">단축어 <b>CS 타이머</b>를 만들고 동작 두 개를 넣어요: ① <b>입력에서 숫자 가져오기</b>(입력: 단축어 입력) ② <b>타이머 시작</b>(시간 칸의 숫자를 눌러 변수 <b>숫자</b>를 고르고 단위 분). 시간 칸에 30처럼 숫자가 그대로 있으면 늘 30분이 켜져요. 단축어 설정(ⓘ)에서 입력 받기가 꺼져 있으면 켜요.</p>
-        <label class="gate"><input type="checkbox" id="tim-scmode" ${scMode==="input"?"checked":""}><span>단축어 하나(CS 타이머) 방식 쓰기</span></label>
+      <p class="note"><b>30분(또는 다른 고정 시간)이 켜지면:</b> 4번에서 시간 칸이 아직 숫자예요. 파란 "숫자"로 바꿔요. <b>"단축어를 찾을 수 없음"</b>이면 이름이 달라요.</p>
+      <div class="bar"><button id="tim-test">테스트 (1분 타이머)</button></div>
+      <details style="margin-top:8px"><summary class="note">잘 안 되면: 시간이 고정된 단축어 셋으로 쓰기</summary>
+        <p class="note">타이머 시작만 넣은 단축어 세 개를 <b>CS 12분</b>(12분), <b>CS 2분</b>(2분), <b>CS 10분</b>(10분)으로 만들고 아래를 켜요.</p>
+        <label class="gate"><input type="checkbox" id="tim-scmode" ${scMode==="fixed"?"checked":""}><span>고정 시간 단축어 셋 쓰기</span></label>
       </details>
     </details>
     <div class="bar"><button class="primary" id="tim-go">블록 시작</button><button id="tim-known" title="이 회차 단계들의 ✅ 30초 체크를 다 맞혔을 때">이미 알아요 · 건너뛰기</button></div>
@@ -394,8 +395,8 @@ function bindTimer(){
     $("tim-sess-note").textContent=ss.length?`이 장 ${done.length}/${ss.length}회차 끝냄${(c.optional||[]).length?" · 선택(처음엔 건너뛰기): "+c.optional.join(", "):""}`:""; };
   if($("tim-ch")){ $("tim-ch").value=store.lastCh||$("tim-ch").value; $("tim-ch").onchange=fillSess; fillSess(); }
   if($("tim-sc")) $("tim-sc").onchange=e=>{useShortcut=e.target.checked; try{localStorage.setItem(SCKEY,useShortcut?"1":"0")}catch(_){}};
-  if($("tim-test")) $("tim-test").onclick=()=>{ if(!useShortcut){useShortcut=true; try{localStorage.setItem(SCKEY,"1")}catch(_){} } clockTimer(2); };
-  if($("tim-scmode")) $("tim-scmode").onchange=e=>{scMode=e.target.checked?"input":"fixed"; try{localStorage.setItem(SCKEY+"-mode",scMode)}catch(_){}};
+  if($("tim-test")) $("tim-test").onclick=()=>{ if(!useShortcut){useShortcut=true; try{localStorage.setItem(SCKEY,"1")}catch(_){} } scMode==="fixed"?clockTimer(2):clockTimer(1); };
+  if($("tim-scmode")) $("tim-scmode").onchange=e=>{scMode=e.target.checked?"fixed":"input"; try{localStorage.setItem(SCKEY+"-mode",scMode)}catch(_){}};
   if($("tim-known")) $("tim-known").onclick=()=>{const ch=$("tim-ch").value, n=+$("tim-sess").value; if(!n) return; const a=store.sess[ch]=store.sess[ch]||[]; if(!a.includes(n)) a.push(n); (store.skips=store.skips||[]).push({ts:now(),date:today(),ch,sess:n}); store.lastCh=ch; save(); home();};
   if($("tim-go")) $("tim-go").onclick=()=>{ try{ if("Notification" in window&&Notification.permission==="default") Notification.requestPermission(); }catch(e){}store.lastCh=$("tim-ch").value; const n=+$("tim-sess").value; tim={ch:$("tim-ch").value,sess:n,step:n?n+"회차":"",phase:"read",end:Date.now()+BLOCK*1000,blocks:0}; save(); runTick(); home(); clockTimer(12);};
   const startRest=(stepDone)=>{const note=$("tim-note")?$("tim-note").value:""; tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note}); if(stepDone){store.steps.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,blocks:tim.blocks}); if(tim.sess){const a=store.sess[tim.ch]=store.sess[tim.ch]||[]; if(!a.includes(tim.sess)) a.push(tim.sess); const c=DATA.find(x=>x.num===tim.ch); const nx=(c.sessions||[]).find(x=>!a.includes(x.n)); tim.flash=nx?`🏁 ${tim.sess}회차 끝! 이 장 ${a.length}/${c.sessions.length}. 오늘은 여기까지 해도 돼요.`:`🏁 이 장 회차를 다 끝냈어요. 셀프 체크로 마무리하세요.`; tim.sess=nx?nx.n:0; tim.step=nx?nx.n+"회차":"";} tim.blocks=0;} save(); sinceLong++; const lr=sinceLong>=4; if(lr) sinceLong=0; tim.phase="rest"; tim.longRest=lr; tim.end=Date.now()+(lr?LONGREST:REST)*1000; home(); clockTimer(lr?10:2);};
