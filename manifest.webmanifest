@@ -1,10 +1,10 @@
 {
- "name": "CS 노트 학습 앱",
- "short_name": "CS 노트",
+ "name": "Iolite",
+ "short_name": "Iolite",
  "start_url": "./",
  "display": "standalone",
- "background_color": "#12151b",
- "theme_color": "#1b2029",
+ "background_color": "#f6f4fb",
+ "theme_color": "#f6f4fb",
  "lang": "ko",
  "icons": [
   {
