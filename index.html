@@ -323,24 +323,68 @@ function startChapter(num){
 /* ---------- 공부 타이머: 12분 읽기 → 멈춤 질문 → 3분 쉬기 ---------- */
 const BLOCK=12*60, REST=2*60, LONGREST=10*60; // 12분 읽기 → 한 줄 요약(약 1분) → 2분 쉬기, 4블록마다 10분
 let sinceLong=0;
-/* 아이폰 홈 화면 앱은 다른 앱(노션)으로 가면 알림을 못 띄워요. 그래서 단축어 "CS 타이머"로 시계 앱 타이머를 대신 켜요.
-   시계 타이머는 화면이 잠겨 있어도 진동과 배너로 알려 줘요. 기기 설정이라 이 브라우저에만 저장해요. */
-const SCKEY="csnotes-shortcut-v1";
-let useShortcut=false; try{useShortcut=localStorage.getItem(SCKEY)==="1"}catch(e){}
-let scMode="input"; try{scMode=localStorage.getItem(SCKEY+"-mode")||"input"}catch(e){}
-function clockTimer(min){ // fixed: 시간이 고정된 단축어 셋(CS 12분·CS 2분·CS 10분) / input: 분을 넘겨받는 단축어 하나(CS 타이머)
-  if(!useShortcut) return;
-  location.href = scMode==="input"
-    ? "shortcuts://run-shortcut?name="+encodeURIComponent("CS 타이머")+"&input=text&text="+min
-    : "shortcuts://run-shortcut?name="+encodeURIComponent("CS "+min+"분");
+/* 아이폰 홈 화면 앱은 다른 앱(노션)으로 가거나 화면이 잠기면 멈춰서 스스로 알림을 못 띄워요.
+   그래서 단계가 바뀔 때마다 "언제 어떤 알림을 보낼지" 목록을 알림 서버(push/worker.js)에 보내요.
+   서버가 그 시각에 푸시 알림을 보내고, 목록이 바뀌면 통째로 바꾸고, 빈 목록이면 취소해요. */
+const PUSH_URL="https://iolite-push.yskingpark.workers.dev", PUSH_KEY="BB9isJh-tlXLP8cAO0MINof-P4YgfJuSkZ5uoUwsFCHyZVOM0__dyb_4l9YIutLOUQtooHhYeibGZ2gZ4PBbbsA";
+const PKEY="iolite-push-v1"; // 이 기기의 {id, sub}. 기기 설정이라 동기화하지 않아요
+let push=null; try{push=JSON.parse(localStorage.getItem(PKEY)||"null")}catch(e){}
+let pushSent="", pushMsg="";
+const pushSupported=()=>"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window&&location.protocol==="https:";
+const isStandalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+function pushPost(alerts){
+  if(!push||!PUSH_URL.startsWith("https")) return Promise.resolve(null);
+  return fetch(PUSH_URL+"/plan",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({id:push.id,sub:push.sub,alerts})});
 }
+function timerAlerts(){ // 지금 상태에서 앞으로 보낼 알림들
+  if(!tim) return [];
+  const a=[], W=8*60*1000;
+  if(tim.phase==="read") a.push({at:tim.end,title:"12분 됐어요",body:"다음 소제목까지만 읽고 한 줄 요약을 써요"},{at:tim.end+W,title:"한 줄 요약 시간",body:"방금 읽은 내용을 한 문장으로 적어요"});
+  else if(tim.phase==="wrap") a.push({at:tim.end,title:"한 줄 요약 시간",body:"방금 읽은 내용을 한 문장으로 적어요"});
+  else if(tim.phase==="rest") a.push({at:tim.end,title:"쉬는 시간 끝",body:"다음 블록을 시작해요"});
+  return a.filter(x=>x.at>Date.now()+2000);
+}
+function pushPlan(){ // 목록이 바뀌었을 때만 보내요
+  const a=timerAlerts(), key=JSON.stringify(a);
+  if(key===pushSent) return; pushSent=key;
+  pushPost(a).catch(()=>{pushSent="";});
+}
+async function enablePush(){
+  try{
+    if(await Notification.requestPermission()!=="granted"){pushMsg="알림이 꺼져 있어요. 설정 → 알림 → Iolite에서 켜요."; home(); return;}
+    const reg=await navigator.serviceWorker.ready;
+    const key=Uint8Array.from(atob(PUSH_KEY.replace(/-/g,"+").replace(/_/g,"/")),c=>c.charCodeAt(0));
+    const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});
+    const id=(push&&push.id)||Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,"0")).join("");
+    push={id,sub:sub.toJSON()}; try{localStorage.setItem(PKEY,JSON.stringify(push))}catch(e){}
+    pushSent=""; pushMsg="알림이 켜졌어요. 테스트를 눌러 확인해요."; home();
+  }catch(e){pushMsg="알림을 켜지 못했어요: "+(e&&e.message||e); home();}
+}
+async function testPush(){ // 10초 뒤 알림. 그 사이 화면을 잠가 봐요
+  pushMsg="10초 뒤에 알림이 와요. 지금 화면을 잠가 보세요."; home();
+  try{ const r=await pushPost([{at:Date.now()+10000,title:"Iolite 알림 테스트",body:"이렇게 12분마다 알려 줘요"}]); pushSent=""; if(!r||!r.ok){pushMsg="알림 서버에 닿지 못했어요"+(r?" ("+r.status+")":"")+". 앱 안 타이머는 그대로 써요."; home();} }
+  catch(e){pushMsg="알림 서버에 닿지 못했어요. 인터넷을 확인해요."; home();}
+}
+const TKEY="iolite-timer-v1"; // 앱이 다시 열려도 진행 중인 블록을 이어가요
+function saveTim(){ try{ tim?localStorage.setItem(TKEY,JSON.stringify({tim,sinceLong})):localStorage.removeItem(TKEY);}catch(e){} pushPlan(); }
 function alertUser(title,body){ // 화면을 보고 있지 않으면 알림과 진동 (브라우저가 허락한 경우)
   try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}
-  try{ if(document.hidden&&"Notification" in window&&Notification.permission==="granted") new Notification(title,{body,tag:"csnotes-timer"}); }catch(e){}
+  try{ if(!push&&document.hidden&&"Notification" in window&&Notification.permission==="granted") new Notification(title,{body,tag:"csnotes-timer"}); }catch(e){} // 푸시가 켜져 있으면 서버 알림이 대신 와요
 }
 let tim=null, tick=null;
+try{const t=JSON.parse(localStorage.getItem(TKEY)||"null"); if(t&&t.tim){tim=t.tim; sinceLong=t.sinceLong||0;}}catch(e){}
 const mmss=s=>`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
 const weekStart=()=>{const t=new Date();t.setDate(t.getDate()-((t.getDay()+6)%7));return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`};
+function pushBox(){ // 알림 켜기·테스트
+  const msg=pushMsg?`<p class="note"><b>${esc(pushMsg)}</b></p>`:"";
+  if(!pushSupported()) return `<p class="note">이 브라우저는 백그라운드 알림을 못 받아요. 아이폰은 Safari에서 공유 → 홈 화면에 추가한 Iolite로 열어요. 이 화면을 켜 두면 앱 안 타이머는 그대로 돌아요.</p>`;
+  if(!isStandalone()&&/iPhone|iPad/.test(navigator.userAgent)) return `<p class="note">알림은 홈 화면의 Iolite 아이콘으로 열었을 때만 켤 수 있어요.</p>`;
+  const on=push&&Notification.permission==="granted";
+  return `<details class="box" ${on?"":"open"}><summary>${on?"알림 켜짐 · 노션을 보고 있어도 12분에 배너가 와요":"알림 켜기 (한 번)"}</summary>
+    <p class="note">블록을 시작하면 12분 읽기 끝, 요약 시간, 쉬는 시간 끝에 알림이 와요. 일찍 끝내거나 그만하면 남은 알림도 같이 취소돼요.</p>
+    <p class="note"><b>소리 없이 진동만:</b> 폰 옆 무음 스위치(또는 제어 센터의 무음 모드)를 켜면 진동만 와요. 설정 → 사운드 및 햅틱 → <b>무음 모드에서 햅틱 재생</b>이 켜져 있어야 해요. 소리를 켜 둔 채 Iolite만 조용히 하려면 설정 → 알림 → Iolite → 사운드를 꺼 보세요(이때 진동이 오는지는 테스트로 확인해요).</p>
+    <div class="bar">${on?`<button id="push-test">테스트 (10초 뒤 알림)</button>`:`<button class="primary" id="push-on">알림 켜기</button>`}</div>${msg}</details>`;
+}
 function timerHtml(){
   const t=today(), ws=weekStart();
   const todayBlocks=store.log.filter(x=>x.date===t).length;
@@ -353,24 +397,7 @@ function timerHtml(){
     body=`<p class="q">한 블록 = 12분 읽기 + 한 줄 요약(약 1분) + 2분 쉬기</p><p class="note">4블록(1시간)마다 10분 쉬어요. 12분이 지나면 다음 소제목까지만 읽어요(최대 20분).</p>
     <p class="note">시작이 제일 어려워요. 첫 2분은 "이 회차 첫 단계의 ✅ 30초 체크 질문을 먼저 읽고 답을 예측하기"만 해요. 노션의 🏁 표시까지가 한 회차예요. 12분 뒤에는 방금 읽은 걸 한 문장으로 적고 쉬어요. 하루 최소 1블록이면 그날은 성공이에요.</p>
     <div class="bar"><select id="tim-ch" aria-label="장">${chOpts}</select><select id="tim-sess" aria-label="회차"></select></div><p class="note" id="tim-sess-note"></p>
-    <label class="gate"><input type="checkbox" id="tim-sc" ${useShortcut?"checked":""}><span>아이폰: 시계 앱 타이머로 알림 받기 <span class="note">(노션을 보고 있어도 12분에 진동·배너가 와요)</span></span></label>
-    <details class="box" ${useShortcut?"":"open"}><summary>단축어 "CS 타이머" 만드는 법 (한 번, 1분)</summary>
-      <p class="note">단축어 하나만 만들면 앱이 그때그때 시간을 넘겨줘요(읽기 12분, 쉬기 2분, 긴 휴식 10분). 핵심은 타이머의 시간 칸에 숫자를 직접 쓰지 않고 <b>파란 "숫자" 변수</b>를 넣는 거예요.</p>
-      <ol class="note" style="padding-left:1.2em;display:flex;flex-direction:column;gap:6px;margin:8px 0">
-        <li><b>단축어</b> 앱 → 오른쪽 위 <b>+</b>.</li>
-        <li>검색창에 <b>숫자</b> → <b>입력에서 숫자 가져오기</b>를 추가해요. 동작에 "<b>단축어 입력</b>에서 숫자 가져오기"라고 보이면 맞아요. (다른 말이 보이면 그 칸을 눌러 <b>단축어 입력</b>을 골라요.)</li>
-        <li>그 아래에 <b>타이머 시작</b>을 추가해요(검색: 타이머).</li>
-        <li>"30분"의 <b>30</b>을 눌러요. 키보드 위 줄에 나오는 파란 <b>숫자</b>를 눌러서 30 자리에 파란 "숫자"가 들어가게 해요. 30이 남아 있으면 지워요. 단위는 <b>분</b>.</li>
-        <li>맨 위 이름을 <b>CS 타이머</b>로 바꾸고(띄어쓰기까지 똑같이) 완료.</li>
-        <li>위의 "시계 앱 타이머로 알림 받기"를 켜고 <b>테스트</b>를 눌러요. "단축어를 열까요?"에는 <b>열기</b>. 시계 앱에 <b>1분</b> 타이머가 켜지면 성공이에요.</li>
-      </ol>
-      <p class="note"><b>30분(또는 다른 고정 시간)이 켜지면:</b> 4번에서 시간 칸이 아직 숫자예요. 파란 "숫자"로 바꿔요. <b>"단축어를 찾을 수 없음"</b>이면 이름이 달라요.</p>
-      <div class="bar"><button id="tim-test">테스트 (1분 타이머)</button></div>
-      <details style="margin-top:8px"><summary class="note">잘 안 되면: 시간이 고정된 단축어 셋으로 쓰기</summary>
-        <p class="note">타이머 시작만 넣은 단축어 세 개를 <b>CS 12분</b>(12분), <b>CS 2분</b>(2분), <b>CS 10분</b>(10분)으로 만들고 아래를 켜요.</p>
-        <label class="gate"><input type="checkbox" id="tim-scmode" ${scMode==="fixed"?"checked":""}><span>고정 시간 단축어 셋 쓰기</span></label>
-      </details>
-    </details>
+    ${pushBox()}
     <div class="bar"><button class="primary" id="tim-go">블록 시작</button><button id="tim-known" title="이 회차 단계들의 ✅ 30초 체크를 다 맞혔을 때">이미 알아요 · 건너뛰기</button></div>
     <p class="note">"이미 알아요"는 엄격하게: 그 회차 단계들의 ✅ 30초 체크를 안 보고 전부 답하고, 핵심어로 채점하고, 문항마다 "왜"를 한 줄 말한 뒤, 소제목·굵은 글씨·코드를 2분 훑어 낯선 게 없을 때만 눌러요. ✅ 체크가 없는 회차는 읽어요.</p>`;
   }else{
@@ -394,16 +421,15 @@ function bindTimer(){
     const next=ss.find(x=>!done.includes(x.n)); if(next) $("tim-sess").value=next.n;
     $("tim-sess-note").textContent=ss.length?`이 장 ${done.length}/${ss.length}회차 끝냄${(c.optional||[]).length?" · 선택(처음엔 건너뛰기): "+c.optional.join(", "):""}`:""; };
   if($("tim-ch")){ $("tim-ch").value=store.lastCh||$("tim-ch").value; $("tim-ch").onchange=fillSess; fillSess(); }
-  if($("tim-sc")) $("tim-sc").onchange=e=>{useShortcut=e.target.checked; try{localStorage.setItem(SCKEY,useShortcut?"1":"0")}catch(_){}};
-  if($("tim-test")) $("tim-test").onclick=()=>{ if(!useShortcut){useShortcut=true; try{localStorage.setItem(SCKEY,"1")}catch(_){} } scMode==="fixed"?clockTimer(2):clockTimer(1); };
-  if($("tim-scmode")) $("tim-scmode").onchange=e=>{scMode=e.target.checked?"fixed":"input"; try{localStorage.setItem(SCKEY+"-mode",scMode)}catch(_){}};
+  if($("push-on")) $("push-on").onclick=enablePush;
+  if($("push-test")) $("push-test").onclick=testPush;
   if($("tim-known")) $("tim-known").onclick=()=>{const ch=$("tim-ch").value, n=+$("tim-sess").value; if(!n) return; const a=store.sess[ch]=store.sess[ch]||[]; if(!a.includes(n)) a.push(n); (store.skips=store.skips||[]).push({ts:now(),date:today(),ch,sess:n}); store.lastCh=ch; save(); home();};
-  if($("tim-go")) $("tim-go").onclick=()=>{ try{ if("Notification" in window&&Notification.permission==="default") Notification.requestPermission(); }catch(e){}store.lastCh=$("tim-ch").value; const n=+$("tim-sess").value; tim={ch:$("tim-ch").value,sess:n,step:n?n+"회차":"",phase:"read",end:Date.now()+BLOCK*1000,blocks:0}; save(); runTick(); home(); clockTimer(12);};
-  const startRest=(stepDone)=>{const note=$("tim-note")?$("tim-note").value:""; tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note}); if(stepDone){store.steps.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,blocks:tim.blocks}); if(tim.sess){const a=store.sess[tim.ch]=store.sess[tim.ch]||[]; if(!a.includes(tim.sess)) a.push(tim.sess); const c=DATA.find(x=>x.num===tim.ch); const nx=(c.sessions||[]).find(x=>!a.includes(x.n)); tim.flash=nx?`🏁 ${tim.sess}회차 끝! 이 장 ${a.length}/${c.sessions.length}. 오늘은 여기까지 해도 돼요.`:`🏁 이 장 회차를 다 끝냈어요. 셀프 체크로 마무리하세요.`; tim.sess=nx?nx.n:0; tim.step=nx?nx.n+"회차":"";} tim.blocks=0;} save(); sinceLong++; const lr=sinceLong>=4; if(lr) sinceLong=0; tim.phase="rest"; tim.longRest=lr; tim.end=Date.now()+(lr?LONGREST:REST)*1000; home(); clockTimer(lr?10:2);};
+  if($("tim-go")) $("tim-go").onclick=()=>{ store.lastCh=$("tim-ch").value; const n=+$("tim-sess").value; tim={ch:$("tim-ch").value,sess:n,step:n?n+"회차":"",phase:"read",end:Date.now()+BLOCK*1000,blocks:0}; save(); saveTim(); runTick(); home();};
+  const startRest=(stepDone)=>{const note=$("tim-note")?$("tim-note").value:""; tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note}); if(stepDone){store.steps.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,blocks:tim.blocks}); if(tim.sess){const a=store.sess[tim.ch]=store.sess[tim.ch]||[]; if(!a.includes(tim.sess)) a.push(tim.sess); const c=DATA.find(x=>x.num===tim.ch); const nx=(c.sessions||[]).find(x=>!a.includes(x.n)); tim.flash=nx?`🏁 ${tim.sess}회차 끝! 이 장 ${a.length}/${c.sessions.length}. 오늘은 여기까지 해도 돼요.`:`🏁 이 장 회차를 다 끝냈어요. 셀프 체크로 마무리하세요.`; tim.sess=nx?nx.n:0; tim.step=nx?nx.n+"회차":"";} tim.blocks=0;} save(); sinceLong++; const lr=sinceLong>=4; if(lr) sinceLong=0; tim.phase="rest"; tim.longRest=lr; tim.end=Date.now()+(lr?LONGREST:REST)*1000; saveTim(); home();};
   if($("tim-rest")) $("tim-rest").onclick=()=>startRest(false);
   if($("tim-stepdone")) $("tim-stepdone").onclick=()=>startRest(true);
-  if($("tim-skip")) $("tim-skip").onclick=()=>{ if(tim.phase==="read"||tim.phase==="wrap"){tim.phase="pause";} else {tim.phase="read"; tim.end=Date.now()+BLOCK*1000; clockTimer(12);} home(); };
-  if($("tim-stop")) $("tim-stop").onclick=()=>{ if(tim.phase==="pause"){const n=$("tim-note").value; tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note:n}); save();} tim=null; clearInterval(tick); home(); };
+  if($("tim-skip")) $("tim-skip").onclick=()=>{ if(tim.phase==="read"||tim.phase==="wrap"){tim.phase="pause";} else {tim.phase="read"; tim.end=Date.now()+BLOCK*1000;} saveTim(); home(); };
+  if($("tim-stop")) $("tim-stop").onclick=()=>{ if(tim.phase==="pause"){const n=$("tim-note").value; tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note:n}); save();} tim=null; clearInterval(tick); saveTim(); home(); };
 }
 function ringP(){ if(!tim||tim.phase==="pause"||tim.phase==="ready") return 1; const tot=tim.phase==="read"?BLOCK:tim.phase==="wrap"?480:(tim.longRest?LONGREST:REST); return Math.max(0,Math.min(1,(tim.end-Date.now())/1000/tot)).toFixed(4); }
 function runTick(){
@@ -412,8 +438,8 @@ function runTick(){
     if(!tim){clearInterval(tick);return}
     const left=Math.round((tim.end-Date.now())/1000);
     if(tim.phase!=="pause"&&tim.phase!=="ready"&&left<=0){
-      if(tim.phase==="read"){tim.phase="wrap"; tim.end=Date.now()+8*60*1000; alertUser("12분 됐어요","다음 소제목까지만 읽고 한 줄 요약을 써요");} else if(tim.phase==="wrap"){tim.phase="pause"; alertUser("한 줄 요약 시간","방금 읽은 내용을 한 문장으로 적어요");} else {tim.phase="ready"; alertUser("쉬는 시간 끝","다음 블록을 시작해요");}
-      try{navigator.vibrate&&navigator.vibrate(200)}catch(e){}
+      if(tim.phase==="read"){tim.phase="wrap"; tim.end+=8*60*1000; alertUser("12분 됐어요","다음 소제목까지만 읽고 한 줄 요약을 써요");} else if(tim.phase==="wrap"){tim.phase="pause"; alertUser("한 줄 요약 시간","방금 읽은 내용을 한 문장으로 적어요");} else {tim.phase="ready"; alertUser("쉬는 시간 끝","다음 블록을 시작해요");}
+      saveTim();
       if(tab==="tim") home();
     } else { const c=document.getElementById("tim-clock"); if(c&&tim.phase!=="pause"&&tim.phase!=="ready"){ c.textContent=mmss(Math.max(0,left)); const r=document.getElementById("tim-ring"); if(r) r.style.setProperty("--p",ringP()); } }
   },1000);
@@ -612,6 +638,7 @@ function result(){
   const ag=document.getElementById("again"); if(ag) ag.onclick=()=>run.kind==="chapter"?startChapter(run.num):run.kind==="review"?startReview():startMix();
 }
 home();
+if(tim) runTick();
 </script>
 
 <script>if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js");</script>
