@@ -320,7 +320,7 @@ function startChapter(num){
   run={kind:"chapter",num,title:c.title,items,i:0,scores:[],shown:false};
   ask();
 }
-/* ---------- 공부 타이머: 12분 읽기 → 멈춤 질문 → 3분 쉬기 ---------- */
+/* ---------- 공부 타이머: 12분 읽기 → 멈춤 질문 → 2분 쉬기 ---------- */
 const BLOCK=12*60, REST=2*60, LONGREST=10*60; // 12분 읽기 → 한 줄 요약(약 1분) → 2분 쉬기, 4블록마다 10분
 let sinceLong=0;
 /* 아이폰 홈 화면 앱은 다른 앱(노션)으로 가거나 화면이 잠기면 멈춰서 스스로 알림을 못 띄워요.
@@ -405,7 +405,7 @@ function timerHtml(){
     body=`${tim.flash&&tim.phase==="rest"?`<div class="pass-box">${esc(tim.flash)}</div>`:""}<div class="phase">${tim.phase==="ready"?"쉬는 시간 끝":tim.phase==="read"?"읽기 · "+tim.ch+"장 "+esc(tim.step):tim.phase==="wrap"?"다음 소제목까지만 마저 읽어요":tim.phase==="pause"?"멈춤 질문":(tim.longRest?"긴 휴식 10분 (일어나서 움직여요)":"쉬기 2분 (일어나서 움직여요)")}</div>
     <div class="ring" id="tim-ring" style="--p:${ringP()}"><div class="clock" id="tim-clock">${tim.phase==="pause"?"✎":tim.phase==="ready"?"▶":mmss(left)}</div></div>
     ${tim.phase==="pause"?`<label class="note" for="tim-note">방금 읽은 부분을 한 문장으로. 왜 그런지도 한 줄.</label><textarea id="tim-note" placeholder="예: 투 포인터는 정렬돼 있어서 한쪽을 버릴 수 있다. 버려도 되는 이유는…"></textarea>
-    <div class="bar"><button class="primary" id="tim-rest">기록하고 3분 쉬기</button><button id="tim-stepdone">${tim.sess?"회차 끝냄 🏁":"이 단계 끝냄"} + 쉬기</button><button id="tim-stop">오늘은 여기까지</button></div>`:
+    <div class="bar"><button class="primary" id="tim-rest">기록하고 ${sinceLong+1>=4?"10":"2"}분 쉬기</button><button id="tim-stepdone">${tim.sess?"회차 끝냄 🏁":"이 단계 끝냄"} + 쉬기</button><button id="tim-stop">오늘은 여기까지</button></div>`:
     `<div class="bar"><button id="tim-skip" ${tim.phase==="wrap"||tim.phase==="ready"?'class="primary"':""}>${tim.phase==="read"?"블록 일찍 끝내기":tim.phase==="wrap"?"소제목 끝, 멈춤 질문으로":tim.phase==="ready"?"다음 블록 시작":"쉬기 건너뛰고 다음 블록"}</button><button id="tim-stop">그만하기</button></div>`}`;
   }
   return `<div class="card">${body}</div>
