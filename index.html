@@ -376,13 +376,25 @@ async function testPush(){ // 10초 뒤 알림. 그 사이 화면을 잠가 봐�
   catch(e){pushMsg="알림 서버에 닿지 못했어요. 인터넷을 확인해요."; home();}
 }
 const TKEY="iolite-timer-v1"; // 앱이 다시 열려도 진행 중인 블록을 이어가요
-function saveTim(){ try{ tim?localStorage.setItem(TKEY,JSON.stringify({tim,sinceLong})):localStorage.removeItem(TKEY);}catch(e){} pushPlan(); }
+const STALE=30*60*1000; // 30분 동안 손대지 않은 블록은 자동으로 정리해요
+let timFlash="";
+function saveTim(user){ if(tim&&user!==false) tim.touched=Date.now(); try{ tim?localStorage.setItem(TKEY,JSON.stringify({tim,sinceLong})):localStorage.removeItem(TKEY);}catch(e){} pushPlan(); }
 function alertUser(title,body){ // 화면을 보고 있지 않으면 알림과 진동 (브라우저가 허락한 경우)
   try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}
   try{ if(!push&&document.hidden&&"Notification" in window&&Notification.permission==="granted") new Notification(title,{body,tag:"csnotes-timer"}); }catch(e){} // 푸시가 켜져 있으면 서버 알림이 대신 와요
 }
 let tim=null, tick=null, qt=null; // qt: ✅ 30초 체크 테스트 진행 상태
 try{const t=JSON.parse(localStorage.getItem(TKEY)||"null"); if(t&&t.tim){tim=t.tim; sinceLong=t.sinceLong||0;}}catch(e){}
+function timLastActive(){ return Math.max(tim.touched||0, tim.phase==="read"?tim.end+8*60*1000:tim.end); }
+function timStaleCheck(){ // 앱을 닫아 두었거나 오래 안 썼으면: 다 읽은 블록은 기록하고(요약 초안 포함) 타이머를 비워요
+  if(!tim||Date.now()-timLastActive()<=STALE) return false;
+  const readDone=tim.phase==="wrap"||tim.phase==="pause"||(tim.phase==="read"&&Date.now()>tim.end);
+  if(readDone){ store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note:tim.note||"",auto:true}); save(); }
+  timFlash=readDone?"오래 손대지 않아서 지난 블록을 정리했어요. 읽은 블록은 기록했어요"+(tim.note?"(쓰던 요약 포함).":".")+" 새로 시작해요.":"오래 손대지 않아서 타이머를 비웠어요.";
+  tim=null; clearInterval(tick); saveTim(); return true;
+}
+timStaleCheck();
+window.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"&&timStaleCheck()) home(); });
 const mmss=s=>`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
 const weekStart=()=>{const t=new Date();t.setDate(t.getDate()-((t.getDay()+6)%7));return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`};
 function pushBox(){ // 알림 켜기·테스트
@@ -395,6 +407,7 @@ function pushBox(){ // 알림 켜기·테스트
     <p class="note"><b>소리 없이 진동만:</b> 폰 옆 무음 스위치(또는 제어 센터의 무음 모드)를 켜면 진동만 와요. 설정 → 사운드 및 햅틱 → <b>무음 모드에서 햅틱 재생</b>이 켜져 있어야 해요. 소리를 켜 둔 채 Iolite만 조용히 하려면 설정 → 알림 → Iolite → 사운드를 꺼 보세요(이때 진동이 오는지는 테스트로 확인해요).</p>
     <div class="bar">${on?`<button id="push-test">테스트 (10초 뒤 알림)</button>`:`<button class="primary" id="push-on">알림 켜기</button>`}</div>${msg}</details>`;
 }
+const resetBar=()=>`<div class="bar"><button id="tim-reset">타이머 초기화</button><span class="note">30분 동안 손대지 않으면 자동으로 정리돼요</span></div>`;
 function timerHtml(){
   const t=today(), ws=weekStart();
   const todayBlocks=store.log.filter(x=>x.date===t).length;
@@ -409,7 +422,7 @@ function timerHtml(){
       ${qt.shown?`<div class="mdx">${MD(it.a)}</div><p class="note">핵심어가 하나라도 빠졌거나 "왜"를 말 못 했으면 못 맞힌 거예요.</p><div class="seg"><button data-qt="1">맞힘</button><button data-qt="0">못 맞힘</button></div>`:`<div class="bar"><button class="primary" id="qt-show">답 열기</button></div>`}</div><div class="bar"><button id="qt-quit">그만두기</button></div>`
       :(qt.ok.every(Boolean)?`<div class="pass-box">전부 맞혔어요. ${qt.n}회차를 건너뛴 걸로 기록했어요. 소제목·굵은 글씨·코드만 2분 훑어요.</div>`:`<div class="pass-box">${qt.ok.filter(Boolean).length}/${qt.q.length} 맞혔어요. 이 회차는 읽어요. 못 맞힌 문항이 나오는 단계를 특히 천천히.</div>`)+`<div class="bar"><button class="primary" id="qt-close">확인</button></div>`;
   } else if(!tim){
-    body=`<p class="q">한 블록 = 12분 읽기 + 한 줄 요약(약 1분) + 2분 쉬기</p><p class="note">4블록(1시간)마다 10분 쉬어요. 12분이 지나면 다음 소제목까지만 읽어요(최대 20분).</p>
+    body=`${timFlash?`<div class="pass-box">${esc(timFlash)}</div>`:""}<p class="q">한 블록 = 12분 읽기 + 한 줄 요약(약 1분) + 2분 쉬기</p><p class="note">4블록(1시간)마다 10분 쉬어요. 12분이 지나면 다음 소제목까지만 읽어요(최대 20분).</p>
     <p class="note">시작이 제일 어려워요. 첫 2분은 "이 회차 첫 단계의 ✅ 30초 체크 질문을 먼저 읽고 답을 예측하기"만 해요. 노션의 🏁 표시까지가 한 회차예요. 12분 뒤에는 방금 읽은 걸 한 문장으로 적고 쉬어요. 하루 최소 1블록이면 그날은 성공이에요.</p>
     <div class="bar"><select id="tim-ch" aria-label="장">${chOpts}</select><select id="tim-sess" aria-label="회차"></select></div><p class="note" id="tim-sess-note"></p><div id="tim-quick"></div>
     ${pushBox()}
@@ -419,9 +432,9 @@ function timerHtml(){
     const left=Math.max(0,Math.round((tim.end-Date.now())/1000));
     body=`${tim.flash&&tim.phase==="rest"?`<div class="pass-box">${esc(tim.flash)}</div>`:""}<div class="phase">${tim.phase==="ready"?"쉬는 시간 끝":tim.phase==="read"?"읽기 · "+tim.ch+"장 "+esc(tim.step):tim.phase==="wrap"?"다음 소제목까지만 마저 읽어요":tim.phase==="pause"?"멈춤 질문":(tim.longRest?"긴 휴식 10분 (일어나서 움직여요)":"쉬기 2분 (일어나서 움직여요)")}</div>
     <div class="ring" id="tim-ring" style="--p:${ringP()}"><div class="clock" id="tim-clock">${tim.phase==="pause"?"✎":tim.phase==="ready"?"▶":mmss(left)}</div></div>
-    ${tim.phase==="pause"?`<label class="note" for="tim-note">방금 읽은 부분을 한 문장으로. 왜 그런지도 한 줄.</label><textarea id="tim-note" placeholder="예: 투 포인터는 정렬돼 있어서 한쪽을 버릴 수 있다. 버려도 되는 이유는…"></textarea>
-    <div class="bar"><button class="primary" id="tim-rest">기록하고 ${sinceLong+1>=4?"10":"2"}분 쉬기</button><button id="tim-stepdone">${tim.sess?"회차 끝냄 🏁":"이 단계 끝냄"} + 쉬기</button><button id="tim-stop">오늘은 여기까지</button></div>`:
-    `<div class="bar"><button id="tim-skip" ${tim.phase==="wrap"||tim.phase==="ready"?'class="primary"':""}>${tim.phase==="read"?"블록 일찍 끝내기":tim.phase==="wrap"?"소제목 끝, 멈춤 질문으로":tim.phase==="ready"?"다음 블록 시작":"쉬기 건너뛰고 다음 블록"}</button><button id="tim-stop">그만하기</button></div>`}`;
+    ${tim.phase==="pause"?`<label class="note" for="tim-note">방금 읽은 부분을 한 문장으로. 왜 그런지도 한 줄.</label><textarea id="tim-note" placeholder="예: 투 포인터는 정렬돼 있어서 한쪽을 버릴 수 있다. 버려도 되는 이유는…">${esc(tim.note||"")}</textarea>
+    <div class="bar"><button class="primary" id="tim-rest">기록하고 ${sinceLong+1>=4?"10":"2"}분 쉬기</button><button id="tim-stepdone">${tim.sess?"회차 끝냄 🏁":"이 단계 끝냄"} + 쉬기</button><button id="tim-stop">오늘은 여기까지</button></div>${resetBar()}`:
+    `<div class="bar"><button id="tim-skip" ${tim.phase==="wrap"||tim.phase==="ready"?'class="primary"':""}>${tim.phase==="read"?"블록 일찍 끝내기":tim.phase==="wrap"?"소제목 끝, 멈춤 질문으로":tim.phase==="ready"?"다음 블록 시작":"쉬기 건너뛰고 다음 블록"}</button><button id="tim-stop">그만하기</button></div>${resetBar()}`}`;
   }
   return `<div class="card">${body}</div>
   <div class="card"><div class="meta"><span>이번 주 ${weekBlocks}블록 (목표 범위 40~60)</span><span>오늘 ${todayBlocks}블록</span></div>
@@ -450,10 +463,12 @@ function bindTimer(){
   if($("push-test")) $("push-test").onclick=testPush;
   if($("tim-known")) $("tim-known").onclick=()=>{const ch=$("tim-ch").value, n=+$("tim-sess").value; if(!n) return; const c=DATA.find(x=>x.num===ch), sel=(c.sessions||[]).find(x=>x.n===n), q=sel&&sel.q||[]; store.lastCh=ch; save();
     if(!q.length){ $("tim-sess-note").textContent="이 회차는 ✅ 체크가 없어요. 읽어요."; return; } qt={ch,n,q,i:0,ok:[],shown:false}; home(); window.scrollTo(0,0);};
-  if($("tim-go")) $("tim-go").onclick=()=>{ store.lastCh=$("tim-ch").value; const n=+$("tim-sess").value; tim={ch:$("tim-ch").value,sess:n,step:n?n+"회차":"",phase:"read",end:Date.now()+BLOCK*1000,blocks:0}; save(); saveTim(); runTick(); home();};
-  const startRest=(stepDone)=>{const note=$("tim-note")?$("tim-note").value:""; tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note}); if(stepDone){store.steps.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,blocks:tim.blocks}); if(tim.sess){const a=store.sess[tim.ch]=store.sess[tim.ch]||[]; if(!a.includes(tim.sess)) a.push(tim.sess); const c=DATA.find(x=>x.num===tim.ch); const nx=(c.sessions||[]).find(x=>!a.includes(x.n)); tim.flash=nx?`🏁 ${tim.sess}회차 끝! 이 장 ${a.length}/${c.sessions.length}. 오늘은 여기까지 해도 돼요.`:`🏁 이 장 회차를 다 끝냈어요. 셀프 체크로 마무리하세요.`; tim.sess=nx?nx.n:0; tim.step=nx?nx.n+"회차":"";} tim.blocks=0;} save(); sinceLong++; const lr=sinceLong>=4; if(lr) sinceLong=0; tim.phase="rest"; tim.longRest=lr; tim.end=Date.now()+(lr?LONGREST:REST)*1000; saveTim(); home();};
+  if($("tim-go")) $("tim-go").onclick=()=>{ timFlash=""; store.lastCh=$("tim-ch").value; const n=+$("tim-sess").value; tim={ch:$("tim-ch").value,sess:n,step:n?n+"회차":"",phase:"read",end:Date.now()+BLOCK*1000,blocks:0}; save(); saveTim(); runTick(); home();};
+  const startRest=(stepDone)=>{const note=$("tim-note")?$("tim-note").value:""; tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note}); tim.note=""; if(stepDone){store.steps.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,blocks:tim.blocks}); if(tim.sess){const a=store.sess[tim.ch]=store.sess[tim.ch]||[]; if(!a.includes(tim.sess)) a.push(tim.sess); const c=DATA.find(x=>x.num===tim.ch); const nx=(c.sessions||[]).find(x=>!a.includes(x.n)); tim.flash=nx?`🏁 ${tim.sess}회차 끝! 이 장 ${a.length}/${c.sessions.length}. 오늘은 여기까지 해도 돼요.`:`🏁 이 장 회차를 다 끝냈어요. 셀프 체크로 마무리하세요.`; tim.sess=nx?nx.n:0; tim.step=nx?nx.n+"회차":"";} tim.blocks=0;} save(); sinceLong++; const lr=sinceLong>=4; if(lr) sinceLong=0; tim.phase="rest"; tim.longRest=lr; tim.end=Date.now()+(lr?LONGREST:REST)*1000; saveTim(); home();};
   if($("tim-rest")) $("tim-rest").onclick=()=>startRest(false);
   if($("tim-stepdone")) $("tim-stepdone").onclick=()=>startRest(true);
+  if($("tim-note")) $("tim-note").oninput=e=>{tim.note=e.target.value; saveTim();};
+  if($("tim-reset")) $("tim-reset").onclick=e=>{ const b=e.target; if(!b.dataset.sure){b.dataset.sure=1; b.textContent="기록 없이 비울까요? 한 번 더 누르기"; return;} tim=null; clearInterval(tick); saveTim(); timFlash="타이머를 비웠어요. 이번 블록은 기록하지 않았어요."; home(); };
   if($("tim-skip")) $("tim-skip").onclick=()=>{ if(tim.phase==="read"||tim.phase==="wrap"){tim.phase="pause";} else {tim.phase="read"; tim.end=Date.now()+BLOCK*1000;} saveTim(); home(); };
   if($("tim-stop")) $("tim-stop").onclick=()=>{ if(tim.phase==="pause"){const n=$("tim-note").value; tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note:n}); save();} tim=null; clearInterval(tick); saveTim(); home(); };
 }
@@ -462,10 +477,11 @@ function runTick(){
   clearInterval(tick);
   tick=setInterval(()=>{
     if(!tim){clearInterval(tick);return}
+    if(timStaleCheck()){ home(); return; }
     const left=Math.round((tim.end-Date.now())/1000);
     if(tim.phase!=="pause"&&tim.phase!=="ready"&&left<=0){
       if(tim.phase==="read"){tim.phase="wrap"; tim.end+=8*60*1000; alertUser("12분 됐어요","다음 소제목까지만 읽고 한 줄 요약을 써요");} else if(tim.phase==="wrap"){tim.phase="pause"; alertUser("한 줄 요약 시간","방금 읽은 내용을 한 문장으로 적어요");} else {tim.phase="ready"; alertUser("쉬는 시간 끝","다음 블록을 시작해요");}
-      saveTim();
+      saveTim(false);
       if(tab==="tim") home();
     } else { const c=document.getElementById("tim-clock"); if(c&&tim.phase!=="pause"&&tim.phase!=="ready"){ c.textContent=mmss(Math.max(0,left)); const r=document.getElementById("tim-ring"); if(r) r.style.setProperty("--p",ringP()); } }
   },1000);
