@@ -100,7 +100,9 @@ code{font-family:var(--f-mono);font-size:.85em;background:var(--surface-2);borde
 .hero .t{font-size:1.4rem;font-weight:800;line-height:1.3;letter-spacing:-.02em}
 .hero .s{font-size:.92rem;opacity:.85;line-height:1.5}
 .hero .f{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;font-size:.8rem;font-weight:600;opacity:.95}
-.hero .go{background:var(--bg);color:var(--text);font-weight:700;padding:10px 16px;border-radius:14px;font-size:.92rem}
+.hero .acts{display:flex;gap:8px;flex-wrap:wrap}
+.hero .go{background:var(--bg);color:var(--text);font-weight:700;padding:10px 16px;border-radius:14px;font-size:.92rem;min-height:44px}
+.hero .go2{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:14px;border:1.5px solid rgba(21,17,46,.35);color:var(--on-primary);font-weight:700;font-size:.88rem;text-decoration:none}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tile{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:16px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;min-height:auto;font-weight:400}
 .tile .lab{font-size:.8rem;color:var(--text-2);font-weight:600}
@@ -551,9 +553,10 @@ function todayHtml(){
   const qn=nx?((nx.nx.q||[]).length):0, pcN=(typeof pcList==="function")?pcList().length:0;
   const ctitle=nx?esc(nx.c.title.replace(/^\d+b?\.\s*/,"").split(/[:：]/)[0].slice(0,18)):"";
   return `<div class="dateline"><span class="note">바쁜 날은 1블록이나 복습 10문항이면 성공한 날이에요.</span><span class="pill">${wk&&wk>=1?wk+"주차 · ":""}${dstr}</span></div>
-  ${nx?`<button id="go-sess" class="hero"><span class="eyebrow">지금 할 것</span><span class="t">${nx.c.num}장 ${ctitle} · ${nx.nx.n}회차</span><span class="s">${esc(nx.nx.steps.join(", ").slice(0,48))} · ${qn?`30초 체크 ${qn}개로 시작`:"읽기부터 시작"}</span><span class="f"><span class="go">블록 준비</span><span>이 장 ${nx.done}/${nx.total}회차</span></span></button>`
+  ${nx?`<div class="hero"><span class="eyebrow" style="display:flex;justify-content:space-between;gap:8px"><span>지금 할 것</span><span>이 장 ${nx.done}/${nx.total}회차</span></span><span class="t">${nx.c.num}장 ${ctitle} · ${nx.nx.n}회차</span><span class="s">${esc(nx.nx.steps.join(", ").slice(0,48))} · ${qn?`30초 체크 ${qn}개로 시작`:"읽기부터 시작"}</span>
+    <span class="f"><span class="acts"><button id="go-sess" class="go">블록 준비</button>${NMAP&&notionUrl(nx.c.num,nx.nx.steps[0])?`<a class="go2" href="${notionUrl(nx.c.num,nx.nx.steps[0])}" target="_blank" rel="noopener">노션에서 ${esc(nx.nx.steps[0])} 열기</a>`:""}</span></span></div>
+  ${NMAP?"":`<span class="note">노션 바로가기는 이 기기에서 GitHub 동기화를 연결하면 나타나요(기록 탭).</span>`}`
      :`<div class="card"><p class="q">지금 할 것</p><p class="note">이어서 할 회차가 없어요. 체크 탭에서 장을 골라요.</p></div>`}
-  ${nx?(NMAP?nlink(nx.c.num,nx.nx.steps[0],`노션에서 ${nx.c.num}장 ${esc(nx.nx.steps[0])} 열기`):`<span class="note">노션 바로가기는 이 기기에서 GitHub 동기화를 연결하면 나타나요(기록 탭). 위치표가 비공개 저장소에 있어서요.</span>`):""}
   <div class="tiles">
     <button id="go-rev" class="tile" ${due?"":"disabled"}><span class="lab">오늘의 복습</span><span class="n">${due}</span><span class="sub">${due?`약 ${Math.max(1,Math.round(Math.min(10,due)*0.5))}분 · 10문항씩`:"오늘 몫 끝"}</span></button>
     <button id="go-prac" class="tile"><span class="lab">다시 풀 문제</span><span class="n">${pd.length}</span><span class="sub">${pcN?`PC 목록 ${pcN}개`:"실전 탭"}</span></button>
