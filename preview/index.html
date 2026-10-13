@@ -553,7 +553,7 @@ function todayHtml(){
   return `<div class="dateline"><span class="note">바쁜 날은 1블록이나 복습 10문항이면 성공한 날이에요.</span><span class="pill">${wk&&wk>=1?wk+"주차 · ":""}${dstr}</span></div>
   ${nx?`<button id="go-sess" class="hero"><span class="eyebrow">지금 할 것</span><span class="t">${nx.c.num}장 ${ctitle} · ${nx.nx.n}회차</span><span class="s">${esc(nx.nx.steps.join(", ").slice(0,48))} · ${qn?`30초 체크 ${qn}개로 시작`:"읽기부터 시작"}</span><span class="f"><span class="go">블록 준비</span><span>이 장 ${nx.done}/${nx.total}회차</span></span></button>`
      :`<div class="card"><p class="q">지금 할 것</p><p class="note">이어서 할 회차가 없어요. 체크 탭에서 장을 골라요.</p></div>`}
-  ${nx?nlink(nx.c.num,nx.nx.steps[0],`노션에서 ${nx.c.num}장 ${esc(nx.nx.steps[0])} 열기`):""}
+  ${nx?(NMAP?nlink(nx.c.num,nx.nx.steps[0],`노션에서 ${nx.c.num}장 ${esc(nx.nx.steps[0])} 열기`):`<span class="note">노션 바로가기는 이 기기에서 GitHub 동기화를 연결하면 나타나요(기록 탭). 위치표가 비공개 저장소에 있어서요.</span>`):""}
   <div class="tiles">
     <button id="go-rev" class="tile" ${due?"":"disabled"}><span class="lab">오늘의 복습</span><span class="n">${due}</span><span class="sub">${due?`약 ${Math.max(1,Math.round(Math.min(10,due)*0.5))}분 · 10문항씩`:"오늘 몫 끝"}</span></button>
     <button id="go-prac" class="tile"><span class="lab">다시 풀 문제</span><span class="n">${pd.length}</span><span class="sub">${pcN?`PC 목록 ${pcN}개`:"실전 탭"}</span></button>
