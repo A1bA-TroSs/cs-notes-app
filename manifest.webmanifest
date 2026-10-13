@@ -3,8 +3,8 @@
  "short_name": "Iolite",
  "start_url": "./",
  "display": "standalone",
- "background_color": "#f6f4fb",
- "theme_color": "#f6f4fb",
+ "background_color": "#100E18",
+ "theme_color": "#100E18",
  "lang": "ko",
  "icons": [
   {
