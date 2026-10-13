@@ -247,7 +247,7 @@ async function ghApi(method,body){
 const NKEY="iolite-notion-map"; let NMAP=null; try{NMAP=JSON.parse(localStorage.getItem(NKEY)||"null")}catch(e){}
 async function loadNotionMap(){ if(!gh||!gh.token) return; try{ const r=await fetch(`https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/notion-map.json?t=${Date.now()}`,{headers:{"Authorization":"Bearer "+gh.token,"Accept":"application/vnd.github+json"}}); if(!r.ok) return; const j=await r.json(); const m=JSON.parse(b64d(j.content)); const ch=JSON.stringify(m)!==JSON.stringify(NMAP); NMAP=m; try{localStorage.setItem(NKEY,JSON.stringify(m))}catch(e){} if(ch&&!run) home(); }catch(e){} }
 function notionUrl(num,step){ if(!NMAP||!NMAP.pages||!NMAP.pages[num]) return null; let u="https://www.notion.so/"+NMAP.pages[num]; const hs=NMAP.heads&&NMAP.heads[num];
-  if(step&&hs){ const k=Object.keys(hs).find(h=>h.startsWith(step)&&(h.length===step.length||!/\d/.test(h[step.length]))); if(k) u+="#"+hs[k]; } return u; }
+  if(step&&hs){ const bare=h=>h.replace(/^[^\p{L}\p{N}]+/u,""); const k=Object.keys(hs).find(h0=>{const h=bare(h0); return h.startsWith(step)&&(h.length===step.length||!/\d/.test(h[step.length]));}); if(k) u+="#"+hs[k]; } return u; }
 const nlink=(num,step,label)=>{const u=notionUrl(num,step); return u?`<a class="nlink" href="${u}" target="_blank" rel="noopener">${label} ›</a>`:"";};
 async function ghSync(){
   if(!gh||!gh.token||ghBusy) return; ghBusy=true; setGh("동기화 중…");
