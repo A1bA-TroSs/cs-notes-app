@@ -97,7 +97,7 @@ code{font-family:var(--f-mono);font-size:.85em;background:var(--surface-2);borde
 .lv.hi{background:var(--primary-tint);color:var(--primary-ink)}
 .result h2{margin:0;font-size:1.35rem;color:var(--text)}
 .big{font-size:3rem;line-height:1;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.pass-box{background:var(--success-tint);color:var(--success);padding:12px 14px;border-radius:var(--r-m);font-weight:600}
+.pass-box{scroll-margin-top:16px;background:var(--success-tint);color:var(--success);padding:12px 14px;border-radius:var(--r-m);font-weight:600}
 .fail-box{background:var(--warning-tint);color:var(--warning);padding:12px 14px;border-radius:var(--r-m);font-weight:600}
 .missed{display:flex;flex-direction:column;gap:10px}
 .missed div{border-top:1px solid var(--border);padding-top:10px;font-size:.92rem}
@@ -367,7 +367,7 @@ const LOGO="iVBORw0KGgoAAAANSUhEUgAAAGAAAABJCAYAAADCOyPGAAAzv0lEQVR4nOW9CbydVXku
 const ICON={today:'<path d="M12 3l8 9-8 9-8-9z"/>',self:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',rev:'<path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/>',tim:'<circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l2.5 2M9.5 3h5"/>',prac:'<rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 9h6M9 13h6M9 17h3"/>',stats:'<path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6"/>'};
 const ICON_OLD={today:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',self:'<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9"/>',rev:'<path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5"/><path d="M3.5 3.5v5h5"/>',tim:'<circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.5l2.5 2M9.5 2.5h5"/>',prac:'<path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5"/>',stats:'<path d="M5 20v-8M11 20V5M17 20v-5M3 20.5h18"/>'};
 function navHtml(){const due=dueIds().length; return `<nav class="nav" aria-label="메뉴">`+NAV.map(([t,l])=>`<button data-tab="${t}" ${tab===t?'aria-current="page"':""}><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[t]}</svg><span>${l}</span>${t==="rev"&&due?`<span class="badge">${due}</span>`:""}</button>`).join("")+`</nav>`}
-function bindTabs(){ app.querySelectorAll(".nav [data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;archView=false;archCh=null;guideView=false;home();window.scrollTo(0,0)}); }
+function bindTabs(){ app.querySelectorAll(".nav [data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;archView=false;archCh=null;guideView=false;try{history.replaceState(null,"","#"+tab)}catch(e){}home();window.scrollTo(0,0)}); }
 let shelf=true; // 처음 열면 서재. 블록이 돌고 있거나 탭 주소로 열면 바로 노트로
 function shelfHtml(){
   const ws=weekStart(), wSess=store.steps.filter(x=>x.date>=ws).length, passed=Object.values(store.attempts).filter(a=>a.some(x=>x.pass)).length;
@@ -381,7 +381,7 @@ function shelfHtml(){
 function home(){
   if(shelf){ app.innerHTML=`<header><img class="logo" src="data:image/png;base64,${LOGO}" alt=""><h1 class="word">Iolite</h1><span id="sync" class="sync ${gh&&gh.token?"ok":""}">${headSync()}</span></header>`+shelfHtml();
     app.querySelectorAll("[data-nb]").forEach(b=>b.onclick=()=>{shelf=false; home(); window.scrollTo(0,0);}); return; }
-  let h=`<header><img class="logo" src="data:image/png;base64,${LOGO}" alt=""><h1 class="word">Iolite</h1><span id="sync" class="sync ${syncState==="ok"||(gh&&gh.token)?"ok":""}">${headSync()}</span></header>`+navHtml();
+  let h=`<header><img class="logo" src="data:image/png;base64,${LOGO}" alt=""><h1 class="word">Iolite</h1><span id="sync" aria-live="polite" class="sync ${syncState==="ok"||(gh&&gh.token)?"ok":""}">${headSync()}</span></header>`+navHtml();
   const view={today:todayHtml,tim:timerHtml,rev:revHtml,prac:pracHtml,stats:statsHtml,self:selfHtml}[tab]||selfHtml;
   app.innerHTML=h+`<div class="bar" style="justify-content:space-between"><button class="crumb" id="to-shelf">‹ Iolite · ${esc(NB.title)}</button><button class="crumb" data-guide>사용법</button></div>`+(guideView?guideHtml():whenBox(tab)+view());
   document.getElementById("to-shelf").onclick=()=>{shelf=true; guideView=false; home(); window.scrollTo(0,0);};
@@ -576,9 +576,9 @@ function timerHtml(){
     const c=DATA.find(x=>x.num===qt.ch), it=c.quick[qt.q[qt.i]];
     body=qt.i<qt.q.length?`<p class="q">✅ ${esc(qt.ch)}장 ${qt.n}회차 테스트 · ${qt.i+1}/${qt.q.length}</p><div class="qcard"><p class="q">${md(it.q)}</p>
       ${qt.shown?`<div class="mdx">${MD(it.a)}</div><p class="note">핵심어가 하나라도 빠졌거나 "왜"를 말 못 했으면 못 맞힌 거예요.</p><div class="seg"><button data-qt="1">맞힘</button><button data-qt="0">못 맞힘</button></div>`:`<div class="bar"><button class="primary" id="qt-show">답 열기</button></div>`}</div><div class="bar"><button id="qt-quit">그만두기</button></div>`
-      :(qt.ok.every(Boolean)?`<div class="pass-box">전부 맞혔어요. ${qt.n}회차를 건너뛴 걸로 기록했어요. 소제목·굵은 글씨·코드만 2분 훑어요.</div>`:`<div class="pass-box">${qt.ok.filter(Boolean).length}/${qt.q.length} 맞혔어요. 이 회차는 읽어요. 못 맞힌 문항이 나오는 단계를 특히 천천히.</div>`)+`<div class="bar"><button class="primary" id="qt-close">확인</button></div>`;
+      :(qt.ok.every(Boolean)?`<div class="pass-box" role="status">전부 맞혔어요. ${qt.n}회차를 건너뛴 걸로 기록했어요. 소제목·굵은 글씨·코드만 2분 훑어요.</div>`:`<div class="pass-box" role="status">${qt.ok.filter(Boolean).length}/${qt.q.length} 맞혔어요. 이 회차는 읽어요. 못 맞힌 문항이 나오는 단계를 특히 천천히.</div>`)+`<div class="bar"><button class="primary" id="qt-close">확인</button></div>`;
   } else if(!tim){
-    body=`${timFlash?`<div class="pass-box">${esc(timFlash)}</div>`:""}<div class="bar"><select id="tim-ch" aria-label="장">${chOpts}</select><select id="tim-sess" aria-label="회차"></select></div><p class="note" id="tim-sess-note"></p>
+    body=`${timFlash?`<div class="pass-box" role="status">${esc(timFlash)}</div>`:""}<div class="bar"><select id="tim-ch" aria-label="장">${chOpts}</select><select id="tim-sess" aria-label="회차"></select></div><p class="note" id="tim-sess-note"></p>
     <div class="bar"><button class="primary" id="tim-go">블록 시작</button><button id="tim-known" title="이 회차의 ✅ 30초 체크를 시험으로 풀어요">이미 알아요? 테스트</button></div><div id="tim-quick"></div>
     ${pushBox()}
     <details class="qcard"><summary class="note"><b>블록 규칙과 "이미 알아요" 테스트</b></summary><p class="note"><b>한 블록 = 12분 읽기 + 한 줄 요약(약 1분) + 2분 쉬기</b></p><p class="note">4블록(1시간)마다 10분 쉬어요. 12분이 지나면 다음 소제목까지만 읽어요(최대 20분).</p>
@@ -586,7 +586,7 @@ function timerHtml(){
     <p class="note">"이미 알아요" 테스트: 이 회차의 ✅ 30초 체크를 답을 보지 않고 소리 내어 답하고, 핵심어로 채점하고, "왜"를 한 줄 말해요. 전부 맞히면 회차를 건너뛰어요(그래도 소제목·굵은 글씨·코드를 2분 훑어요). ✅ 체크가 없는 회차는 읽어요.</p></details>`;
   }else{
     const left=Math.max(0,Math.round((tim.end-Date.now())/1000));
-    body=`${tim.flash&&tim.phase==="rest"?`<div class="pass-box">${esc(tim.flash)}</div>`:""}<div class="phase">${tim.phase==="ready"?"쉬는 시간 끝":tim.phase==="read"?"읽기 · "+tim.ch+"장 "+esc(tim.step):tim.phase==="wrap"?"다음 소제목까지만 마저 읽어요":tim.phase==="pause"?"멈춤 질문":(tim.longRest?"긴 휴식 10분 (일어나서 움직여요)":"쉬기 2분 (일어나서 움직여요)")}</div>
+    body=`${tim.flash&&tim.phase==="rest"?`<div class="pass-box" role="status">${esc(tim.flash)}</div>`:""}<div class="phase">${tim.phase==="ready"?"쉬는 시간 끝":tim.phase==="read"?"읽기 · "+tim.ch+"장 "+esc(tim.step):tim.phase==="wrap"?"다음 소제목까지만 마저 읽어요":tim.phase==="pause"?"멈춤 질문":(tim.longRest?"긴 휴식 10분 (일어나서 움직여요)":"쉬기 2분 (일어나서 움직여요)")}</div>
     ${(tim.phase==="read"||tim.phase==="wrap")?`<div style="text-align:center">${nlink(tim.ch,((DATA.find(x=>x.num===tim.ch).sessions||[]).find(x=>x.n===tim.sess)||{steps:[]}).steps[0],`노션에서 ${tim.ch}장 ${esc(tim.step)} 열기`)}</div>`:""}
     <div class="ring" id="tim-ring">${facetSvg(...ringFacets())}${(tim.phase==="pause"||tim.phase==="ready")?`<div class="clock" id="tim-clock">${tim.phase==="pause"?"✎":"▶"}</div>`:`<button class="core ${tim.hold?"held":""}" id="tim-core" aria-label="${tim.hold?"다시 시작":"잠시 멈춤"}. 길게 누르면 이 블록을 저장하지 않고 취소">
       <svg class="hold-ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" pathLength="100"/></svg>
@@ -1090,7 +1090,7 @@ function weekResult(n,score){
   <div class="card result"><div class="meta"><span>${esc(run.title)}</span><span>${today()}</span></div>${bubbles()}
   ${run.kind==="weekly"?`<div class="big">${pct}<span class="note"> 점</span></div>
   <div class="${pct>=WT_BAR*100?"pass-box":"fail-box"}">${pct>=WT_BAR*100?"목표 80점을 넘었어요.":"목표 80점 아래예요. 괜찮아요, 잠기는 건 없어요."} 틀린 ${missed.length}문항은 일요일에 맞을 때까지 다시 익히고, 다음 주간 테스트들에서 세 번 맞힐 때까지 다시 나와요.</div>`
-  :`<div class="pass-box">다 맞혔어요. 이 문항들은 앞으로 주간 테스트에서 세 번 더 확인해요.</div>`}
+  :`<div class="pass-box" role="status">다 맞혔어요. 이 문항들은 앞으로 주간 테스트에서 세 번 더 확인해요.</div>`}
   ${run.kind==="weekly"&&missed.length?`<div class="missed"><p class="note">틀린 문항</p>`+missed.map(x=>`<div><b>${esc(x.from)}장</b> · ${md(x.q)} ${nlink(x.from,x.st,"노션에서 보기")}</div>`).join("")+`</div>`:""}
   <div class="bar">${run.kind==="weekly"&&missed.length?`<button class="primary" id="again">지금 다시 익히기</button>`:""}</div></div>`;
   document.getElementById("back").onclick=()=>{tab="today";home();};
@@ -1108,7 +1108,7 @@ function result(){
   app.innerHTML=`<div class="bar"><button id="back">← 목록</button></div>
   <div class="card result"><div class="meta"><span>${esc(run.title)}</span><span>${today()}</span></div>${bubbles()}
   <div class="big">${scaled} <span class="note">/ 5</span></div>
-  ${run.kind==="chapter"?(pass?`<div class="pass-box">통과했어요. Habit Doom에서 "Claude lesson done"을 체크하세요.</div>`:`<div class="fail-box">4점이 안 됐어요. 아래 문항이 나온 단계를 다시 읽고 내일 한 번 더 해 보세요.</div>`):`<p class="note">맞힌 문항은 다음 상자로, 틀린 문항은 내일 다시 나와요. ${run.kind==="review"&&dueIds().length?"남은 복습 "+dueIds().length+"개.":""}</p>`}
+  ${run.kind==="chapter"?(pass?`<div class="pass-box" role="status">통과했어요. Habit Doom에서 "Claude lesson done"을 체크하세요.</div>`:`<div class="fail-box">4점이 안 됐어요. 아래 문항이 나온 단계를 다시 읽고 내일 한 번 더 해 보세요.</div>`):`<p class="note">맞힌 문항은 다음 상자로, 틀린 문항은 내일 다시 나와요. ${run.kind==="review"&&dueIds().length?"남은 복습 "+dueIds().length+"개.":""}</p>`}
   ${missed.length?`<div class="missed"><p class="note">다시 볼 문항</p>`+missed.map(x=>`<div><b>${esc(x.from)}장</b> · ${md(x.q)}</div>`).join("")+`</div>`:""}
   ${run.kind==="chapter"?practice(run.num):""}
   <div class="bar">${run.kind==="chapter"?`<button id="again">같은 장 다시 (새 5문항)</button>`:(run.kind==="review"?(dueIds().length?`<button id="again">다음 ${Math.min(10,dueIds().length)}문항</button>`:``):`<button id="again">다른 10문항</button>`)}</div></div>`;
