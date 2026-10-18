@@ -88,7 +88,7 @@ code{font-family:var(--f-mono);font-size:.85em;background:var(--surface-2);borde
 .ring{width:min(260px,74vw);aspect-ratio:1;margin:4px auto;display:grid;place-items:center}
 .ring>svg{grid-area:1/1;width:100%;height:100%}
 .gem{display:inline-block;vertical-align:middle;flex:none}
-.gems{display:flex;flex-wrap:nowrap;justify-content:space-between;align-items:center;min-height:48px}
+.gems{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;min-height:48px}
 .boxes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;text-align:center}
 .boxes div{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.72rem;color:var(--text-2)}
 .boxes b{font-size:1rem;color:var(--text);font-variant-numeric:tabular-nums}
@@ -410,7 +410,7 @@ function pushPost(alerts){
   return fetch(PUSH_URL+"/plan",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({id:push.id,sub:push.sub,alerts})});
 }
 function timerAlerts(){ // 지금 상태에서 앞으로 보낼 알림들
-  if(!tim) return [];
+  if(!tim||tim.hold) return []; // 잠시 멈춤 중에는 알림 없음, 다시 시작하면 남은 시간으로 다시 예약
   const a=[], W=8*60*1000;
   if(tim.phase==="read") a.push({at:tim.end,title:"12분 됐어요",body:"다음 소제목까지만 읽고 한 줄 요약을 써요"},{at:tim.end+W,title:"한 줄 요약 시간",body:"방금 읽은 내용을 한 문장으로 적어요"});
   else if(tim.phase==="wrap") a.push({at:tim.end,title:"한 줄 요약 시간",body:"방금 읽은 내용을 한 문장으로 적어요"});
@@ -458,10 +458,10 @@ function facetSvg(lit,tone){ // tone: read(보랏빛) · rest(물빛) · done(�
   return `<svg viewBox="0 0 300 300" role="img" aria-label="${lit}/12">${FACETS.o.map((p,i)=>`<polygon points="${p}" fill="${i<lit?on[i%2]:(i%2?"#2A2639":"#252133")}"/>`).join("")}${FACETS.st.map((p,i)=>`<polygon points="${p}" fill="${["#1C1929","#1F1C2D","#1A1726"][i%3]}"/>`).join("")}<polygon points="${FACETS.table}" fill="#171522" stroke="#2D2940" stroke-width="1"/>${FACETS.o.map(p=>`<polygon points="${p}" fill="none" stroke="#100E18" stroke-width="3" stroke-linejoin="round"/>`).join("")}</svg>`;
 }
 function ringFacets(){ if(!tim) return [12,"read"]; if(tim.phase==="pause"||tim.phase==="ready") return [12,tim.phase==="pause"?"done":"rest"]; if(tim.phase==="wrap") return [12,"read"];
-  const p=+ringP(); return tim.phase==="read"?[Math.min(12,Math.floor((1-p)*12)),"read"]:[Math.ceil(p*12),"rest"]; }
+  const p=tim.hold?Math.max(0,(tim.end-tim.hold)/1000/(tim.phase==="read"?BLOCK:480)):+ringP(); return tim.phase==="read"?[Math.min(12,Math.floor((1-p)*12)),"read"]:[Math.ceil(p*12),"rest"]; }
 let tim=null, tick=null, qt=null; // qt: ✅ 30초 체크 테스트 진행 상태
 try{const t=JSON.parse(localStorage.getItem(TKEY)||"null"); if(t&&t.tim){tim=t.tim; sinceLong=t.sinceLong||0;}}catch(e){}
-function timLastActive(){ return Math.max(tim.touched||0, tim.phase==="read"?tim.end+8*60*1000:tim.end); }
+function timLastActive(){ if(tim.hold) return tim.hold; return Math.max(tim.touched||0, tim.phase==="read"?tim.end+8*60*1000:tim.end); }
 function timStaleCheck(){ // 앱을 닫아 두었거나 오래 안 썼으면: 다 읽은 블록은 기록하고(요약 초안 포함) 타이머를 비워요
   if(!tim||Date.now()-timLastActive()<=STALE) return false;
   const readDone=tim.phase==="wrap"||tim.phase==="pause"||(tim.phase==="read"&&Date.now()>tim.end);
@@ -483,6 +483,7 @@ function pushBox(){ // 알림 켜기·테스트
     <p class="note"><b>소리 없이 진동만:</b> 폰 옆 무음 스위치(또는 제어 센터의 무음 모드)를 켜면 진동만 와요. 설정 → 사운드 및 햅틱 → <b>무음 모드에서 햅틱 재생</b>이 켜져 있어야 해요. 소리를 켜 둔 채 Iolite만 조용히 하려면 설정 → 알림 → Iolite → 사운드를 꺼 보세요(이때 진동이 오는지는 테스트로 확인해요).</p>
     <div class="bar">${on?`<button id="push-test">테스트 (10초 뒤 알림)</button>`:`<button class="primary" id="push-on">알림 켜기</button>`}</div>${msg}</details>`;
 }
+function holdTip(){ const m=(Date.now()-tim.hold)/60000; return m<3?"3분까지는 그냥 쉬어도 돼요. 시간은 멈춰 있어요.":m<15?"3분이 넘었어요. 돌아올 수 있으면 지금 다시 시작해요.":"15분이 넘었어요. 이어서 읽거나, 읽은 만큼만 기록하고 끝낼 수 있어요."; }
 const resetBar=()=>`<div class="bar"><button id="tim-reset">타이머 초기화</button><span class="note">30분 동안 손대지 않으면 자동으로 정리돼요</span></div>`;
 function timerHtml(){
   const t=today(), ws=weekStart();
@@ -508,10 +509,13 @@ function timerHtml(){
     const left=Math.max(0,Math.round((tim.end-Date.now())/1000));
     body=`${tim.flash&&tim.phase==="rest"?`<div class="pass-box">${esc(tim.flash)}</div>`:""}<div class="phase">${tim.phase==="ready"?"쉬는 시간 끝":tim.phase==="read"?"읽기 · "+tim.ch+"장 "+esc(tim.step):tim.phase==="wrap"?"다음 소제목까지만 마저 읽어요":tim.phase==="pause"?"멈춤 질문":(tim.longRest?"긴 휴식 10분 (일어나서 움직여요)":"쉬기 2분 (일어나서 움직여요)")}</div>
     ${(tim.phase==="read"||tim.phase==="wrap")?`<div style="text-align:center">${nlink(tim.ch,((DATA.find(x=>x.num===tim.ch).sessions||[]).find(x=>x.n===tim.sess)||{steps:[]}).steps[0],`노션에서 ${tim.ch}장 ${esc(tim.step)} 열기`)}</div>`:""}
-    <div class="ring" id="tim-ring">${facetSvg(...ringFacets())}<div class="clock" id="tim-clock">${tim.phase==="pause"?"✎":tim.phase==="ready"?"▶":mmss(left)}</div></div>
+    <div class="ring" id="tim-ring" style="${tim.hold?"opacity:.55":""}">${facetSvg(...ringFacets())}<div class="clock" id="tim-clock">${tim.phase==="pause"?"✎":tim.phase==="ready"?"▶":mmss(tim.hold?Math.max(0,Math.round((tim.end-tim.hold)/1000)):left)}</div></div>
+    ${tim.hold?`<div class="qcard"><p class="q" style="font-size:1rem">잠시 멈춤 · <span id="hold-min">${Math.floor((Date.now()-tim.hold)/60000)}</span>분째</p><p class="note" id="hold-tip">${holdTip()}</p>
+      <label class="note" for="hold-note">어디까지 읽었는지 한 줄 (다시 시작할 때 보여 줘요)</label><input id="hold-note" value="${esc(tim.holdNote||"")}" placeholder="예: 3단계 두 번째 예시 직전">
+      <div class="bar"><button class="primary" id="hold-go">다시 시작</button>${Date.now()-tim.hold>15*60000?`<button id="hold-cut">여기까지 기록하고 끝내기</button>`:""}</div></div>`:(tim.resumeNote?`<p class="note" style="text-align:center">멈췄던 곳: <b>${esc(tim.resumeNote)}</b></p>`:"")}
     ${tim.phase==="pause"?`<label class="note" for="tim-note">방금 읽은 부분을 한 문장으로. 왜 그런지도 한 줄.</label><textarea id="tim-note" placeholder="예: 투 포인터는 정렬돼 있어서 한쪽을 버릴 수 있다. 버려도 되는 이유는…">${esc(tim.note||"")}</textarea>
     <div class="bar"><button class="primary" id="tim-rest">기록하고 ${sinceLong+1>=4?"10":"2"}분 쉬기</button><button id="tim-stepdone">${tim.sess?"회차 끝냄 🏁":"이 단계 끝냄"} + 쉬기</button><button id="tim-stop">오늘은 여기까지</button></div>${resetBar()}`:
-    `<div class="bar"><button id="tim-skip" ${tim.phase==="wrap"||tim.phase==="ready"?'class="primary"':""}>${tim.phase==="read"?"블록 일찍 끝내기":tim.phase==="wrap"?"소제목 끝, 멈춤 질문으로":tim.phase==="ready"?"다음 블록 시작":"쉬기 건너뛰고 다음 블록"}</button><button id="tim-stop">그만하기</button></div>${resetBar()}`}`;
+    tim.hold?"":`<div class="bar">${(tim.phase==="read"||tim.phase==="wrap")?`<button id="tim-hold">잠시 멈춤</button>`:""}<button id="tim-skip" ${tim.phase==="wrap"||tim.phase==="ready"?'class="primary"':""}>${tim.phase==="read"?"블록 일찍 끝내기":tim.phase==="wrap"?"소제목 끝, 멈춤 질문으로":tim.phase==="ready"?"다음 블록 시작":"쉬기 건너뛰고 다음 블록"}</button><button id="tim-stop">그만하기</button></div>${resetBar()}`}`;
   }
   return `<div class="card">${body}</div>
   <div class="card"><div class="meta"><span>이번 주 ${weekBlocks}블록 (목표 범위 40~60)</span><span>오늘 ${todayBlocks}블록</span></div>
@@ -546,6 +550,10 @@ function bindTimer(){
   if($("tim-stepdone")) $("tim-stepdone").onclick=()=>startRest(true);
   if($("tim-note")) $("tim-note").oninput=e=>{tim.note=e.target.value; saveTim();};
   if($("tim-reset")) $("tim-reset").onclick=e=>{ const b=e.target; if(!b.dataset.sure){b.dataset.sure=1; b.textContent="기록 없이 비울까요? 한 번 더 누르기"; return;} tim=null; clearInterval(tick); saveTim(); timFlash="타이머를 비웠어요. 이번 블록은 기록하지 않았어요."; home(); };
+  if($("tim-hold")) $("tim-hold").onclick=()=>{ tim.hold=Date.now(); tim.holds=(tim.holds||0)+1; saveTim(); home(); };
+  if($("hold-note")) $("hold-note").oninput=e=>{ tim.holdNote=e.target.value; saveTim(); };
+  if($("hold-go")) $("hold-go").onclick=()=>{ const d=Date.now()-tim.hold; tim.end+=d; tim.heldMs=(tim.heldMs||0)+d; tim.hold=null; tim.resumeNote=tim.holdNote||""; tim.holdNote=""; saveTim(); runTick(); home(); };
+  if($("hold-cut")) $("hold-cut").onclick=()=>{ const readMs=BLOCK*1000-(tim.end-tim.hold); store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note:tim.holdNote||"",partial:true,mins:Math.max(0,Math.round(readMs/60000))}); save(); tim=null; clearInterval(tick); saveTim(); timFlash="멈춘 블록을 읽은 만큼만 기록했어요(부분 블록)."; home(); };
   if($("tim-skip")) $("tim-skip").onclick=()=>{ if(tim.phase==="read"||tim.phase==="wrap"){tim.phase="pause";} else {tim.phase="read"; tim.end=Date.now()+BLOCK*1000;} saveTim(); home(); };
   if($("tim-stop")) $("tim-stop").onclick=()=>{ if(tim.phase==="pause"){const n=$("tim-note").value; tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note:n}); save();} tim=null; clearInterval(tick); saveTim(); home(); };
 }
@@ -555,6 +563,7 @@ function runTick(){
   tick=setInterval(()=>{
     if(!tim){clearInterval(tick);return}
     if(timStaleCheck()){ home(); return; }
+    if(tim.hold){ const hm=document.getElementById("hold-min"); if(hm){ const m=Math.floor((Date.now()-tim.hold)/60000); if(hm.textContent!==String(m)){ if(tab==="tim"&&document.activeElement&&document.activeElement.id!=="hold-note") home(); else hm.textContent=m; } } return; }
     const left=Math.round((tim.end-Date.now())/1000);
     if(tim.phase!=="pause"&&tim.phase!=="ready"&&left<=0){
       if(tim.phase==="read"){tim.phase="wrap"; tim.end+=8*60*1000; alertUser("12분 됐어요","다음 소제목까지만 읽고 한 줄 요약을 써요");} else if(tim.phase==="wrap"){tim.phase="pause"; alertUser("한 줄 요약 시간","방금 읽은 내용을 한 문장으로 적어요");} else {tim.phase="ready"; alertUser("쉬는 시간 끝","다음 블록을 시작해요");}
@@ -583,6 +592,18 @@ function pracDue(){const t=today();return APP.problems.filter(p=>{const s=pracSt
 function activeDays(){const d=new Set();for(const e of store.log)d.add(e.date);for(const a of Object.values(store.attempts))for(const x of a)d.add(x.date);for(const a of Object.values(store.prac))for(const x of a)d.add(x.date);return d}
 function streak(){const d=activeDays();let n=0,t=today();if(!d.has(t))t=addDays(t,-1);while(d.has(t)){n++;t=addDays(t,-1)}return n}
 function weekNo(){const st=store.settings&&store.settings.start;if(!st)return null;const ms=new Date(today()+"T00:00:00")-new Date(st+"T00:00:00");return Math.floor(ms/864e5/7)+1}
+function weekLines(ws,wSess,due,tBlocks){
+  const [lo,hi]=wkRange(ws), t=lastTest(ws), pt=pracTarget(), pw=pracThisWeek(ws);
+  const nextAct=due?`오늘의 복습 ${Math.min(10,due)}문항`:tBlocks>=4?"실전 1문제":wSess<hi?"다음 회차 1블록":pw<pt?"실전 1문제":"오늘은 복습만 해도 충분해요";
+  const line=(k,v,ok)=>`<div class="meta"><span style="color:var(--text);font-weight:600">${k}</span><span style="color:${ok?"var(--honey-ink)":"var(--text-2)"}">${v}</span></div>`;
+  return line("회차 (새로 읽기)",`${wSess} / ${lo}~${hi}`,wSess>=lo)+line("복습",`오늘 ${due}문항 · 주간 테스트 ${t?Math.round(t.score*100)+"점":"토요일"}`,!due&&!!t)+line("실전 (문제·드릴·모의)",`${pw} / ${pt}`,pw>=pt)+`<div class="strip"><span>다음 할 것</span><span>${nextAct}</span></div>`+(weekAdvice(ws)?`<p class="note"><b>${esc(weekAdvice(ws))}</b></p>`:"");
+}
+function mondayCard(ws){ // 새 주의 첫 화면: 지난주 결과와 이번 주 목표 정하기 (정하면 사라져요)
+  if(store.wk[ws]) return ""; const lw=addDays(ws,-7); if(!activeWeek(lw)) return "";
+  const s=sessIn(lw), [lo,hi]=wkRange(lw), g=defaultGoal(ws);
+  return `<div class="card"><p class="q">새 주예요. 지난주 회차 ${s} (목표 ${lo}~${hi})</p><p class="note">${s>=lo?"목표를 지켰어요.":"목표 아래였어요. 남은 회차는 다음 주에 얹지 않고 끝나는 날짜만 밀려요."} 지난 4주 기준으로 이번 주 목표는 <b>${Math.max(1,g-2)}~${g}회차</b>를 권해요.</p>
+    <div class="bar"><button class="primary" id="wk-keep">${Math.max(1,g-2)}~${g}로 시작</button><button id="wk-less">하나 줄이기</button><button id="wk-more">하나 늘리기</button></div></div>`;
+}
 function todayHtml(){
   const due=dueIds().length, nx=nextSession(), pd=pracDue(), ws=weekStart();
   const wBlocks=store.log.filter(x=>x.date>=ws).length, wSess=store.steps.filter(x=>x.date>=ws).length, tBlocks=store.log.filter(x=>x.date===today()).length;
@@ -593,6 +614,7 @@ function todayHtml(){
   return `<div class="dateline"><span class="note">바쁜 날은 1블록이나 복습 10문항이면 성공한 날이에요.</span><span class="pill">${wk&&wk>=1?wk+"주차 · ":""}${dstr}</span></div>
   ${nx?`<section class="hero"><svg class="tex" viewBox="0 0 350 196" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><filter id="hz" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.018" numOctaves="3" seed="11"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .36  0 0 0 0 .86  1.7 0 0 0 -.62"/></filter><filter id="hg" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.011 0.02" numOctaves="3" seed="4"/><feColorMatrix values="0 0 0 0 .86  0 0 0 0 .78  0 0 0 0 .56  1.9 0 0 0 -.8"/></filter><filter id="hn" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.6 0 0 0 -.62"/></filter><radialGradient id="hrg" cx="0.85" cy="0.95" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient><mask id="hm"><rect width="350" height="196" fill="url(#hrg)"/></mask><linearGradient id="hs" x1="0" y1="0" x2="1" y2="0.6"><stop offset="0.25" stop-color="#fff" stop-opacity="0"/><stop offset="0.42" stop-color="#fff" stop-opacity=".16"/><stop offset="0.58" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><rect width="350" height="196" filter="url(#hz)" opacity=".6"/><g mask="url(#hm)"><rect width="350" height="196" filter="url(#hg)" opacity=".55"/></g><rect width="350" height="196" filter="url(#hn)" opacity=".16"/><rect width="350" height="196" fill="url(#hs)"/><path d="M-10 60L120 -10M-10 140L200 -10M60 210L342 20M180 210L350 90M250 -10L350 70" stroke="#fff" stroke-opacity=".09" stroke-width="1" fill="none"/></svg><span class="eyebrow">지금 할 것</span><h2 class="t">이 장 ${nx.done}/${nx.total}회차</h2><p class="s">${nx.c.num}장 ${ctitle} · ${nx.nx.n}회차</p>
     <span class="acts"><button id="go-sess" class="go">블록 준비</button>${NMAP&&notionUrl(nx.c.num,nx.nx.steps[0])?`<a class="go2" href="${notionUrl(nx.c.num,nx.nx.steps[0])}" target="_blank" rel="noopener">노션에서 ${esc(nx.nx.steps[0])} 열기</a>`:""}</span></section>
+  ${tBlocks>=4?`<div class="strip"><span>오늘 읽기는 충분해요 (${tBlocks}블록)</span><span>더 하려면 실전 1문제나 복습으로</span></div>`:""}
   <p class="note" style="margin:0">${esc(nx.nx.steps.join(", ").slice(0,48))} · ${qn?`30초 체크 ${qn}개로 시작`:"읽기부터 시작"}</p>
   ${NMAP?"":`<span class="note">노션 바로가기는 이 기기에서 GitHub 동기화를 연결하면 나타나요(기록 탭).</span>`}`
      :`<div class="card"><p class="q">지금 할 것</p><p class="note">이어서 할 회차가 없어요. 체크 탭에서 장을 골라요.</p></div>`}
@@ -600,14 +622,16 @@ function todayHtml(){
     <button id="go-rev" class="tile" ${due?"":"disabled"}><span class="lab">오늘의 복습</span><span class="n">${due}</span><span class="sub">${due?`약 ${Math.max(1,Math.round(Math.min(10,due)*0.5))}분 · 10문항씩`:"오늘 몫 끝"}</span></button>
     <button id="go-prac" class="tile"><span class="lab">다시 풀 문제</span><span class="n">${pd.length}</span><span class="sub">${pcN?`PC 목록 ${pcN}개`:"실전 탭"}</span></button>
   </div>
-  <div class="card"><div class="meta"><span style="color:var(--text);font-weight:800;font-size:18px">이번 주 보석</span><span>회차 ${wSess} / ${wkOf(ws).goal}</span></div>
+  ${mondayCard(ws)}
+  <div class="card"><div class="meta"><span style="color:var(--text);font-weight:800;font-size:18px">이번 주 보석</span><span>연속 ${weekStreak()}주</span></div>
     <div class="gems" title="이번 주 회차 목표">${Array.from({length:Math.max(wkOf(ws).goal,wSess+1)},(_,i)=>gem(i<wSess?"done":i===wSess?"on":"empty",30)).join("")}</div>
-    <div class="meta"><span>목표 ${wkOf(ws).goal}회차 · 여유 1 (${Math.max(0,wkOf(ws).goal-1)}회차면 성공)</span><span class="bar" style="gap:6px"><button id="wg-minus" class="round" aria-label="목표 줄이기">−</button><button id="wg-plus" class="round" aria-label="목표 늘리기">+</button></span></div>
-    <div class="meta"><span>이번 주 ${wBlocks}블록 (범위 40~60)</span><span>오늘 ${tBlocks}블록 · 연속 ${streak()}일</span></div>
+    ${weekLines(ws,wSess,due,tBlocks)}
+    <div class="meta"><span>회차 목표 ${wkRange(ws)[0]}~${wkRange(ws)[1]}${finishDate(ws)?` · 이 속도면 ${scopeParts()?"범위":"본 경로"} 끝 ${finishDate(ws).slice(2).replace(/-/g,".")}`:""}</span><span class="bar" style="gap:6px"><button id="wg-minus" class="round" aria-label="목표 줄이기">−</button><button id="wg-plus" class="round" aria-label="목표 늘리기">+</button></span></div>
+    <div class="meta"><span>이번 주 ${wBlocks}블록</span><span>오늘 ${tBlocks}블록</span></div>
     ${row?`<div class="kv"><span>알고리즘</span><span>${esc(row[0])}</span><span>CS</span><span>${esc(row[1])}</span></div><div class="strip"><span>토요일 오후</span><span>${esc(row[2])}</span></div>`:""}
     ${weekCardExtra(ws)}
     <details><summary class="note">테스트 시각 바꾸기</summary><div class="bar" style="margin-top:8px"><select id="wt-day" aria-label="요일"><option value="6" ${testCfg().day===6?"selected":""}>토요일</option><option value="0" ${testCfg().day===0?"selected":""}>일요일</option></select><input type="time" id="wt-time" value="${esc(testCfg().time)}" aria-label="시각"></div><p class="note">"토 10:00이 되면 책상에서 주간 테스트를 연다"처럼 정해 두면 실제로 하는 비율이 크게 올라가요.</p></details>
-    <p class="note">못 채운 주는 넘기지 않고 그냥 지나가요. 회차를 못 채웠어도 주간 테스트는 봐요.</p></div>
+    <p class="note">못 채운 회차는 다음 주에 얹지 않아요. 대신 끝나는 날짜가 밀려요. 회차를 못 채웠어도 주간 테스트는 봐요.</p></div>
   <div class="card">${wk!==null&&wk<1?`<p class="q">1기는 ${esc(store.settings.start.slice(5))}에 시작해요</p><p class="note">1주차: ${esc(APP.plan[0][0])} · ${esc(APP.plan[0][1])}</p>`:wk?`<p class="q">${wk<=12?`1기 ${wk}주차`:wk<=24?`2기 ${wk}주차`:`${wk}주차`}</p>${wk>12?`<p class="note">2기: 49 → 51b → 52 → 53 → 54 → 57 → 65 → 58b, 그리고 P1·P2 프로젝트예요.</p>`:""}`:`<p class="q">시작일을 정하면 이번 주 계획을 보여 줘요</p>`}
     <div class="bar"><label class="note" for="start">1기 1주차 월요일</label><input type="date" id="start" value="${esc((store.settings&&store.settings.start)||"")}"></div></div>`;
 }
@@ -616,6 +640,9 @@ function bindToday(){
   if($("go-rev")) $("go-rev").onclick=()=>startReview();
   const ws=weekStart(), setGoal=d=>{const g=Math.min(14,Math.max(2,wkOf(ws).goal+d)); store.wk[ws]={goal:g,t:now()}; save(); home();};
   if($("wg-minus")) $("wg-minus").onclick=()=>setGoal(-1);
+  if($("wk-keep")) $("wk-keep").onclick=()=>setGoal(0);
+  if($("wk-less")) $("wk-less").onclick=()=>setGoal(-1);
+  if($("wk-more")) $("wk-more").onclick=()=>setGoal(1);
   if($("wg-plus")) $("wg-plus").onclick=()=>setGoal(1);
   if($("wt-go")) $("wt-go").onclick=startWeekTest;
   if($("wt-re")) $("wt-re").onclick=startRelearn;
@@ -792,7 +819,22 @@ function startMix(){
    이번 주 장 70% + 예전 약한 문항 30%를 섞어요. 80%는 목표일 뿐 잠금이 아니에요.
    틀린 문항: 일요일에 맞을 때까지 다시 익히고, 이후 주간 테스트에서 세 번 맞힐 때까지 다시 나와요. */
 const WT_N=20, WT_MIN=15, WT_BAR=0.8, WT_NEW=0.7;
-const wkOf=ws=>store.wk[ws]||{goal:8};
+/* 주간 목표 = 지난 4주 회차의 중앙값(최대 8, 기록 없으면 8), 범위로 보여 줘요(예: 6~8). 못 채운 회차는 다음 주에 얹지 않고 끝나는 날짜가 밀려요 */
+const sessIn=ws=>store.steps.filter(x=>x.date>=ws&&x.date<addDays(ws,7)).length;
+const activeWeek=ws=>store.log.some(x=>x.date>=ws&&x.date<addDays(ws,7));
+function defaultGoal(ws){ const past=[1,2,3,4].map(k=>addDays(ws,-7*k)).filter(activeWeek).map(sessIn).sort((a,b)=>a-b); if(!past.length) return 8; const m=past[Math.floor((past.length-1)/2)]; return Math.min(8,Math.max(2,m)); }
+const wkOf=ws=>store.wk[ws]||{goal:defaultGoal(ws)};
+const wkRange=ws=>{const g=wkOf(ws).goal; return [Math.max(1,g-2),g];};
+function weekStreak(){ let n=0, miss=0; if(sessIn(weekStart())>=wkRange(weekStart())[0]) n++; let w=addDays(weekStart(),-7); for(let k=0;k<52;k++,w=addDays(w,-7)){ if(sessIn(w)>=wkRange(w)[0]) n++; else if(activeWeek(w)&&!miss) miss=1; else break; } return n; } // 주 단위, 한 번 놓친 주는 이어 줘요
+function pathLeft(){ return pathChapters().reduce((a,n)=>{const c=chapterOf(n); return a+((c&&c.sessions)||[]).length-(store.sess[n]||[]).length;},0); }
+function finishDate(ws){ const pace=defaultGoal(ws), left=pathLeft(); if(!left) return null; const weeks=Math.ceil(left/Math.max(1,pace)); return addDays(ws,7*weeks); }
+function weekAdvice(ws){ const a=addDays(ws,-7), b=addDays(ws,-14); if(!activeWeek(a)||!activeWeek(b)) return "";
+  const [la]=wkRange(a), [lb]=wkRange(b), ha=wkOf(a).goal, hb=wkOf(b).goal;
+  if(sessIn(a)<la&&sessIn(b)<lb) return `두 주 연속 목표 아래예요. 이번 주 목표를 ${Math.max(2,wkOf(ws).goal-1)}로 줄이고, 매일 같은 시각(예: 20:30)을 정해 1블록부터 해요.`;
+  if(sessIn(a)>ha&&sessIn(b)>hb) return "두 주 연속 목표를 넘었어요. 읽기를 더 늘리기보다 남는 블록을 실전(문제·드릴)으로 돌려요.";
+  return ""; }
+const pracTarget=()=>{ if(scopeParts()) return 2; const w=weekNo(); return !w||w<=4?2:w<=8?3:4; };
+const pracThisWeek=ws=>Object.values(store.prac).reduce((a,arr)=>a+arr.filter(x=>x.date>=ws).length,0);
 const testCfg=()=>Object.assign({day:6,time:"10:00"},(store.settings&&store.settings.test)||{});
 function testAtOf(ws){ const c=testCfg(), d=addDays(ws,c.day===0?6:c.day-1); return new Date(d+"T"+c.time+":00"); }
 function weekChapters(ws){ // 이번 주에 손댄 장 + 12주 계획의 이번 주 장
