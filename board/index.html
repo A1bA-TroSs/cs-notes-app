@@ -8,143 +8,181 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@800&amp;text=Iolite&amp;display=swap">
 <style>
-/* Iolite design board: every screen as a named 390x844 frame on one page, for one Figma capture.
-   Concept: the jeweler's atelier as a light metaphor (docs/research/design-direction.md). Labels stay plain Korean. */
-.t-dark{--bg:#12101C;--surface:#1C1930;--s2:#262240;--line:#2D2945;--ink:#F1EEFA;--sub:#B0AAC7;--mute:#8A85A0;--pri:#A99CFF;--onpri:#14102A;--tint:#2A2546;--num:#D3CDFF;--water:#5BB0E6;--violet:#9A82FF;--honey:#F0B93A;--honeyInk:#F6D27A;--honeyTint:#3A2D12;--waterTint:#172838;--empty:#6C6690;--uncut:#2A2639;--uncut2:#252133;--table:#171522;--gap:#12101C;--wash:radial-gradient(120% 40% at 100% 0%,rgba(150,160,255,.16),transparent 70%),radial-gradient(90% 30% at 0% 100%,rgba(232,180,100,.06),transparent 70%);--sheen:linear-gradient(160deg,rgba(150,140,255,.08),rgba(120,150,255,0) 45%);--hero:linear-gradient(135deg,#231E64 0%,#352F8E 34%,#3F56AE 70%,#5470BE 100%)}
-.t-light{--bg:#F6F3FA;--surface:#FFFFFF;--s2:#EEEAF6;--line:#E4DFEE;--ink:#1B1730;--sub:#5E5873;--mute:#7A7490;--pri:#5443C8;--onpri:#FFFFFF;--tint:#ECE8FA;--num:#2B2674;--water:#2F86BF;--violet:#6E4FD6;--honey:#D9981A;--honeyInk:#8A5F07;--honeyTint:#FBF0D8;--waterTint:#E3F0F8;--empty:#9892B0;--uncut:#E7E2F3;--uncut2:#DED8EE;--table:#FBFAFE;--gap:#F6F3FA;--wash:radial-gradient(120% 40% at 100% 0%,rgba(110,90,230,.10),transparent 70%),radial-gradient(90% 30% at 0% 100%,rgba(230,170,80,.07),transparent 70%);--sheen:linear-gradient(160deg,rgba(84,67,200,.05),rgba(84,100,200,0) 45%);--hero:linear-gradient(140deg,#6652DC 0%,#5443C8 45%,#3D3EA6 100%)}
+/* Iolite design board v2 — "the jeweler's atelier", carried through every screen.
+   1 Layout: every screen = header → bench (the one object, under a warm lamp) → one primary action in thumb reach → details in velvet trays.
+   2 Material: night velvet ground, inset trays, a single champagne-gold hairline as the only metal.
+   3 Colour roles: water = rough/unread, violet = being cut, honey = polished. Nothing else carries colour.
+   4 Type: SUIT only (serif only in the wordmark). Scale 28/20/16/14/12, fixed weights, engraved labels, tabular numbers. */
+.t-dark{--bg:#110F1A;--tray:#0C0A14;--surface:#1A1728;--s2:#242036;--line:#2A2640;--ink:#EFEBF8;--sub:#A8A2BE;--mute:#7F7996;
+ --gold:#C9AE7C;--goldA:rgba(201,174,124,.38);--pri:#A99CFF;--onpri:#15112E;--violet:#9A82FF;--water:#5BB0E6;--honey:#F0B93A;--honeyInk:#F6D27A;
+ --violetT:rgba(154,130,255,.14);--waterT:rgba(91,176,230,.13);--honeyT:rgba(240,185,58,.14);--uncut:#2A2639;--uncut2:#232030;--table:#16131F;--gap:#110F1A;
+ --lamp:radial-gradient(closest-side,rgba(255,214,150,.13),rgba(255,214,150,.04) 55%,transparent);--velvet:radial-gradient(120% 90% at 30% 0%,#2C2470 0%,#1B1650 45%,#120F33 100%);
+ --tabbg:#15121F;--shadowIn:inset 0 1px 0 rgba(255,255,255,.035),inset 0 -1px 0 rgba(0,0,0,.4)}
+.t-light{--bg:#F4F1F8;--tray:#ECE7F3;--surface:#FFFFFF;--s2:#E6E0EF;--line:#DDD6E8;--ink:#1B1730;--sub:#5E5873;--mute:#7A7490;
+ --gold:#9C7B45;--goldA:rgba(156,123,69,.35);--pri:#5443C8;--onpri:#FFFFFF;--violet:#6E4FD6;--water:#2F86BF;--honey:#D9981A;--honeyInk:#8A5F07;
+ --violetT:rgba(110,79,214,.10);--waterT:rgba(47,134,191,.10);--honeyT:rgba(217,152,26,.12);--uncut:#E3DDEF;--uncut2:#D9D2E8;--table:#FBFAFE;--gap:#F4F1F8;
+ --lamp:radial-gradient(closest-side,rgba(255,200,120,.22),rgba(255,200,120,.06) 55%,transparent);--velvet:radial-gradient(120% 90% at 30% 0%,#6F5DE0 0%,#4C3DB8 50%,#33297F 100%);
+ --tabbg:#FFFFFF;--shadowIn:inset 0 1px 2px rgba(40,20,90,.06)}
 *{box-sizing:border-box}
-body{margin:0;background:#0B0A10;color:#ddd;font-family:"SUIT Variable",-apple-system,sans-serif}
-.board{display:flex;flex-wrap:wrap;gap:64px 48px;padding:48px}
+body{margin:0;background:#08070C;color:#ddd;font-family:"SUIT Variable",-apple-system,sans-serif}
+.intro{padding:40px 48px 0;color:#bdb8cc;max-width:980px;font-size:14px;line-height:1.7}
+.intro b{color:#fff}
+.board{display:flex;flex-wrap:wrap;gap:72px 48px;padding:40px 48px 80px}
 .fwrap{display:flex;flex-direction:column;gap:10px}
 .fname{font-size:13px;color:#9a96ad;font-weight:600}
-.frame{width:390px;height:844px;overflow:hidden;position:relative;background:var(--wash),var(--bg);color:var(--ink);font-family:"SUIT Variable",-apple-system,sans-serif;font-size:15px;line-height:1.5;border-radius:36px;box-shadow:0 0 0 1px #2a2735}
-.frame.pc{width:1280px;height:800px;border-radius:16px}
-.scr{position:absolute;inset:0;padding:54px 20px 104px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
-.hdr{display:flex;align-items:center;gap:10px}
-.hdr .logo{width:38px;height:38px;object-fit:contain}
-.hdr .word{font-family:"Noto Serif KR",Georgia,serif;font-weight:800;font-size:26px;letter-spacing:-.5px}
-.hdr .sync{margin-left:auto;font-size:12px;color:var(--sub)}
-.crumbs{display:flex;justify-content:space-between}
-.pill{font-size:12px;font-weight:600;color:var(--sub);border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:transparent}
-.h1{font-size:24px;font-weight:800;letter-spacing:-.4px;margin:0}
-.note{font-size:13px;color:var(--sub);margin:0}
-.card{background:var(--sheen),var(--bg);border:1px solid var(--line);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:10px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px}
-.row .k{font-weight:600}.row .v{color:var(--sub)}.row .v.ok{color:var(--honeyInk)}
-.btn{min-height:44px;border-radius:14px;border:0;background:var(--s2);color:var(--ink);font:600 15px "SUIT Variable";padding:0 16px;display:inline-flex;align-items:center;justify-content:center}
-.btn.pri{background:var(--pri);color:var(--onpri);font-weight:800}
-.btn.ghost{background:transparent;border:1px solid var(--line)}
-.bar{display:flex;gap:8px;flex-wrap:wrap}
-.hero{position:relative;border-radius:28px;padding:22px;color:#fff;background:var(--hero);overflow:hidden;display:flex;flex-direction:column;gap:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
-.hero .eb{font-size:12px;font-weight:700;opacity:.9}.hero .t{font-size:28px;font-weight:800;letter-spacing:-.5px;margin:0}.hero .s{font-size:15px;margin:0;opacity:.95}
-.hero .go{margin-top:12px;min-height:46px;border-radius:23px;background:#fff;color:#2B2674;font-weight:800;padding:0 22px;border:0;align-self:flex-start;font-size:15px}
-.hero .grain{position:absolute;inset:0;opacity:.18;background-image:repeating-linear-gradient(115deg,rgba(255,255,255,.12) 0 1px,transparent 1px 22px)}
-.strip{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:14px;padding:11px 14px;font-size:13px;color:var(--sub);background:var(--bg)}
-.strip b{color:var(--ink);font-size:14px}
-.tabbar{position:absolute;left:12px;right:12px;bottom:18px;height:62px;border-radius:31px;background:var(--surface);border:1px solid var(--line);display:flex;padding:4px;gap:2px}
-.tabbar span{flex:1;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;color:var(--sub)}
-.tabbar span.on{background:var(--tint);color:var(--pri);font-weight:700;box-shadow:inset 0 0 0 1px var(--line)}
-.tabbar svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.shelf{display:flex;flex-direction:column;gap:8px}
-.shelf .lbl{font-size:12px;font-weight:700;color:var(--sub)}
-.stones{display:flex;flex-wrap:wrap;gap:10px;padding-bottom:10px;border-bottom:2px solid var(--line)}
-.stone{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:700;color:var(--sub)}
-.ledger{border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--sheen),var(--bg)}
-.hidden-line{height:10px;border-radius:5px;background:repeating-linear-gradient(90deg,var(--s2) 0 60%,transparent 60% 64%);opacity:.9}
+.frame{width:390px;height:844px;overflow:hidden;position:relative;background:var(--bg);color:var(--ink);font-family:"SUIT Variable",-apple-system,sans-serif;font-size:14px;line-height:1.55;border-radius:38px;box-shadow:0 0 0 1px #262335}
+.sheet{width:1280px;height:900px;border-radius:20px}
+/* type scale */
+.t28{font-size:28px;line-height:34px;font-weight:800;letter-spacing:-.4px;margin:0}
+.t20{font-size:20px;line-height:27px;font-weight:700;letter-spacing:-.2px;margin:0}
+.t16{font-size:16px;line-height:24px;font-weight:600;margin:0}
+.t14{font-size:14px;line-height:22px;font-weight:400;margin:0;color:var(--sub)}
+.t12{font-size:12px;line-height:17px;font-weight:500;margin:0;color:var(--mute)}
+.eng{font-size:11px;line-height:14px;font-weight:700;letter-spacing:.14em;color:var(--gold);margin:0}
+.num{font-variant-numeric:tabular-nums}
+/* anatomy */
+.scr{position:absolute;inset:0;padding:52px 20px 96px;display:flex;flex-direction:column;gap:16px;overflow:hidden}
+.hdr{display:flex;align-items:center;gap:10px;min-height:36px}
+.hdr .logo{width:30px;height:30px;object-fit:contain}
+.hdr .word{font-family:"Noto Serif KR",Georgia,serif;font-weight:800;font-size:22px;letter-spacing:-.3px}
+.hdr .ctx{margin-left:auto;font-size:12px;color:var(--sub);display:flex;gap:6px;align-items:center}
+.hair{height:1px;background:linear-gradient(90deg,transparent,var(--goldA) 18%,var(--goldA) 82%,transparent)}
+.bench{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 0 4px;text-align:center}
+.bench::before{content:"";position:absolute;left:50%;top:-6px;width:340px;height:300px;transform:translateX(-50%);background:var(--lamp);pointer-events:none}
+.bench>*{position:relative}
+.act{display:flex;flex-direction:column;gap:8px}
+.btn{height:52px;border-radius:16px;border:0;font:800 16px "SUIT Variable";display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.btn.pri{background:var(--pri);color:var(--onpri)}
+.btn.sec{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:600;font-size:15px;height:46px}
+.btn.sm{height:38px;width:auto;padding:0 14px;font-size:13px;font-weight:600;border-radius:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tray{background:var(--tray);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadowIn);border:1px solid var(--line)}
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.kv .k{font-size:14px;font-weight:600;color:var(--ink)}.kv .v{font-size:14px;color:var(--sub)}.kv .v.done{color:var(--honeyInk)}
+.field{border-radius:14px;padding:12px 14px;color:var(--mute);font-size:14px;background:var(--surface);border:1px solid var(--line)}
+.ans{border-radius:16px;padding:14px;font-size:14px;line-height:22px;white-space:pre-line;background:var(--surface);border:1px solid var(--line)}
+.ans .eng{margin-bottom:6px}
+.chip{font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;letter-spacing:.02em}
+.c-w{background:var(--waterT);color:var(--water)}.c-v{background:var(--violetT);color:var(--violet)}.c-h{background:var(--honeyT);color:var(--honeyInk)}.c-n{background:var(--s2);color:var(--sub)}
 .grade{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.grade div{border-radius:16px;padding:10px 4px;text-align:center;font-weight:800;font-size:14px}
-.grade small{display:block;font-weight:500;font-size:11px}
-.g1{background:var(--waterTint);color:var(--water)}.g2{background:var(--tint);color:var(--pri)}.g3{background:var(--honeyTint);color:var(--honeyInk)}
-.ans{background:var(--s2);border-radius:16px;padding:12px 14px;font-size:14px;white-space:pre-line}
-.chip{font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;background:var(--s2);color:var(--sub)}
-.chip.v{background:var(--tint);color:var(--pri)}.chip.h{background:var(--honeyTint);color:var(--honeyInk)}.chip.w{background:var(--waterTint);color:var(--water)}
-.field{border:1px solid var(--line);border-radius:12px;padding:11px 13px;color:var(--mute);font-size:14px;background:var(--surface)}
-.big{font-size:44px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
-.sheet{width:1280px;height:844px}
-.sheet .scr{padding:40px;flex-direction:row;flex-wrap:wrap;gap:28px;align-content:flex-start}
-.sheet .grp{display:flex;flex-direction:column;gap:10px;min-width:240px}
-.ann{font-size:12px;color:var(--mute)}
+.grade div{border-radius:14px;padding:11px 4px;text-align:center;font-weight:800;font-size:14px}
+.grade small{display:block;font-weight:500;font-size:11px;margin-top:1px}
+.g1{background:var(--waterT);color:var(--water)}.g2{background:var(--violetT);color:var(--violet)}.g3{background:var(--honeyT);color:var(--honeyInk)}
+/* tab bar: velvet with a gold diamond above the active tab */
+.tabbar{position:absolute;left:0;right:0;bottom:0;height:84px;background:var(--tabbg);border-top:1px solid var(--line);display:flex;padding:8px 6px 26px}
+.tabbar::before{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;background:linear-gradient(90deg,transparent,var(--goldA),transparent)}
+.tabbar span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;font-size:11px;color:var(--mute);position:relative;font-weight:500}
+.tabbar span.on{color:var(--ink);font-weight:700}
+.tabbar span.on::before{content:"";position:absolute;top:-6px;width:7px;height:7px;background:var(--gold);transform:rotate(45deg);border-radius:1px}
+.tabbar svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tabbar span.on svg{color:var(--pri)}
+/* appraisal tag (서재 summary card) */
+.tag{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:6px 16px 16px 6px;padding:14px 14px 14px 30px;display:flex;flex-direction:column;gap:8px}
+.tag::before{content:"";position:absolute;left:11px;top:50%;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 1.5px var(--goldA)}
+.tag::after{content:"";position:absolute;left:-16px;top:50%;width:27px;height:1px;background:var(--goldA)}
+.tag.empty{background:transparent;border-style:dashed}
+.veil{height:9px;border-radius:5px;background:var(--s2)}
+.velvetbox{border-radius:26px;background:var(--velvet);padding:18px;display:flex;justify-content:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.shelf{display:flex;flex-direction:column;gap:8px}
+.stones{display:flex;flex-wrap:wrap;gap:8px 10px;padding:10px 0 12px;position:relative}
+.stones::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:2px;background:var(--line);box-shadow:0 1px 0 var(--goldA)}
+.stone{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:700;color:var(--sub)}
+.loupe{display:flex;align-items:center;gap:10px;border-radius:14px;padding:11px 14px;background:var(--surface);border:1px solid var(--line);color:var(--mute)}
+.loupe svg{width:18px;height:18px;stroke:var(--gold);fill:none;stroke-width:1.8}
+.big{font-size:44px;line-height:1;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.sheet .scr{padding:40px;flex-direction:row;flex-wrap:wrap;gap:30px;align-content:flex-start}
+.grp{display:flex;flex-direction:column;gap:10px}
+.ann{font-size:12px;color:var(--mute);max-width:280px}
 </style>
 </head>
 <body>
+<div class="intro"><b>Iolite 디자인 보드 v2 · 보석 아틀리에</b><br>모든 화면이 같은 구조예요: 머리말 → <b>작업대</b>(그 화면의 물건 하나, 따뜻한 램프 아래) → 엄지 닿는 곳의 <b>주 행동 하나</b> → 아래 <b>벨벳 트레이</b>의 세부. 금빛 머리카락 선이 유일한 금속이고, 색은 상태(물빛·보랏빛·꿀빛)만 말해요. 글꼴은 SUIT 하나(로고만 세리프), 크기는 28·20·16·14·12.</div>
 <div class="board" id="board"></div>
 <script>
-/* ---- components ---- */
 const C={uncut:"var(--uncut)",water:"var(--water)",violet:"var(--violet)",honey:"var(--honey)"};
-function stone(states,size=40,label){ // one facet per Notion step; centre turns honey only when every facet is honey
-  const n=Math.max(3,states.length), R=size/2-1, r=R*.62, t=R*.34, cx=size/2, cy=size/2, P=(rad,a)=>[cx+rad*Math.cos(a),cy+rad*Math.sin(a)].map(v=>v.toFixed(1)).join(",");
-  let g=""; for(let i=0;i<n;i++){ const a0=-Math.PI/2-Math.PI/n+2*Math.PI*i/n, a1=a0+2*Math.PI/n; const st=states[i]||"uncut"; g+=`<polygon points="${P(R,a0)} ${P(R,a1)} ${P(r,a1)} ${P(r,a0)}" fill="${C[st]}" stroke="var(--gap)" stroke-width="${size>60?2:1.2}"/>`; }
-  const all=states.length&&states.every(s=>s==="honey"); let tb=""; for(let i=0;i<n;i++){ tb+=P(t+ (r-t)*.0, -Math.PI/2+2*Math.PI*i/n)+" "; }
-  const ring=Array.from({length:n},(_,i)=>P(r,-Math.PI/2-Math.PI/n+2*Math.PI*i/n)).join(" ");
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">${g}<polygon points="${ring}" fill="${all?"var(--honey)":"var(--table)"}" stroke="var(--line)" stroke-width="1"/>${label?`<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="${size*.24}" font-weight="800" fill="${all?"#3A2D12":"var(--sub)"}">${label}</text>`:""}</svg>`;
-}
-const pip=(st,w=22)=>{const h=Math.round(w*36/30), c=st&&C[st]; return `<svg width="${w}" height="${h}" viewBox="0 0 30 36"><path d="M15 2l12 14-12 18L3 16z" fill="${c||"none"}" stroke="${c||"var(--empty)"}" stroke-width="2" stroke-linejoin="round"/>${c?`<path d="M15 2l12 14H3z" fill="#fff" fill-opacity=".3"/><path d="M15 16v18L3 16z" fill="#000" fill-opacity=".12"/>`:""}</svg>`;};
-const ICON={shelf:'<path d="M4 5h16M4 12h16M4 19h16"/><path d="M7 5v14M12 5v14"/>',today:'<path d="M12 3l8 9-8 9-8-9z"/>',check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',rev:'<path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/>',tim:'<circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l2.5 2M9.5 3h5"/>',prac:'<rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 9h6M9 13h6M9 17h3"/>'};
+function stone(states,size=40,label){
+  const n=Math.max(3,states.length),R=size/2-1,r=R*.6,cx=size/2,P=(rad,a)=>[cx+rad*Math.cos(a),cx+rad*Math.sin(a)].map(v=>v.toFixed(1)).join(",");
+  let g="";for(let i=0;i<n;i++){const a0=-Math.PI/2-Math.PI/n+2*Math.PI*i/n,a1=a0+2*Math.PI/n;g+=`<polygon points="${P(R,a0)} ${P(R,a1)} ${P(r,a1)} ${P(r,a0)}" fill="${C[states[i]||"uncut"]}" stroke="var(--gap)" stroke-width="${size>70?2.2:1.3}"/>`;}
+  const all=states.length&&states.every(s=>s==="honey"),ring=Array.from({length:n},(_,i)=>P(r,-Math.PI/2-Math.PI/n+2*Math.PI*i/n)).join(" ");
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">${g}<polygon points="${ring}" fill="${all?"var(--honey)":"var(--table)"}" stroke="var(--goldA)" stroke-width="1"/>${label?`<text x="${cx}" y="${cx+size*.085}" text-anchor="middle" font-family="SUIT Variable" font-size="${size*.22}" font-weight="800" fill="${all?"#3A2D12":"var(--sub)"}">${label}</text>`:""}</svg>`;}
+const pip=(st,w=18)=>{const h=Math.round(w*36/30),c=st&&C[st];return `<svg width="${w}" height="${h}" viewBox="0 0 30 36"><path d="M15 2l12 14-12 18L3 16z" fill="${c||"none"}" stroke="${c||"var(--mute)"}" stroke-width="2" stroke-linejoin="round"/>${c?`<path d="M15 2l12 14H3z" fill="#fff" fill-opacity=".3"/><path d="M15 16v18L3 16z" fill="#000" fill-opacity=".12"/>`:""}</svg>`;};
+function cut(lit,size=236,tone="violet"){const R=size/2-4,r=R*.78,t=R*.5,c=size/2,P=(rad,a)=>[c+rad*Math.cos(a),c+rad*Math.sin(a)].map(v=>v.toFixed(1)).join(",");
+  const on=tone==="honey"?["var(--honey)","#D9A445"]:tone==="water"?["var(--water)","#4A93C2"]:["var(--violet)","var(--pri)"];
+  let g="";for(let i=0;i<12;i++){const a0=(-105+30*i)*Math.PI/180,a1=a0+Math.PI/6;g+=`<polygon points="${P(R,a0)} ${P(R,a1)} ${P(r,a1)} ${P(r,a0)}" fill="${i<lit?on[i%2]:(i%2?"var(--uncut)":"var(--uncut2)")}" stroke="var(--gap)" stroke-width="3"/>`;
+   g+=`<polygon points="${P(r,a0)} ${P(r,a1)} ${P(t,a0+Math.PI/12)}" fill="var(--table)" opacity="${i%2?.75:1}"/>`;}
+  const ring=Array.from({length:12},(_,i)=>P(t,(-90+30*i)*Math.PI/180)).join(" ");
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${g}<polygon points="${ring}" fill="var(--table)" stroke="var(--goldA)"/></svg>`;}
+const ICON={today:'<path d="M12 3l8 9-8 9-8-9z"/>',check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',rev:'<path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/>',tim:'<circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l2.5 2M9.5 3h5"/>',prac:'<rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 9h6M9 13h6M9 17h3"/>',shelf:'<path d="M4 6h16M4 18h16"/><path d="M7 6v12M11 6v12M15.5 6.5l3 11"/>'};
 const TABS=[["today","오늘"],["check","체크"],["rev","복습"],["tim","타이머"],["prac","실전"],["shelf","서재"]];
 const tabbar=on=>`<div class="tabbar">${TABS.map(([k,l])=>`<span class="${k===on?"on":""}"><svg viewBox="0 0 24 24">${ICON[k]}</svg>${l}</span>`).join("")}</div>`;
-const hdr=(sync="동기화됨 07:12")=>`<div class="hdr"><img class="logo" src="logo-96.png" alt=""><span class="word">Iolite</span><span class="sync">${sync}</span></div>`;
-const crumbs=()=>`<div class="crumbs"><span class="pill">‹ Iolite · CS 인터뷰 노트</span><span class="pill">사용법</span></div>`;
-function brilliant(lit,tone="violet",size=250){ const R=size/2-6, r=R*.8, t=R*.55, c=size/2, P=(rad,a)=>[c+rad*Math.cos(a),c+rad*Math.sin(a)].map(v=>v.toFixed(1)).join(",");
-  let g=""; for(let i=0;i<12;i++){ const a0=(-105+30*i)*Math.PI/180, a1=a0+Math.PI/6; g+=`<polygon points="${P(R,a0)} ${P(R,a1)} ${P(r,a1)} ${P(r,a0)}" fill="${i<lit?(i%2?"var(--violet)":"var(--pri)"):(i%2?"var(--uncut)":"var(--uncut2)")}" stroke="var(--gap)" stroke-width="3"/>`; }
-  const ring=Array.from({length:12},(_,i)=>P(t,(-90+30*i)*Math.PI/180)).join(" ");
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${g}<polygon points="${ring}" fill="var(--table)" stroke="var(--line)"/></svg>`; }
-/* ---- sample content (real items from chapter 18) ---- */
-const Q="세 기능에 동시성 제어를 골라야 해요. (a) 콘서트 좌석 재고 한 행에 오픈 순간 초당 2,000건 차감 (b) 사내 위키 문서 편집 (c) 잔액 차감. 각각 한 줄 UPDATE, 비관적 락, 낙관적 락 중 무엇이고 왜인가요?";
-const A="• (a) stock = stock - 1 WHERE stock >= 1 한 줄 UPDATE. 충돌이 잦아 낙관적 락은 재시도 폭주예요.\n• (b) 낙관적 락(version). 충돌이 드물고, 몇 분 동안 락을 쥐면 남이 다 기다려요.\n• (c) 외부 조회는 트랜잭션 밖에서, 짧은 트랜잭션에서 FOR UPDATE.";
-const VQ="(a) 바이럴 게시글 좋아요 수, 한 행에 초당 3,000번 증가 (b) 상품 설명 편집, 한 번에 10분 (c) 공연 예약 확정, 외부 결제 승인 2초. 각각 무엇을 고르고 왜인가요?";
-/* ---- frames ---- */
-const F=[];
-const add=(name,theme,html,cls="")=>F.push({name,theme,html,cls});
+const hdr=(ctx="CS 인터뷰 노트")=>`<div class="hdr"><img class="logo" src="logo-96.png" alt=""><span class="word">Iolite</span><span class="ctx">${ctx} <span style="color:var(--mute)">· 동기화됨</span></span></div>`;
+const loupeI='<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg>';
+const Q="세 기능에 동시성 제어를 골라요. (a) 콘서트 좌석 재고 한 행에 초당 2,000건 차감 (b) 사내 위키 문서 편집 (c) 잔액 차감. 각각 한 줄 UPDATE, 비관적 락, 낙관적 락 중 무엇이고 왜인가요?";
+const A="• (a) 한 줄 UPDATE: stock = stock - 1 WHERE stock >= 1. 충돌이 잦아 낙관적 락은 재시도가 폭주해요.\n• (b) 낙관적 락(version). 충돌이 드물고, 몇 분씩 락을 쥐면 남이 기다려요.\n• (c) 외부 조회는 트랜잭션 밖에서, 짧은 트랜잭션에서 FOR UPDATE.";
+const VQ="(a) 게시글 좋아요 수, 한 행에 초당 3,000번 증가 (b) 상품 설명 편집, 한 번에 10분 (c) 공연 예약 확정, 외부 결제 승인 2초. 각각 무엇을 고르고 왜인가요?";
+const F=[],add=(name,theme,html,cls="")=>F.push({name,theme,html,cls});
+const s18=["honey","honey","violet","violet","water","uncut"];
 add("00 Components / sheet","dark",`<div class="scr">
- <div class="grp"><b>원석 (장마다 하나, 단계마다 한 면)</b><div class="bar">${stone(["uncut","uncut","uncut","uncut","uncut","uncut"],64,"18")}${stone(["water","water","uncut","uncut","uncut","uncut"],64,"18")}${stone(["violet","violet","water","water","uncut","uncut"],64,"18")}${stone(["honey","honey","honey","violet","violet","water"],64,"18")}${stone(["honey","honey","honey","honey","honey","honey"],64,"18")}</div><span class="ann">깎지 않음 → 물빛(읽음) → 보랏빛(떠올림 성공) → 꿀빛(간격 두고 다시 성공). 가운데는 모든 면이 꿀빛일 때만 꿀빛.</span></div>
- <div class="grp"><b>작은 보석 (주간 회차)</b><div class="bar">${pip("honey",26)}${pip("honey",26)}${pip("violet",26)}${pip(null,26)}${pip(null,26)}</div></div>
- <div class="grp"><b>브릴리언트 타이머 (12분 = 12면)</b>${brilliant(7,"violet",140)}</div>
- <div class="grp" style="width:300px"><b>장부 카드 (요약 숨김)</b><div class="ledger"><div class="row"><span class="k">${pip("violet",16)} 2회차 · 4~7단계</span><span class="v">다음 10.22</span></div><div class="hidden-line"></div><div class="hidden-line" style="width:70%"></div><div class="bar"><span class="btn">떠올려 보기</span></div></div></div>
- <div class="grp" style="width:300px"><b>채점 버튼 (다음 간격 표시)</b><div class="grade"><div class="g1">못 함<small>내일</small></div><div class="g2">반쯤<small>3일 뒤</small></div><div class="g3">맞음<small>7일 뒤</small></div></div></div>
- <div class="grp" style="width:330px"><b>지금 할 것 카드</b><div class="hero"><div class="grain"></div><span class="eb">지금 할 것</span><p class="t">이 장 2/5회차</p><p class="s">18장 트랜잭션 · 3회차</p><button class="go">블록 준비</button></div></div>
- <div class="grp"><b>모션</b><span class="ann">자르기(cut): 상태가 바뀔 때 180ms 면 채우기 · 빛 받기(catch the light): 무언가 얻었을 때만 한 번 반짝 + 숫자 올라감 · reduce-motion이면 둘 다 즉시 전환</span></div>
+ <div class="grp"><p class="eng">원석 · 장 하나, 단계마다 한 면</p><div style="display:flex;gap:12px;align-items:center">${stone(["uncut","uncut","uncut","uncut","uncut","uncut"],64,"18")}${stone(["water","water","uncut","uncut","uncut","uncut"],64,"18")}${stone(["violet","violet","water","water","uncut","uncut"],64,"18")}${stone(s18,64,"18")}${stone(Array(6).fill("honey"),64,"18")}</div><p class="ann">깎지 않음 → 물빛(읽음) → 보랏빛(떠올림) → 꿀빛(며칠 뒤 다시 떠올림). 가운데 테이블은 모든 면이 꿀빛일 때만 꿀빛.</p></div>
+ <div class="grp"><p class="eng">커팅 타이머 · 12분 = 12면</p>${cut(7,150)}</div>
+ <div class="grp" style="width:300px"><p class="eng">감정서 태그 · 서재의 한 줄 요약</p><div class="tag"><div class="kv"><span class="k">${pip("violet",14)} 2회차 · 4~7단계</span><span class="v num">10.22</span></div><div class="veil"></div><div class="veil" style="width:62%"></div></div><div class="tag empty"><span class="t12">3회차 · 아직 깎지 않았어요</span></div></div>
+ <div class="grp" style="width:290px"><p class="eng">벨벳 트레이 · 세부</p><div class="tray"><div class="kv"><span class="k">회차</span><span class="v num">3 / 4~6</span></div><div class="kv"><span class="k">복습</span><span class="v done">오늘 몫 끝</span></div></div></div>
+ <div class="grp" style="width:290px"><p class="eng">주 행동과 보조 행동</p><button class="btn pri">블록 준비</button><button class="btn sec">노션에서 8단계</button></div>
+ <div class="grp" style="width:290px"><p class="eng">채점 · 다음 간격을 함께</p><div class="grade"><div class="g1">못 함<small>내일</small></div><div class="g2">반쯤<small>3일</small></div><div class="g3">맞음<small>7일 뒤</small></div></div></div>
+ <div class="grp" style="width:290px"><p class="eng">돋보기 검색</p><div class="loupe">${loupeI}요약에서 찾기</div></div>
+ <div class="grp" style="width:300px"><p class="eng">글꼴 · SUIT 하나</p><p class="t28">28 화면 제목</p><p class="t20">20 작업대 제목</p><p class="t16">16 강조 본문</p><p class="t14">14 본문 · 설명</p><p class="t12">12 보조 · 날짜</p><p class="eng">11 새긴 라벨</p></div>
+ <div class="grp" style="width:300px"><p class="eng">색 · 상태만 말해요</p><div style="display:flex;gap:8px"><span class="chip c-w">물빛 · 아직</span><span class="chip c-v">보랏빛 · 깎는 중</span><span class="chip c-h">꿀빛 · 다듬음</span></div><p class="ann">금빛 머리카락 선은 라벨·구분선·탭 표시에만. 그림자·유리 효과 없음. 램프 빛은 작업대 뒤에만.</p></div>
+ <div class="grp" style="width:300px"><p class="eng">움직임</p><p class="ann">깎기(cut): 상태가 바뀌면 그 면만 180ms로 채워져요. 빛 받기: 무언가 얻었을 때만 한 번 반짝 + 숫자 올라감. 길게 누르기: 가장자리가 시계 방향으로 채워짐. 동작 줄이기 설정이면 즉시 전환.</p></div>
 </div>`,"sheet");
-add("01 서재 / home shelf / dark","dark",`<div class="scr">${hdr()}<p class="note">서재 · 공부할 노트를 골라요</p>
- <div class="hero"><div class="grain"></div><span class="eb">노트</span><p class="t" style="font-size:24px">CS 인터뷰 노트</p><p class="s">네트워크 · OS · DB · 시스템 디자인 · 알고리즘 · AI</p><div class="bar" style="margin-top:8px">${pip("honey",20)}${pip("honey",20)}${pip("violet",20)}${pip(null,20)}${pip(null,20)}${pip(null,20)}</div><span class="s" style="font-size:13px">본 경로 40장 · 31/222회차 · 통과한 장 4</span></div>
- <div class="card"><b>요약 서재</b><p class="note">한 줄 요약 128장 · 오늘 떠올릴 카드 6장</p><div class="shelf"><span class="lbl">4부 · 데이터베이스</span><div class="stones">${["17","18","19","20"].map((n,i)=>`<span class="stone">${stone([["honey","honey","violet","water","uncut"],["honey","violet","violet","water","water","uncut"],["water","water","uncut","uncut"],["uncut","uncut","uncut","uncut","uncut"]][i],44)}${n}</span>`).join("")}</div></div><span class="btn ghost">서재 열기</span></div>
- <div class="card" style="border-style:dashed"><b>새 노트 넣기</b><p class="note">다른 요약 노트도 같은 방식으로 꽂을 수 있어요.</p></div></div>`);
-add("02 서재 / shelves / dark","dark",`<div class="scr">${hdr()}${crumbs()}<p class="h1">요약 서재</p><p class="note">원석의 면 하나가 한 단계예요. 점선은 아직 깎지 않은 장이에요.</p>
- ${[["1부 · 네트워크",["01","02","03","04","05","06","07","08"]],["4부 · 데이터베이스",["17","18","19","20"]],["6부 · 알고리즘",["30","31","32","33","34","35","36"]]].map(([nm,ns],k)=>`<div class="shelf"><span class="lbl">${nm}</span><div class="stones">${ns.map((n,i)=>`<span class="stone">${stone(Array.from({length:4+(i%3)},(_,j)=>j<((i+k)%4)?(j<1?"honey":j<2?"violet":"water"):"uncut"),40)}${n}</span>`).join("")}</div></div>`).join("")}
- <div class="strip"><b>떠올릴 카드 6장</b><span>오늘</span></div>${tabbar("shelf")}</div>`);
-add("03 서재 / chapter ledger / dark","dark",`<div class="scr">${hdr()}${crumbs()}<div class="bar" style="align-items:center">${stone(["honey","violet","violet","water","water","uncut"],64,"18")}<div><p class="h1" style="font-size:20px">18장 트랜잭션</p><p class="note">5회차 · 요약 4장 · 떠올림 2장</p></div></div>
- ${[["1회차 · 1~3단계","honey","다음 11.02"],["2회차 · 4~7단계","violet","다음 10.22"],["3회차 · 8~9단계","water","오늘"]].map(([t,s,d])=>`<div class="ledger"><div class="row"><span class="k">${pip(s,16)} ${t}</span><span class="v">${d}</span></div><div class="hidden-line"></div><div class="hidden-line" style="width:60%"></div><div class="bar"><span class="btn">떠올려 보기</span></div></div>`).join("")}
- <div class="ledger" style="border-style:dashed;opacity:.7"><div class="row"><span class="k">4회차 · 10단계</span></div><p class="note">아직 요약이 없어요. 이 회차를 읽으면 여기에 꽂혀요.</p></div>${tabbar("shelf")}</div>`);
-add("04 서재 / card recall-reveal / dark","dark",`<div class="scr">${hdr()}${crumbs()}<p class="note">18장 · 2회차 · 4~7단계</p><div class="card"><p class="note">무엇을 배웠는지 먼저 떠올려요.</p><div class="field">떠올린 것 (소리 내어도 돼요)</div>
- <div class="ans">10.19 · 격리 수준을 올리면 이상 현상이 줄지만 동시성이 떨어져요. 왜: 잠금 범위가 넓어지니까.\n10.26 · 고쳐 씀 · REPEATABLE READ는 같은 행 재조회만 막고, 팬텀은 갭 락이 막아요.</div>
+add("01 서재 / home / dark","dark",`<div class="scr">${hdr("서재")}<div class="bench"><p class="eng">노트</p><div class="velvetbox">${stone(s18,108,"CS")}</div><p class="t20">CS 인터뷰 노트</p><p class="t14">본 경로 40장 · 31 / 222회차 · 통과한 장 4</p></div>
+ <div class="act"><button class="btn pri">노트 펼치기</button></div><div class="hair"></div>
+ <div class="tray"><div class="kv"><span class="k">요약 서재</span><span class="v num">128장 · 오늘 6장</span></div><div class="shelf"><p class="eng">4부 · 데이터베이스</p><div class="stones">${["17","18","19","20"].map((n,i)=>`<span class="stone">${stone([["honey","honey","violet","water","uncut"],s18,["water","water","uncut","uncut"],["uncut","uncut","uncut","uncut","uncut"]][i],40)}${n}</span>`).join("")}</div></div></div>
+ <div class="tray" style="border-style:dashed;background:transparent"><span class="t16">새 노트 넣기</span><span class="t12">다른 요약 노트도 같은 방식으로 꽂을 수 있어요.</span></div></div>`);
+add("02 서재 / shelves / dark","dark",`<div class="scr">${hdr()}<p class="t28">요약 서재</p><div class="loupe">${loupeI}요약에서 찾기</div>
+ ${[["1부 · 네트워크",["01","02","03","04","05","06","07","08"]],["4부 · 데이터베이스",["17","18","19","20"]],["6부 · 알고리즘",["30","31","32","33","34","35","36","37"]]].map(([nm,ns],k)=>`<div class="shelf"><p class="eng">${nm}</p><div class="stones">${ns.map((n,i)=>`<span class="stone">${stone(Array.from({length:4+(i%3)},(_,j)=>j<((i+k)%4)?(j<1?"honey":j<2?"violet":"water"):"uncut"),38)}${n}</span>`).join("")}</div></div>`).join("")}
+ <div class="act"><button class="btn pri">오늘 떠올릴 태그 6장</button></div>${tabbar("shelf")}</div>`);
+add("03 서재 / chapter tags / dark","dark",`<div class="scr">${hdr()}<div class="bench" style="flex-direction:row;justify-content:flex-start;text-align:left;gap:14px;padding:6px 0">${stone(s18,76,"18")}<div><p class="eng">18장</p><p class="t20">트랜잭션과 격리 수준</p><p class="t12 num">5회차 · 태그 4장 · 떠올림 2</p></div></div><div class="hair"></div>
+ ${[["1회차 · 1~3단계","honey","11.02"],["2회차 · 4~7단계","violet","10.22"],["3회차 · 8~9단계","water","오늘"]].map(([t,s,d])=>`<div class="tag"><div class="kv"><span class="k">${pip(s,14)} ${t}</span><span class="v num">${d}</span></div><div class="veil"></div><div class="veil" style="width:58%"></div></div>`).join("")}
+ <div class="tag empty"><span class="t12">4회차 · 10단계 · 읽으면 여기에 꽂혀요</span></div>${tabbar("shelf")}</div>`);
+add("04 서재 / tag recall / dark","dark",`<div class="scr">${hdr()}<div class="bench"><p class="eng">18장 · 2회차 · 4~7단계</p><p class="t20">무엇을 배웠는지 먼저 떠올려요</p></div>
+ <div class="ans"><p class="eng">내 감정서</p>10.19 · 격리 수준을 올리면 이상 현상이 줄지만 동시성이 떨어져요. 왜: 잠금 범위가 넓어져서.\n10.26 · 고쳐 씀 · 팬텀은 갭 락이 막아요.</div>
  <div class="grade"><div class="g1">못 함<small>내일</small></div><div class="g2">반쯤<small>3일</small></div><div class="g3">떠올림<small>7일 뒤</small></div></div>
- <div class="field">더 나은 한 줄로 고쳐 쓰기</div><div class="bar"><span class="btn ghost">노션에서 이 회차</span><span class="btn ghost">30초 체크 3개</span></div></div>${tabbar("shelf")}</div>`);
-add("05 오늘 / workbench / dark","dark",`<div class="scr">${hdr()}${crumbs()}<p class="note">10월 19일 일 · 3주차</p>
- <div class="hero"><div class="grain"></div><span class="eb">지금 할 것</span><p class="t">이 장 2/5회차</p><p class="s">18장 트랜잭션 · 3회차</p><div class="bar"><button class="go">블록 준비</button><span class="pill" style="color:#fff;border-color:rgba(255,255,255,.5);align-self:flex-end">노션 8단계</span></div></div>
- <div class="card"><div class="row"><b>이번 주</b><span class="v">연속 3주</span></div><div class="bar">${pip("honey",24)}${pip("honey",24)}${pip("honey",24)}${pip("violet",24)}${pip(null,24)}${pip(null,24)}</div>
- <div class="row"><span class="k">회차</span><span class="v">3 / 4~6</span></div><div class="row"><span class="k">복습</span><span class="v ok">오늘 0문항 · 토 테스트</span></div><div class="row"><span class="k">실전</span><span class="v">1 / 3</span></div>
- <div class="strip"><b>다음 할 것</b><span>다음 회차 1블록</span></div></div>${tabbar("today")}</div>`);
-add("06 오늘 / done / dark","dark",`<div class="scr">${hdr()}${crumbs()}<div class="card" style="align-items:center;text-align:center;padding:28px 16px">${stone(["honey","honey","violet","violet","water","uncut"],96,"18")}<p class="h1" style="font-size:20px">오늘 몫을 했어요</p><p class="note">다음 복습은 내일 07:00에 6문항이 기다려요. 더 하고 싶으면 실전 1문제.</p><span class="btn ghost">실전 1문제</span></div>${tabbar("today")}</div>`);
-add("07 타이머 / read / dark","dark",`<div class="scr">${hdr()}${crumbs()}<p class="note" style="text-align:center">읽기 · 18장 3회차 · 8단계</p><div style="display:flex;justify-content:center;position:relative">${brilliant(7)}<span class="big" style="position:absolute;top:96px">04:48</span></div>
- <p class="note" style="text-align:center">12면이 다 차면 다음 소제목까지만 읽고 한 줄 요약.</p><div class="bar" style="justify-content:center"><span class="btn ghost">잠시 멈춤</span><span class="btn ghost">일찍 끝내기</span><span class="btn ghost">노션 8단계</span></div>${tabbar("tim")}</div>`);
-add("08 타이머 / paused / dark","dark",`<div class="scr">${hdr()}${crumbs()}<div style="display:flex;justify-content:center;opacity:.5;position:relative">${brilliant(7)}<span class="big" style="position:absolute;top:96px">04:48</span></div>
- <div class="card"><b>잠시 멈춤 · 4분째</b><p class="note">3분이 넘었어요. 돌아올 수 있으면 지금 다시 시작해요.</p><div class="field">어디까지 읽었는지 한 줄</div><div class="bar"><span class="btn pri">다시 시작</span></div></div>${tabbar("tim")}</div>`);
-add("09 타이머 / summary / dark","dark",`<div class="scr">${hdr()}${crumbs()}<p class="note" style="text-align:center">멈춤 질문 · 이 블록이 원석의 한 면이 돼요</p><div style="display:flex;justify-content:center">${brilliant(12,"honey",200)}</div>
- <div class="card"><div class="field" style="min-height:70px">방금 읽은 것을 한 문장으로</div><div class="field">왜 그런지 한 줄</div><div class="bar"><span class="btn pri">기록하고 2분 쉬기</span><span class="btn">회차 끝냄</span></div></div>${tabbar("tim")}</div>`);
-add("12 체크 / quiz / dark","dark",`<div class="scr">${hdr()}${crumbs()}<div class="row"><span class="v">18장 · 적용 · 꼬리 2</span><span class="v">3 / 5</span></div><div class="card"><p style="margin:0;font-weight:700">${Q}</p>
- <div class="field" style="min-height:64px">내 답</div><div class="field">왜냐하면 …</div><span class="btn pri" style="opacity:.5">이유를 적으면 정답이 열려요</span></div>${tabbar("check")}</div>`);
-add("13 체크 / reveal / dark","dark",`<div class="scr">${hdr()}${crumbs()}<p class="note">내 이유: 충돌이 잦으면 낙관적 락이 재시도로 느려지니까</p><div class="ans">${A}</div>
- <div class="card" style="gap:6px"><p class="note"><b>언제 답이 바뀌나</b> · (a)에서 차감 전에 복잡한 검증이 필요하면 짧은 비관적 락으로 가요.</p><p class="note"><b>다른 장과 연결</b> · 21장: 선착순 쿠폰도 조건부 차감 한 줄로 막아요.</p></div>
- <p class="note">답과 이유가 둘 다 맞았나요?</p><div class="grade"><div class="g1">틀림<small>내일</small></div><div class="g2">반쯤<small>내일</small></div><div class="g3">맞음<small>3일 뒤</small></div></div>${tabbar("check")}</div>`);
-add("15 복습 / variant / dark","dark",`<div class="scr">${hdr()}${crumbs()}<div class="row"><span class="v">18장 · <b style="color:var(--violet)">응용: 둘 중 선택</b></span><span class="v">4 / 10</span></div><div class="card"><p style="margin:0;font-weight:700">${VQ}</p><p class="note">같은 개념, 새 상황이에요. 외운 답은 통하지 않아요.</p>
- <div class="field" style="min-height:64px">내 답</div><div class="field">왜냐하면 …</div><span class="btn pri">정답 보기</span><span class="pill" style="align-self:flex-end">문제 이상해요</span></div>${tabbar("rev")}</div>`);
-add("16 실전 / list / dark","dark",`<div class="scr">${hdr()}${crumbs()}<div class="bar"><span class="chip v">다시 풀 날 2</span><span class="chip">PC 목록 1</span><span class="chip">모의고사</span><span class="chip">드릴</span></div>
- ${[["백준 1806 부분합","Gold IV · 핵심","A · 30일","h"],["LeetCode 76 최소 윈도","Hard · 도전","C · 오늘","v"],["백준 2470 두 용액","Gold V · 핵심","목표 25분",""]].map(([t,s,c,k])=>`<div class="ledger"><div class="row"><span class="k">${t}</span><span class="chip ${k}">${c}</span></div><p class="note">${s}</p></div>`).join("")}${tabbar("prac")}</div>`);
-add("18 서재 / stats & settings / dark","dark",`<div class="scr">${hdr()}${crumbs()}<div class="card"><b>최근 8주</b><div style="display:flex;align-items:flex-end;gap:10px;height:90px">${[3,5,4,6,2,5,6,4].map((v,i)=>`<div style="flex:1;height:${v*13}px;border-radius:6px;background:${i===7?"var(--pri)":"var(--s2)"}"></div>`).join("")}</div></div>
- <div class="card"><b>화면 모드</b><div class="bar"><span class="btn pri">다크</span><span class="btn">라이트</span><span class="btn">기기 설정</span></div></div><div class="card"><b>읽을 범위</b><p class="note">본 경로 40장 · 부를 고르면 그 부만 따라가요</p></div>${tabbar("shelf")}</div>`);
-add("22 사용법 / 첫 원석 / dark","dark",`<div class="scr">${hdr()}<div class="card" style="align-items:center;text-align:center;padding:26px 16px">${stone(["uncut","uncut","uncut","uncut","uncut","uncut"],110)}<p class="h1" style="font-size:22px">첫 원석</p><p class="note">장 하나가 원석 하나예요. 회차를 읽으면 면이 깎이고(물빛), 떠올리면 보랏빛, 며칠 뒤 다시 떠올리면 꿀빛으로 빛나요.</p><span class="btn pri">첫 회차 시작</span></div></div>`);
-add("01L 서재 / home shelf / light","light",F[1].html);
-add("05L 오늘 / workbench / light","light",F[5].html);
-add("13L 체크 / reveal / light","light",F[11].html);
+ <div class="field">더 나은 한 줄로 고쳐 쓰기</div><div class="row2"><button class="btn sec">노션 4단계</button><button class="btn sec">30초 체크 3</button></div>${tabbar("shelf")}</div>`);
+add("05 오늘 / workbench / dark","dark",`<div class="scr">${hdr()}<div class="bench"><p class="eng">지금 할 것 · 10월 19일</p><div class="velvetbox">${stone(s18,120,"18")}</div><p class="t20">18장 트랜잭션 · 3회차</p><p class="t14">8~9단계 · 30초 체크 2개로 시작 · 이 장 2/5회차</p></div>
+ <div class="act"><button class="btn pri">블록 준비</button><button class="btn sec">노션에서 8단계</button></div>
+ <div class="tray"><div class="kv"><span class="eng" style="letter-spacing:.14em">이번 주</span><span class="v">연속 3주</span></div><div style="display:flex;gap:8px">${pip("honey",20)}${pip("honey",20)}${pip("honey",20)}${pip("violet",20)}${pip(null,20)}${pip(null,20)}</div><div class="kv"><span class="k">회차</span><span class="v num">3 / 4~6</span></div><div class="kv"><span class="k">복습</span><span class="v done">오늘 몫 끝</span></div><div class="kv"><span class="k">실전</span><span class="v num">1 / 3</span></div></div>${tabbar("today")}</div>`);
+add("06 오늘 / done / dark","dark",`<div class="scr">${hdr()}<div class="bench" style="padding-top:60px"><p class="eng">오늘 몫을 했어요</p>${stone(["honey","honey","violet","violet","violet","water"],150,"18")}<p class="t20">한 면이 더 깎였어요</p><p class="t14">다음 복습은 내일 07:00 · 6문항</p></div><div class="act"><button class="btn sec">실전 1문제 더 하기</button></div>${tabbar("today")}</div>`);
+add("07 타이머 / cutting / dark","dark",`<div class="scr">${hdr()}<div class="bench"><p class="eng">읽기 · 18장 3회차 · 8단계</p><div style="position:relative;display:flex;align-items:center;justify-content:center">${cut(7)}<div style="position:absolute;width:118px;height:118px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><span class="big" style="font-size:34px">04:48</span><span class="t12">⏸</span></div></div><p class="t12">가운데를 누르면 멈춤 · 길게 누르면 저장하지 않고 취소</p></div>
+ <div class="act"><button class="btn sec">블록 일찍 끝내기</button></div><div class="tray"><div class="kv"><span class="k">이번 블록</span><span class="v num">7 / 12면</span></div><div class="kv"><span class="k">오늘</span><span class="v num">2블록</span></div></div>${tabbar("tim")}</div>`);
+add("08 타이머 / paused / dark","dark",`<div class="scr">${hdr()}<div class="bench"><p class="eng">잠시 멈춤 · 4분째</p><div style="position:relative;display:flex;align-items:center;justify-content:center;opacity:.55">${cut(7)}<div style="position:absolute;width:118px;height:118px;border-radius:50%;background:var(--surface);border:2px solid var(--pri);display:flex;flex-direction:column;align-items:center;justify-content:center"><span class="big" style="font-size:34px">04:48</span><span style="color:var(--pri)">▶</span></div></div><p class="t12">3분이 넘었어요. 돌아올 수 있으면 지금 다시 시작해요.</p></div>
+ <div class="field">어디까지 읽었는지 한 줄</div>${tabbar("tim")}</div>`);
+add("09 타이머 / summary / dark","dark",`<div class="scr">${hdr()}<div class="bench"><p class="eng">한 면 완성 · 멈춤 질문</p>${cut(12,180,"honey")}<p class="t20">방금 깎은 면을 한 줄로</p></div><div class="field" style="min-height:76px">방금 읽은 것을 한 문장으로</div><div class="field">왜 그런지 한 줄</div>
+ <div class="act"><button class="btn pri">감정서에 적고 2분 쉬기</button><button class="btn sec">회차 끝냄</button></div>${tabbar("tim")}</div>`);
+add("10 타이머 / rest / dark","dark",`<div class="scr">${hdr()}<div class="bench"><p class="eng">쉬기 · 일어나서 움직여요</p>${cut(5,220,"water")}<span class="big">01:24</span><p class="t14">방금 면이 18장 원석에 붙었어요</p></div><div class="act"><button class="btn sec">쉬기 건너뛰고 다음 블록</button></div>${tabbar("tim")}</div>`);
+add("11 체크 / list / dark","dark",`<div class="scr">${hdr()}<p class="t28">장별 체크</p><p class="t14">장의 마지막 회차를 끝낸 날 · 5문항 중 4개면 통과</p>
+ ${[["4부 · 데이터베이스",[["17","인덱스","c-h","통과 · 10.12"],["18","트랜잭션","c-v","5/5회차 · 오늘"],["19","조인과 정규화","c-n","2/4회차"]]],["6부 · 알고리즘",[["30","빅오","c-h","통과"],["31","배열과 해싱","c-v","재도전 · 3/5"]]]].map(([p,rows])=>`<p class="eng">${p}</p><div class="tray" style="padding:4px 16px;gap:0">${rows.map(([n,t,c,s],i)=>`<div class="kv" style="padding:12px 0;${i?"border-top:1px solid var(--line)":""}"><span class="k" style="display:flex;gap:10px;align-items:center">${stone(["honey","violet","water","uncut","uncut"],26)}${n} ${t}</span><span class="chip ${c}">${s}</span></div>`).join("")}</div>`).join("")}${tabbar("check")}</div>`);
+add("12 체크 / question / dark","dark",`<div class="scr">${hdr()}<div class="kv"><span class="eng">18장 · 적용 · 꼬리 2</span><span class="t12 num">3 / 5</span></div><p class="t16">${Q}</p>
+ <div class="field" style="min-height:70px">내 답</div><div class="field">왜냐하면 …</div><div class="act"><button class="btn pri" style="opacity:.45">이유를 적으면 정답이 열려요</button></div>${tabbar("check")}</div>`);
+add("13 체크 / reveal / dark","dark",`<div class="scr">${hdr()}<p class="t12">내 이유 · 충돌이 잦으면 낙관적 락이 재시도로 느려지니까</p><div class="ans"><p class="eng">정답과 이유</p>${A}</div>
+ <div class="tray" style="gap:8px"><p class="t14"><b style="color:var(--ink)">언제 답이 바뀌나</b> · 차감 전에 복잡한 검증이 필요하면 짧은 비관적 락으로 가요.</p><p class="t14"><b style="color:var(--ink)">다른 장과 연결</b> · 21장 선착순 쿠폰도 조건부 차감 한 줄로 막아요.</p></div>
+ <p class="t12">답과 이유가 둘 다 맞았나요?</p><div class="grade"><div class="g1">틀림<small>내일</small></div><div class="g2">반쯤<small>내일</small></div><div class="g3">맞음<small>3일 뒤</small></div></div>${tabbar("check")}</div>`);
+add("14 복습 / queue / dark","dark",`<div class="scr">${hdr()}<div class="bench"><p class="eng">오늘의 복습</p><span class="big">12</span><p class="t14">약 6분 · 한 번에 10문항</p></div><div class="act"><button class="btn pri">복습 10문항 시작</button><button class="btn sec">장 번호 없이 섞어서 10문항</button></div>
+ <div class="tray"><p class="eng">상자</p><div style="display:flex;justify-content:space-between">${[[24,"violet","1일"],[18,"violet","3일"],[9,"violet","7일"],[5,"honey","16일"],[2,"honey","35일"]].map(([n,s,d])=>`<div style="display:flex;flex-direction:column;align-items:center;gap:2px">${pip(s,20)}<b class="num">${n}</b><span class="t12">${d}</span></div>`).join("")}</div></div>${tabbar("rev")}</div>`);
+add("15 복습 / variant / dark","dark",`<div class="scr">${hdr()}<div class="kv"><span class="eng">18장 · 응용 · 둘 중 선택</span><span class="t12 num">4 / 10</span></div><span class="chip c-v" style="align-self:flex-start">같은 개념, 새 상황 · 외운 답은 통하지 않아요</span><p class="t16">${VQ}</p>
+ <div class="field" style="min-height:70px">내 답</div><div class="field">왜냐하면 …</div><div class="act"><button class="btn pri">정답 보기</button></div><span class="t12" style="align-self:flex-end">문제가 이상해요</span>${tabbar("rev")}</div>`);
+add("16 실전 / list / dark","dark",`<div class="scr">${hdr()}<p class="t28">실전</p><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip c-v">다시 풀 날 2</span><span class="chip c-n">PC 목록 1</span><span class="chip c-n">모의고사</span><span class="chip c-n">설계 드릴</span></div>
+ <div class="tray" style="padding:4px 16px;gap:0">${[["백준 1806 부분합","Gold IV · 핵심","c-h","A · 30일"],["LeetCode 76 최소 윈도","Hard · 도전","c-v","C · 오늘"],["백준 2470 두 용액","Gold V · 핵심","c-n","목표 25분"],["백준 2003 수들의 합 2","Silver IV · 워밍업","c-n","목표 15분"]].map(([t,s,c,v],i)=>`<div style="padding:12px 0;${i?"border-top:1px solid var(--line)":""}"><div class="kv"><span class="k">${t}</span><span class="chip ${c}">${v}</span></div><span class="t12">${s}</span></div>`).join("")}</div>
+ <div class="tray"><div class="kv"><span class="k">모의고사 A</span><span class="v">5주 토요일 · 90분</span></div></div>${tabbar("prac")}</div>`);
+add("17 실전 / problem / dark","dark",`<div class="scr">${hdr()}<div style="display:flex;gap:6px">${["문제","힌트","해설","코드"].map((t,i)=>`<span class="chip ${i?"c-n":"c-v"}" style="padding:6px 12px">${t}</span>`).join("")}</div><p class="t20">백준 1806 부분합</p><p class="t14">자연수 N개 수열에서 합이 S 이상인 연속 구간 중 가장 짧은 길이를 출력해요. 없으면 0.</p>
+ <div class="ans"><p class="eng">왜 이 코드가 정답인가</p>• 불변식: [l, r]의 합이 total\n• 빠뜨리지 않는 이유: 값이 전부 양수라 끝점은 되돌아가지 않아요\n• 깨지는 가정: 음수가 섞이면 두 포인터가 틀려요</div><div class="act"><button class="btn pri">채점</button></div>${tabbar("prac")}</div>`);
+add("18 서재 / 기록과 설정 / dark","dark",`<div class="scr">${hdr()}<p class="t28">기록</p><div class="tray"><p class="eng">최근 8주 블록</p><div style="display:flex;align-items:flex-end;gap:10px;height:84px">${[3,5,4,6,2,5,6,4].map((v,i)=>`<div style="flex:1;height:${v*12}px;border-radius:5px;background:${i===7?"var(--pri)":"var(--s2)"}"></div>`).join("")}</div></div>
+ <div class="tray"><p class="eng">화면</p><div class="row2"><button class="btn sm" style="background:var(--pri);color:var(--onpri);width:100%">다크</button><button class="btn sm sec" style="width:100%">라이트</button></div><div class="kv"><span class="k">읽을 범위</span><span class="v">본 경로 40장</span></div><div class="kv"><span class="k">동기화</span><span class="v">GitHub · 07:12</span></div></div>${tabbar("shelf")}</div>`);
+add("22 시작 / 첫 원석 / dark","dark",`<div class="scr">${hdr("")}<div class="bench" style="padding-top:70px"><p class="eng">첫 원석</p>${stone(["uncut","uncut","uncut","uncut","uncut","uncut"],160)}<p class="t20">장 하나가 원석 하나예요</p><p class="t14">회차를 읽으면 면이 깎이고(물빛), 떠올리면 보랏빛, 며칠 뒤 다시 떠올리면 꿀빛으로 빛나요.</p></div><div class="act" style="margin-top:auto;margin-bottom:-60px"><button class="btn pri">첫 회차 시작</button></div></div>`);
+const L=n=>F.find(f=>f.name.startsWith(n)).html;
+add("01L 서재 / home / light","light",L("01 "));
+add("05L 오늘 / workbench / light","light",L("05 "));
+add("07L 타이머 / cutting / light","light",L("07 "));
+add("13L 체크 / reveal / light","light",L("13 "));
 document.getElementById("board").innerHTML=F.map(f=>`<div class="fwrap"><span class="fname">${f.name}</span><div class="frame t-${f.theme} ${f.cls}" data-frame="${f.name}">${f.html}</div></div>`).join("");
 </script>
 </body>
