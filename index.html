@@ -256,6 +256,9 @@ button.primary{min-height:52px;border-radius:16px;font-weight:800;font-size:16px
 .loupe input{border:0;background:transparent;flex:1;padding:10px 0}
 #tim-go{flex:1 1 100%;min-height:52px;border-radius:16px;font-size:16px;font-weight:800}
 #tim-known{flex:1 1 100%;background:transparent;border:1px solid var(--border);min-height:46px;border-radius:16px}
+.burst{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:50}
+.toast{position:fixed;left:50%;top:calc(18px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:51;background:var(--surface);border:1px solid var(--goldA);color:var(--text);font-weight:700;font-size:14px;padding:10px 18px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:opacity .4s,transform .4s}
+.toast.out{opacity:0;transform:translate(-50%,-8px)}
 .tag.empty{background:transparent;border-style:dashed}
 .veil{height:9px;border-radius:5px;background:var(--surface-2)}
 </style>
@@ -592,6 +595,24 @@ function alertUser(title,body){ // 화면을 보고 있지 않으면 알림과 �
 /* 작은 보석: 상태별 빛깔(new 물빛 · on 보랏빛 · done 꿀빛 · empty 빈 자리) */
 const GEMC={new:"var(--water)",on:"var(--violet)",done:"var(--honey)"};
 const gem=(st,w=26)=>{const h=Math.round(w*36/30), c=GEMC[st]; return `<svg class="gem" width="${w}" height="${h}" viewBox="0 0 30 36" aria-hidden="true"><path d="M15 2l12 14-12 18L3 16z" fill="${c||"none"}" stroke="${c||"var(--empty)"}" stroke-width="2" stroke-linejoin="round"/>${c?`<path d="M15 2l12 14H3z" fill="#fff" fill-opacity=".3"/><path d="M15 16v18L3 16z" fill="#000" fill-opacity=".12"/>`:""}</svg>`;};
+/* 성과 이벤트: 보석 조각이 터지고 짧은 햅틱. 동작 줄이기 설정이면 조각은 생략하고 알림 문구만.
+   아이폰 Safari에는 진동 API가 없어서, iOS 18+의 스위치 입력이 내는 시스템 햅틱을 써요(안 되는 기기는 조용히 넘어가요). */
+let hapticEl=null;
+function haptic(){ try{ if(navigator.vibrate&&navigator.vibrate([18,40,26])) return; }catch(e){}
+  try{ if(!hapticEl){ const l=document.createElement("label"); l.setAttribute("aria-hidden","true"); l.style.cssText="position:fixed;left:-200px;top:0;opacity:0;pointer-events:none"; const i=document.createElement("input"); i.type="checkbox"; i.setAttribute("switch",""); i.tabIndex=-1; l.appendChild(i); document.body.appendChild(l); hapticEl=l; } hapticEl.click(); }catch(e){} }
+function toast(msg){ if(!msg) return; const t=document.createElement("div"); t.className="toast"; t.setAttribute("role","status"); t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.classList.add("out"),1800); setTimeout(()=>t.remove(),2300); }
+function celebrate(level,msg){ haptic(); if(level>1) setTimeout(haptic,170); toast(msg);
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cs=getComputedStyle(document.documentElement), cols=["--water","--violet","--honey","--gold","--primary"].map(v=>cs.getPropertyValue(v).trim()||"#A99CFF");
+  const cv=document.createElement("canvas"), dpr=Math.min(2,window.devicePixelRatio||1), W=innerWidth, H=innerHeight; cv.width=W*dpr; cv.height=H*dpr; cv.className="burst"; document.body.appendChild(cv);
+  const g=cv.getContext("2d"); g.scale(dpr,dpr); const N=level>1?96:48, P=[];
+  for(let k=0;k<(level>1?2:1);k++) for(let i=0;i<N/(level>1?2:1);i++){ const a=-Math.PI/2+(Math.random()-.5)*Math.PI*1.1, v=7+Math.random()*7; P.push({x:W*(level>1?(k?0.72:0.28):0.5),y:H*0.42,vx:Math.cos(a)*v,vy:Math.sin(a)*v,r:Math.random()*6.3,vr:(Math.random()-.5)*.3,s:5+Math.random()*6,c:cols[i%cols.length],life:0}); }
+  const t0=performance.now();
+  (function step(now){ const e=(now-t0)/1000; g.clearRect(0,0,W,H);
+    for(const p of P){ p.vy+=.32; p.vx*=.985; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; const a=Math.max(0,1-e/1.5); g.save(); g.globalAlpha=a; g.translate(p.x,p.y); g.rotate(p.r); g.fillStyle=p.c;
+      g.beginPath(); g.moveTo(0,-p.s); g.lineTo(p.s*.8,-p.s*.15); g.lineTo(0,p.s*1.2); g.lineTo(-p.s*.8,-p.s*.15); g.closePath(); g.fill(); g.globalAlpha=a*.35; g.fillStyle="#fff"; g.beginPath(); g.moveTo(0,-p.s); g.lineTo(p.s*.8,-p.s*.15); g.lineTo(-p.s*.8,-p.s*.15); g.closePath(); g.fill(); g.restore(); }
+    if(e<1.6) requestAnimationFrame(step); else cv.remove(); })(t0);
+}
 /* 원석: 장 하나, 노션 단계마다 한 면. 깎지 않음 → 물빛(회차 읽음) → 보랏빛(그 단계 체크를 떠올림) → 꿀빛(상자 4 이상). 가운데는 모든 면이 꿀빛일 때만 꿀빛 */
 const SC={uncut:"var(--facet-off)",water:"var(--water)",violet:"var(--violet)",honey:"var(--honey)"};
 function chapterFacets(num){ const c=chapterOf(num); if(!c||!(c.sessions||[]).length) return [];
@@ -705,7 +726,8 @@ function bindTimer(){
   if($("tim-known")) $("tim-known").onclick=()=>{const ch=$("tim-ch").value, n=+$("tim-sess").value; if(!n) return; const c=DATA.find(x=>x.num===ch), sel=(c.sessions||[]).find(x=>x.n===n), q=sel&&sel.q||[]; store.lastCh=ch; save();
     if(!q.length){ $("tim-sess-note").textContent="이 회차는 ✅ 체크가 없어요. 읽어요."; return; } qt={ch,n,q,i:0,ok:[],shown:false}; home(); window.scrollTo(0,0);};
   if($("tim-go")) $("tim-go").onclick=()=>{ timFlash=""; store.lastCh=$("tim-ch").value; const n=+$("tim-sess").value; tim={ch:$("tim-ch").value,sess:n,step:n?n+"회차":"",phase:"read",end:Date.now()+BLOCK*1000,blocks:0}; save(); saveTim(); runTick(); home();};
-  const startRest=(stepDone)=>{const note=$("tim-note")?$("tim-note").value:""; tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note}); tim.note=""; if(stepDone){store.steps.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,blocks:tim.blocks}); if(tim.sess){const a=store.sess[tim.ch]=store.sess[tim.ch]||[]; if(!a.includes(tim.sess)) a.push(tim.sess); const c=DATA.find(x=>x.num===tim.ch); const nx=(c.sessions||[]).find(x=>!a.includes(x.n)); tim.flash=nx?`🏁 ${tim.sess}회차 끝! 이 장 ${a.length}/${c.sessions.length}. 오늘은 여기까지 해도 돼요.`:`🏁 이 장 회차를 다 끝냈어요. 셀프 체크로 마무리하세요.`; tim.sess=nx?nx.n:0; tim.step=nx?nx.n+"회차":"";} tim.blocks=0;} save(); sinceLong++; const lr=sinceLong>=4; if(lr) sinceLong=0; tim.phase="rest"; tim.longRest=lr; tim.end=Date.now()+(lr?LONGREST:REST)*1000; saveTim(); home();};
+  const startRest=(stepDone)=>{const note=$("tim-note")?$("tim-note").value:""; const wsC=weekStart(), before=sessIn(wsC), loC=wkRange(wsC)[0];
+ tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note}); tim.note=""; if(stepDone){store.steps.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,blocks:tim.blocks}); if(tim.sess){const a=store.sess[tim.ch]=store.sess[tim.ch]||[]; if(!a.includes(tim.sess)) a.push(tim.sess); const c=DATA.find(x=>x.num===tim.ch); const nx=(c.sessions||[]).find(x=>!a.includes(x.n)); tim.flash=nx?`🏁 ${tim.sess}회차 끝! 이 장 ${a.length}/${c.sessions.length}. 오늘은 여기까지 해도 돼요.`:`🏁 이 장 회차를 다 끝냈어요. 셀프 체크로 마무리하세요.`; tim.sess=nx?nx.n:0; tim.step=nx?nx.n+"회차":"";} tim.blocks=0;} save(); sinceLong++; const lr=sinceLong>=4; if(lr) sinceLong=0; tim.phase="rest"; tim.longRest=lr; tim.end=Date.now()+(lr?LONGREST:REST)*1000; saveTim(); home(); if(stepDone){ const after=sessIn(wsC); if(before<loC&&after>=loC) celebrate(2,"이번 주 목표 달성"); else celebrate(1,"회차 하나 완성"); } };
   if($("tim-rest")) $("tim-rest").onclick=()=>startRest(false);
   if($("tim-stepdone")) $("tim-stepdone").onclick=()=>startRest(true);
   if($("tim-note")) $("tim-note").oninput=e=>{tim.note=e.target.value; saveTim();};
@@ -777,11 +799,12 @@ function todayHtml(){
   const qn=nx?((nx.nx.q||[]).length):0, pcN=(typeof pcList==="function")?pcList().length:0;
   const ctitle=nx?esc(nx.c.title.replace(/^\d+b?\.\s*/,"").split(/[:：]/)[0].slice(0,18)):"";
   return `<div class="dateline"><span class="note">바쁜 날은 1블록이나 복습 10문항이면 성공한 날이에요.</span><span class="pill">${wk&&wk>=1?wk+"주차 · ":""}${dstr}</span></div>
-  ${nx?`<section class="bench" aria-label="지금 할 것"><p class="eng" style="margin:0">지금 할 것</p><div class="velvetbox">${stone(chapterFacets(nx.c.num),120,nx.c.num)}</div><h2 class="t" style="color:var(--text);letter-spacing:-.2px;font-size:20px;margin:0">${nx.c.num}장 ${ctitle} · ${nx.nx.n}회차</h2><p class="note" style="margin:0">${esc(nx.nx.steps.join(", ").slice(0,40))} · ${qn?`30초 체크 ${qn}개로 시작`:"읽기부터"} · 이 장 ${nx.done}/${nx.total}회차</p></section>
-  <div class="act"><button id="go-sess" class="primary">블록 준비</button>${NMAP&&notionUrl(nx.c.num,nx.nx.steps[0])?`<a class="secbtn" href="${notionUrl(nx.c.num,nx.nx.steps[0])}" target="_blank" rel="noopener">노션에서 ${esc(nx.nx.steps[0])}</a>`:""}</div>
+  ${nx?`<section class="hero"><svg class="tex" viewBox="0 0 350 196" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><filter id="hz" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.018" numOctaves="3" seed="11"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .36  0 0 0 0 .86  1.7 0 0 0 -.62"/></filter><filter id="hg" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.011 0.02" numOctaves="3" seed="4"/><feColorMatrix values="0 0 0 0 .86  0 0 0 0 .78  0 0 0 0 .56  1.9 0 0 0 -.8"/></filter><filter id="hn" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.6 0 0 0 -.62"/></filter><radialGradient id="hrg" cx="0.85" cy="0.95" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient><mask id="hm"><rect width="350" height="196" fill="url(#hrg)"/></mask><linearGradient id="hs" x1="0" y1="0" x2="1" y2="0.6"><stop offset="0.25" stop-color="#fff" stop-opacity="0"/><stop offset="0.42" stop-color="#fff" stop-opacity=".16"/><stop offset="0.58" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><rect width="350" height="196" filter="url(#hz)" opacity=".6"/><g mask="url(#hm)"><rect width="350" height="196" filter="url(#hg)" opacity=".55"/></g><rect width="350" height="196" filter="url(#hn)" opacity=".16"/><rect width="350" height="196" fill="url(#hs)"/><path d="M-10 60L120 -10M-10 140L200 -10M60 210L342 20M180 210L350 90M250 -10L350 70" stroke="#fff" stroke-opacity=".09" stroke-width="1" fill="none"/></svg><span class="eyebrow">지금 할 것</span><h2 class="t">이 장 ${nx.done}/${nx.total}회차</h2><p class="s">${nx.c.num}장 ${ctitle} · ${nx.nx.n}회차</p>
+    <span class="acts"><button id="go-sess" class="go">블록 준비</button>${NMAP&&notionUrl(nx.c.num,nx.nx.steps[0])?`<a class="go2" href="${notionUrl(nx.c.num,nx.nx.steps[0])}" target="_blank" rel="noopener">노션에서 ${esc(nx.nx.steps[0])} 열기</a>`:""}</span></section>
+  ${tBlocks>=4?`<div class="strip"><span>오늘 읽기는 충분해요 (${tBlocks}블록)</span><span>더 하려면 실전 1문제나 복습으로</span></div>`:""}
+  <p class="note" style="margin:0">${esc(nx.nx.steps.join(", ").slice(0,48))} · ${qn?`30초 체크 ${qn}개로 시작`:"읽기부터 시작"}</p>
   ${NMAP?"":`<span class="note">노션 바로가기는 이 기기에서 GitHub 동기화를 연결하면 나타나요(서재 탭).</span>`}`
      :`<div class="card"><p class="q">지금 할 것</p><p class="note">이어서 할 회차가 없어요. 체크 탭에서 장을 골라요.</p></div>`}
-  ${tBlocks>=4?`<div class="strip"><span>오늘 읽기는 충분해요 (${tBlocks}블록)</span><span>더 하려면 실전 1문제나 복습으로</span></div>`:""}
   <div class="tiles">
     <button id="go-rev" class="tile" ${due?"":"disabled"}><span class="lab">오늘의 복습</span><span class="n">${due}</span><span class="sub">${due?`약 ${Math.max(1,Math.round(Math.min(10,due)*0.5))}분 · 10문항씩`:"오늘 몫 끝"}</span></button>
     <button id="go-prac" class="tile"><span class="lab">다시 풀 문제</span><span class="n">${pd.length}</span><span class="sub">${pcN?`PC 목록 ${pcN}개`:"실전 탭"}</span></button>
@@ -1175,6 +1198,7 @@ function practice(num){
 function weekResult(n,score){
   const missed=run.items.map((it,k)=>({...it,s:run.scores[k]})).filter(x=>x.s<1);
   const pct=Math.round(score/n*100);
+  if(run.kind==="weekly"&&pct>=WT_BAR*100) celebrate(2,`주간 테스트 ${pct}점`); else if(run.kind==="relearn") celebrate(1,"틀린 문항을 다 되찾았어요");
   app.innerHTML=`<div class="bar"><button id="back">← 오늘</button></div>
   <div class="card result"><div class="meta"><span>${esc(run.title)}</span><span>${today()}</span></div>${bubbles()}
   ${run.kind==="weekly"?`<div class="big">${pct}<span class="note"> 점</span></div>
@@ -1188,7 +1212,8 @@ function weekResult(n,score){
 function result(){
   const n=run.items.length, score=run.scores.reduce((a,b)=>a+b,0);
   const scaled=Math.round(score/n*5*10)/10, pass=scaled>=4;
-  if(run.kind==="chapter"){(store.attempts[run.num]=store.attempts[run.num]||[]).push({ts:now(),date:today(),score:scaled,pass});save()}
+  if(run.kind==="chapter"){(store.attempts[run.num]=store.attempts[run.num]||[]).push({ts:now(),date:today(),score:scaled,pass});save(); if(pass) celebrate(2,`${run.num}장 통과`);}
+  if(run.kind==="review"&&!dueIds().length) celebrate(1,"오늘 복습 끝");
   if(run.kind==="weekly"&&!run.saved){ run.saved=true; const miss=[], ids=run.items.map(it=>qid(it.from,it.q));
     ids.forEach((id,k)=>{ const v=store.wrel[id]; if(run.scores[k]<1){ miss.push(id); store.wrel[id]={hits:0,fromWs:run.ws,t:now()}; } else if(v&&v.hits<3){ store.wrel[id]={...v,hits:v.hits+1,t:now()}; } });
     store.wtest.push({ts:now(),ws:run.ws,date:today(),n:n,score:score/n,mins:Math.round((Date.now()-run.t0)/60000),miss}); save(); }
