@@ -143,6 +143,9 @@ code{font-family:var(--f-mono);font-size:.85em;background:var(--surface-2);borde
 .spine .fill{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,var(--violet),#5B4BC4);opacity:.85}
 .spine .lbl{position:relative;font-size:11px;font-weight:700;color:var(--text);padding-bottom:4px;font-variant-numeric:tabular-nums}
 .spine:disabled{opacity:.45;border-style:dashed}
+.whenbox{border:1px solid var(--border);border-radius:16px;padding:8px 14px;background:var(--cardsheen),var(--bg)}
+.whenbox p{margin:6px 0 2px}
+.linkbtn{min-height:auto;padding:0;background:none;color:var(--primary-ink);font-weight:700;font-size:inherit;text-decoration:underline}
 .strip{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:12px 16px;font-size:13px;color:var(--text-2)}
 .strip>span:first-child{font-size:15px;font-weight:700;color:var(--text)}
 .round{width:44px;height:44px;min-height:44px;padding:0;border-radius:22px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:20px}
@@ -354,7 +357,7 @@ const LOGO="iVBORw0KGgoAAAANSUhEUgAAAGAAAABJCAYAAADCOyPGAAAzv0lEQVR4nOW9CbydVXku
 const ICON={today:'<path d="M12 3l8 9-8 9-8-9z"/>',self:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',rev:'<path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/>',tim:'<circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l2.5 2M9.5 3h5"/>',prac:'<rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 9h6M9 13h6M9 17h3"/>',stats:'<path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6"/>'};
 const ICON_OLD={today:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',self:'<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9"/>',rev:'<path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5"/><path d="M3.5 3.5v5h5"/>',tim:'<circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.5l2.5 2M9.5 2.5h5"/>',prac:'<path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5"/>',stats:'<path d="M5 20v-8M11 20V5M17 20v-5M3 20.5h18"/>'};
 function navHtml(){const due=dueIds().length; return `<nav class="nav" aria-label="메뉴">`+NAV.map(([t,l])=>`<button data-tab="${t}" ${tab===t?'aria-current="page"':""}><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[t]}</svg><span>${l}</span>${t==="rev"&&due?`<span class="badge">${due}</span>`:""}</button>`).join("")+`</nav>`}
-function bindTabs(){ app.querySelectorAll(".nav [data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;archView=false;archCh=null;home();window.scrollTo(0,0)}); }
+function bindTabs(){ app.querySelectorAll(".nav [data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;archView=false;archCh=null;guideView=false;home();window.scrollTo(0,0)}); }
 let shelf=true; // 처음 열면 서재. 블록이 돌고 있거나 탭 주소로 열면 바로 노트로
 function shelfHtml(){
   const ws=weekStart(), wSess=store.steps.filter(x=>x.date>=ws).length, passed=Object.values(store.attempts).filter(a=>a.some(x=>x.pass)).length;
@@ -370,8 +373,10 @@ function home(){
     app.querySelectorAll("[data-nb]").forEach(b=>b.onclick=()=>{shelf=false; home(); window.scrollTo(0,0);}); return; }
   let h=`<header><img class="logo" src="data:image/png;base64,${LOGO}" alt=""><h1 class="word">Iolite</h1><span id="sync" class="sync ${syncState==="ok"||(gh&&gh.token)?"ok":""}">${headSync()}</span></header>`+navHtml();
   const view={today:todayHtml,tim:timerHtml,rev:revHtml,prac:pracHtml,stats:statsHtml,self:selfHtml}[tab]||selfHtml;
-  app.innerHTML=h+`<button class="crumb" id="to-shelf">‹ Iolite · ${esc(NB.title)}</button>`+view();
-  document.getElementById("to-shelf").onclick=()=>{shelf=true; home(); window.scrollTo(0,0);};
+  app.innerHTML=h+`<div class="bar" style="justify-content:space-between"><button class="crumb" id="to-shelf">‹ Iolite · ${esc(NB.title)}</button><button class="crumb" data-guide>사용법</button></div>`+(guideView?guideHtml():whenBox(tab)+view());
+  document.getElementById("to-shelf").onclick=()=>{shelf=true; guideView=false; home(); window.scrollTo(0,0);};
+  app.querySelectorAll("[data-guide]").forEach(b=>b.onclick=()=>{guideView=true; home(); window.scrollTo(0,0);});
+  if(guideView){ document.getElementById("guide-close").onclick=()=>{guideView=false; home(); window.scrollTo(0,0);}; bindTabs(); return; }
   bindTabs();
   ({today:bindToday,tim:bindTimer,rev:bindRev,prac:bindPrac,stats:bindStats,self:bindSelf}[tab]||bindSelf)();
 }
@@ -394,6 +399,42 @@ function selfHtml(){
 function bindSelf(){
   const q=document.getElementById("q"); if(q){q.oninput=e=>{filter=e.target.value;const p=q.selectionStart;home();const n=document.getElementById("q");n.focus();n.setSelectionRange(p,p)}}
   app.querySelectorAll(".row").forEach(b=>b.onclick=()=>startChapter(b.dataset.num));
+}
+/* ---------- 사용 설명서: 언제 무엇을 하나 (docs/plan_00b.md, docs/plan-v3.md 기준) ---------- */
+let guideView=false;
+const WHEN={
+ self:"<b>언제?</b> 장의 마지막 회차(🏁)를 끝낸 날. 5문항 중 4개 이상이면 그 장은 통과예요. 못 넘으면 틀린 문항이 나온 단계를 다시 읽고 다음 날 한 번 더. 장을 시작하기 전에 한 번 쳐 보는 것(면접 먼저)도 좋아요.",
+ rev:"<b>언제?</b> 매일. 출퇴근길이나 자투리 5분에 10문항씩, 오늘 몫이 0이 될 때까지. 답과 \"왜냐하면\"을 먼저 쓰고 확인해요. 토요일엔 주간 테스트, 일요일엔 틀린 문항 다시 익히기.",
+ tim:"<b>언제?</b> 저녁 공부 시간. 회차 하나 = 12분 블록 3~5개. 첫 2분은 30초 체크로 시작하고, 12분이 지나면 다음 소제목까지만 읽고 한 줄 요약. 바쁜 날은 1블록이면 충분해요.",
+ prac:"<b>언제?</b> 알고리즘 장은 <b>읽기 전에</b> 워밍업 1 + 핵심 1을 15분 먼저 풀어 봐요. 다시 풀 날이 된 문제는 그날. 모의고사는 5·9·12주 토요일, 설계 드릴은 11주부터, 프로젝트는 4·10주. 코딩은 PC가 편해요."
+};
+const whenBox=t=>WHEN[t]?`<details class="whenbox"><summary class="note">${t==="self"?"체크는 언제 하나요?":t==="rev"?"복습은 언제 하나요?":t==="tim"?"타이머는 언제 쓰나요?":"실전은 언제 하나요?"}</summary><p class="note">${WHEN[t]} <button class="linkbtn" data-guide>전체 설명서</button></p></details>`:"";
+function guideHtml(){
+  const row=(a,b)=>`<div class="kv" style="grid-template-columns:7.5em 1fr"><span>${a}</span><span style="text-align:left">${b}</span></div>`;
+  return `<div class="bar"><button id="guide-close">← 돌아가기</button></div>
+  <div class="card"><p class="q">Iolite 사용 설명서</p><p class="note">읽기는 노션, 나머지(타이머·체크·복습·실전·기록)는 전부 여기서 해요. 아래 순서대로 하면 돼요.</p></div>
+  <div class="card"><p class="q">하루</p>
+    ${row("출퇴근 · 5분","<b>복습</b> 10문항. 답과 이유를 먼저 쓰고 확인. 그 이상은 쉬어요.")}
+    ${row("점심 · 1~2블록","다음 회차의 <b>30초 체크</b> 미리 풀기 → 다 맞히면 \"이미 알아요\" 테스트로 건너뛰기. 또는 면접형 체크를 소리 내어.")}
+    ${row("저녁 · 1회차","<b>타이머</b>로 오늘의 회차. 블록마다 한 줄 요약. 🏁에서 \"회차 끝냄\".")}
+    ${row("여유 있는 날","<b>실전</b> 1문제(다시 풀 날인 문제 먼저) 또는 프로젝트 2~3블록.")}
+    ${row("바쁜 날","1블록이나 복습 10문항이면 성공한 날이에요.")}
+    <p class="note">하루 새로 읽기는 4블록까지. 그 뒤로는 실전이나 복습이 더 남아요.</p></div>
+  <div class="card"><p class="q">한 주</p>
+    ${row("월요일","지난주 결과를 보고 이번 주 회차 목표(범위)를 정해요. 못 채운 회차는 얹지 않고, 끝나는 날짜만 밀려요.")}
+    ${row("평일","회차 + 매일 복습. 오늘 탭의 세 줄(회차·복습·실전)이 꿀빛이 되면 그 주 몫을 한 거예요.")}
+    ${row("토요일","정한 시각에 <b>주간 테스트</b> 20문항(이번 주 장 70% + 예전 약한 문항 30%). 80점은 목표일 뿐 잠금이 아니에요. 오후엔 실전·모의고사·프로젝트.")}
+    ${row("일요일","주간 테스트에서 틀린 문항 <b>다시 익히기</b>(맞을 때까지). 요약 서재 카드 몇 장 떠올리기. 반나절은 비워요.")}</div>
+  <div class="card"><p class="q">체크 (장별 5문항)</p><p class="note">장의 마지막 회차를 끝낸 날 풀어요. 4/5 이상이면 통과. 문항은 기억보다 <b>적용</b>을 물어요. 꼬리 질문까지 답할 수 있어야 맞음이에요. 통과한 장의 문항은 복습 상자로 들어가요.</p></div>
+  <div class="card"><p class="q">30초 체크와 "이미 알아요"</p><p class="note">회차마다 단계 끝의 짧은 질문이에요. 회차 시작 2분에 질문만 보고 답을 예측하고, 이미 아는 회차는 "이미 알아요? 테스트"로 시험 쳐서 전부 맞히면 건너뛰어요.</p></div>
+  <div class="card"><p class="q">복습 (간격 반복)</p><p class="note">맞히면 다음 상자(1·3·7·16·35일 뒤), 틀리면 내일 다시. <b>답 + 왜냐하면</b>을 써야 정답이 열려요. 이유가 틀렸으면 반쯤 이하로 눌러요. 매일 오늘 몫이 0이 될 때까지, 한 번에 10문항.</p></div>
+  <div class="card"><p class="q">실전</p>
+    ${row("알고리즘","장 <b>읽기 전에</b> 워밍업 1 + 핵심 1을 15분 먼저. 막히면 힌트 1→2→3, 그다음 해설의 \"왜 이 코드가 정답인가\". 등급: A 힌트 없이 · B 힌트 · C 해설. 다시 풀 날: C 1·3·7일, B 3·10일, A 30일.")}
+    ${row("모의고사","A 5주, B 9주, C 12주(토요일), D 43장까지 끝난 뒤. 장 번호 없이, 시간 안에, 힌트 없이.")}
+    ${row("설계 드릴","11주부터. 45분 실전 → 카드 → 채점표 → 해설. 다음 날 요약, 1주 뒤 35분, 3주 뒤 다시.")}
+    ${row("프로젝트","M1 4주, M3 10주, P1·P2는 2기. 통과 기준과 숫자 하나를 남겨요.")}
+    <p class="note">코딩은 PC가 편해요. 폰에서 💻를 누르면 PC 목록에 올라가요.</p></div>
+  <div class="card"><p class="q">기록과 요약 서재</p><p class="note">블록마다 쓴 한 줄 요약이 장·회차별로 꽂혀요. 면접 전이나 장을 다시 볼 때, 다시 읽는 대신 카드를 열어 <b>먼저 떠올리고</b> 확인해요. 읽을 범위·화면 모드·동기화도 기록 탭에 있어요.</p></div>`;
 }
 function revHtml(){
   const due=dueIds(), total=Object.keys(store.srs).length;

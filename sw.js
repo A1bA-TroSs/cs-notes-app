@@ -1,5 +1,5 @@
 // 오프라인 캐시: 한 번 열면 인터넷 없이도 앱이 떠요. 새 버전을 배포하면 이름(ver)이 바뀌어 자동으로 갱신돼요.
-const CACHE = "iolite-82e1345236";
+const CACHE = "iolite-d709c781b0";
 const FILES = ["./", "index.html", "practice.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "icon-180.png", "logo-96.png"];
 self.addEventListener("install", e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())));
 self.addEventListener("activate", e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())));
