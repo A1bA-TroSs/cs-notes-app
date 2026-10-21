@@ -496,7 +496,7 @@ let guideView=false;
 const WHEN={
  self:"<b>언제?</b> 장의 마지막 회차(🏁)를 끝낸 날. 5문항 중 4개 이상이면 그 장은 통과예요. 못 넘으면 틀린 문항이 나온 단계를 다시 읽고 다음 날 한 번 더. 장을 시작하기 전에 한 번 쳐 보는 것(면접 먼저)도 좋아요.",
  rev:"<b>언제?</b> 매일. 출퇴근길이나 자투리 5분에 10문항씩, 오늘 몫이 0이 될 때까지. 답과 \"왜냐하면\"을 먼저 쓰고 확인해요. 토요일엔 주간 테스트, 일요일엔 틀린 문항 다시 익히기.",
- tim:"<b>언제?</b> 저녁 공부 시간. 회차 하나 = 12분 블록 3~5개. 첫 2분은 30초 체크로 시작하고, 12분이 지나면 다음 소제목까지만 읽고 한 줄 요약. 바쁜 날은 1블록이면 충분해요.",
+ tim:"<b>언제?</b> 저녁 공부 시간. 회차 하나 = 12분 블록 3~5개. 첫 2분은 30초 체크로 시작하고, 12분이 지나면 다음 소제목까지만 읽고 한 줄 요약. 하루 최소 2회차예요. 홀수 회차 🏁에서는 잠깐 쉬고 이어 가고, 짝수·마지막 회차 🏁에서 그날 분량이 끝나요.",
  prac:"<b>언제?</b> 알고리즘 장은 <b>읽기 전에</b> 워밍업 1 + 핵심 1을 15분 먼저 풀어 봐요. 다시 풀 날이 된 문제는 그날. 모의고사는 5·9·12주 토요일, 설계 드릴은 11주부터, 프로젝트는 4·10주. 코딩은 PC가 편해요."
 };
 const whenBox=t=>WHEN[t]?`<details class="whenbox"><summary class="note">${t==="self"?"체크는 언제 하나요?":t==="rev"?"복습은 언제 하나요?":t==="tim"?"타이머는 언제 쓰나요?":"실전은 언제 하나요?"}</summary><p class="note">${WHEN[t]} <button class="linkbtn" data-guide>전체 설명서</button></p></details>`:"";
@@ -507,9 +507,9 @@ function guideHtml(){
   <div class="card"><p class="q">하루</p>
     ${row("출퇴근 · 5분","<b>복습</b> 10문항. 답과 이유를 먼저 쓰고 확인. 그 이상은 쉬어요.")}
     ${row("점심 · 1~2블록","다음 회차의 <b>30초 체크</b> 미리 풀기 → 다 맞히면 \"이미 알아요\" 테스트로 건너뛰기. 또는 면접형 체크를 소리 내어.")}
-    ${row("저녁 · 1회차","<b>타이머</b>로 오늘의 회차. 블록마다 한 줄 요약. 🏁에서 \"회차 끝냄\".")}
+    ${row("저녁 · 2회차","<b>타이머</b>로 오늘의 회차 두 개. 블록마다 한 줄 요약. 🏁에서 \"회차 끝냄\". 홀수 회차 뒤엔 잠깐 쉬고 이어 가요.")}
     ${row("여유 있는 날","<b>실전</b> 1문제(다시 풀 날인 문제 먼저) 또는 프로젝트 2~3블록.")}
-    ${row("바쁜 날","1블록이나 복습 10문항이면 성공한 날이에요.")}
+    ${row("바쁜 날","그래도 2회차가 최소예요. 블록 사이 쉬는 시간을 지키면 생각보다 덜 지쳐요.")}
     <p class="note">하루 새로 읽기는 4블록까지. 그 뒤로는 실전이나 복습이 더 남아요.</p></div>
   <div class="card"><p class="q">한 주</p>
     ${row("월요일","지난주 결과를 보고 이번 주 회차 목표(범위)를 정해요. 못 채운 회차는 얹지 않고, 끝나는 날짜만 밀려요.")}
@@ -725,7 +725,7 @@ function timerHtml(){
     <div class="bar"><button class="primary" id="tim-go">블록 시작</button><button id="tim-known" title="이 회차의 ✅ 30초 체크를 시험으로 풀어요">이미 알아요? 테스트</button></div><div id="tim-quick"></div>
     ${pushBox()}
     <details class="qcard"><summary class="note"><b>블록 규칙과 "이미 알아요" 테스트</b></summary><p class="note"><b>한 블록 = 12분 읽기 + 한 줄 요약(약 1분) + 2분 쉬기</b></p><p class="note">4블록(1시간)마다 10분 쉬어요. 12분이 지나면 다음 소제목까지만 읽어요(최대 20분).</p>
-    <p class="note">시작이 제일 어려워요. 첫 2분은 "이 회차 첫 단계의 ✅ 30초 체크 질문을 먼저 읽고 답을 예측하기"만 해요. 노션의 🏁 표시까지가 한 회차예요. 12분 뒤에는 방금 읽은 걸 한 문장으로 적고 쉬어요. 하루 최소 1블록이면 그날은 성공이에요.</p>
+    <p class="note">시작이 제일 어려워요. 첫 2분은 "이 회차 첫 단계의 ✅ 30초 체크 질문을 먼저 읽고 답을 예측하기"만 해요. 노션의 🏁 표시까지가 한 회차예요. 12분 뒤에는 방금 읽은 걸 한 문장으로 적고 쉬어요. 하루 최소 2회차예요. 짝수·마지막 회차의 🏁에서 그날 분량이 끝나요.</p>
     <p class="note">"이미 알아요" 테스트: 이 회차의 ✅ 30초 체크를 답을 보지 않고 소리 내어 답하고, 핵심어로 채점하고, "왜"를 한 줄 말해요. 전부 맞히면 회차를 건너뛰어요(그래도 소제목·굵은 글씨·코드를 2분 훑어요). ✅ 체크가 없는 회차는 읽어요.</p></details>`;
   }else{
     const left=Math.max(0,Math.round((tim.end-Date.now())/1000));
@@ -772,7 +772,7 @@ function bindTimer(){
     if(!q.length){ $("tim-sess-note").textContent="이 회차는 ✅ 체크가 없어요. 읽어요."; return; } qt={ch,n,q,i:0,ok:[],shown:false}; home(); window.scrollTo(0,0);};
   if($("tim-go")) $("tim-go").onclick=()=>{ timFlash=""; store.lastCh=$("tim-ch").value; const n=+$("tim-sess").value; tim={ch:$("tim-ch").value,sess:n,step:n?n+"회차":"",phase:"read",end:Date.now()+BLOCK*1000,blocks:0}; save(); saveTim(); runTick(); home();};
   const startRest=(stepDone)=>{const note=$("tim-note")?$("tim-note").value:""; const wsC=weekStart(), before=sessIn(wsC), loC=wkRange(wsC)[0];
- tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note}); tim.note=""; if(stepDone){store.steps.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,blocks:tim.blocks}); if(tim.sess){const a=store.sess[tim.ch]=store.sess[tim.ch]||[]; if(!a.includes(tim.sess)) a.push(tim.sess); const c=DATA.find(x=>x.num===tim.ch); const nx=(c.sessions||[]).find(x=>!a.includes(x.n)); tim.flash=nx?`🏁 ${tim.sess}회차 끝! 이 장 ${a.length}/${c.sessions.length}. 오늘은 여기까지 해도 돼요.`:`🏁 이 장 회차를 다 끝냈어요. 셀프 체크로 마무리하세요.`; tim.sess=nx?nx.n:0; tim.step=nx?nx.n+"회차":"";} tim.blocks=0;} save(); sinceLong++; const lr=sinceLong>=4; if(lr) sinceLong=0; tim.phase="rest"; tim.longRest=lr; tim.end=Date.now()+(lr?LONGREST:REST)*1000; saveTim(); home(); if(stepDone){ const after=sessIn(wsC); if(before<loC&&after>=loC) celebrate(2,"이번 주 목표 달성"); else celebrate(1,"회차 하나 완성"); } };
+ tim.blocks++; store.log.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,note}); tim.note=""; if(stepDone){store.steps.push({ts:now(),date:today(),ch:tim.ch,step:tim.step,blocks:tim.blocks}); if(tim.sess){const a=store.sess[tim.ch]=store.sess[tim.ch]||[]; if(!a.includes(tim.sess)) a.push(tim.sess); const c=DATA.find(x=>x.num===tim.ch); const nx=(c.sessions||[]).find(x=>!a.includes(x.n)); const dn=sessToday(); tim.flash=nx?((tim.sess%2===0||dn>=DAY_MIN)?`🏁 ${tim.sess}회차 끝! 이 장 ${a.length}/${c.sessions.length}. 오늘 분량(${DAY_MIN}회차)을 채웠어요.`:`🏁 ${tim.sess}회차 끝. 이 장 ${a.length}/${c.sessions.length}. 잠깐 쉬고 다음 회차로 이어 가요 (오늘 ${dn}/${DAY_MIN}회차).`):`🏁 이 장 회차를 다 끝냈어요. 셀프 체크로 마무리하세요.`; tim.sess=nx?nx.n:0; tim.step=nx?nx.n+"회차":"";} tim.blocks=0;} save(); sinceLong++; const lr=sinceLong>=4; if(lr) sinceLong=0; tim.phase="rest"; tim.longRest=lr; tim.end=Date.now()+(lr?LONGREST:REST)*1000; saveTim(); home(); if(stepDone){ const after=sessIn(wsC); if(before<loC&&after>=loC) celebrate(2,"이번 주 목표 달성"); else celebrate(1,"회차 하나 완성"); } };
   if($("tim-rest")) $("tim-rest").onclick=()=>startRest(false);
   if($("tim-stepdone")) $("tim-stepdone").onclick=()=>startRest(true);
   if($("tim-note")) $("tim-note").oninput=e=>{tim.note=e.target.value; saveTim();};
@@ -824,17 +824,18 @@ function pracDue(){const t=today();return APP.problems.filter(p=>{const s=pracSt
 function activeDays(){const d=new Set();for(const e of store.log)d.add(e.date);for(const a of Object.values(store.attempts))for(const x of a)d.add(x.date);for(const a of Object.values(store.prac))for(const x of a)d.add(x.date);return d}
 function streak(){const d=activeDays();let n=0,t=today();if(!d.has(t))t=addDays(t,-1);while(d.has(t)){n++;t=addDays(t,-1)}return n}
 function weekNo(){const st=store.settings&&store.settings.start;if(!st)return null;const ms=new Date(today()+"T00:00:00")-new Date(st+"T00:00:00");return Math.floor(ms/864e5/7)+1}
+const sessToday=()=>store.steps.filter(x=>x.date===today()).length;
 function weekLines(ws,wSess,due,tBlocks){
   const [lo,hi]=wkRange(ws), t=lastTest(ws), pt=pracTarget(), pw=pracThisWeek(ws);
-  const nextAct=due?`오늘의 복습 ${Math.min(10,due)}문항`:tBlocks>=4?"실전 1문제":wSess<hi?"다음 회차 1블록":pw<pt?"실전 1문제":"오늘은 복습만 해도 충분해요";
+  const nextAct=due?`오늘의 복습 ${Math.min(10,due)}문항`:sessToday()<DAY_MIN?`오늘 회차 ${sessToday()}/${DAY_MIN} · 다음 회차`:wSess<hi?"다음 회차":pw<pt?"실전 1문제":"오늘은 복습만 해도 충분해요";
   const line=(k,v,ok)=>`<div class="meta"><span style="color:var(--text);font-weight:600">${k}</span><span style="color:${ok?"var(--honey-ink)":"var(--text-2)"}">${v}</span></div>`;
-  return line("회차 (새로 읽기)",`${wSess} / ${lo}~${hi}`,wSess>=lo)+line("복습",`오늘 ${due}문항 · 주간 테스트 ${t?Math.round(t.score*100)+"점":"토요일"}`,!due&&!!t)+line("실전 (문제·드릴·모의)",`${pw} / ${pt}`,pw>=pt)+`<div class="strip"><span>다음 할 것</span><span>${nextAct}</span></div>`+(weekAdvice(ws)?`<p class="note"><b>${esc(weekAdvice(ws))}</b></p>`:"");
+  return line("오늘 회차",`${sessToday()} / ${DAY_MIN}`,sessToday()>=DAY_MIN)+line("회차 (새로 읽기)",`${wSess} / ${lo===hi?lo:lo+"~"+hi}`,wSess>=lo)+line("복습",`오늘 ${due}문항 · 주간 테스트 ${t?Math.round(t.score*100)+"점":"토요일"}`,!due&&!!t)+line("실전 (문제·드릴·모의)",`${pw} / ${pt}`,pw>=pt)+`<div class="strip"><span>다음 할 것</span><span>${nextAct}</span></div>`+(weekAdvice(ws)?`<p class="note"><b>${esc(weekAdvice(ws))}</b></p>`:"");
 }
 function mondayCard(ws){ // 새 주의 첫 화면: 지난주 결과와 이번 주 목표 정하기 (정하면 사라져요)
   if(store.wk[ws]) return ""; const lw=addDays(ws,-7); if(!activeWeek(lw)) return "";
   const s=sessIn(lw), [lo,hi]=wkRange(lw), g=defaultGoal(ws);
-  return `<div class="card"><p class="q">새 주예요. 지난주 회차 ${s} (목표 ${lo}~${hi})</p><p class="note">${s>=lo?"목표를 지켰어요.":"목표 아래였어요. 남은 회차는 다음 주에 얹지 않고 끝나는 날짜만 밀려요."} 지난 4주 기준으로 이번 주 목표는 <b>${Math.max(1,g-2)}~${g}회차</b>를 권해요.</p>
-    <div class="bar"><button class="primary" id="wk-keep">${Math.max(1,g-2)}~${g}로 시작</button><button id="wk-less">하나 줄이기</button><button id="wk-more">하나 늘리기</button></div></div>`;
+  return `<div class="card"><p class="q">새 주예요. 지난주 회차 ${s} (목표 ${lo}~${hi})</p><p class="note">${s>=lo?"목표를 지켰어요.":"목표 아래였어요. 남은 회차는 다음 주에 얹지 않고 끝나는 날짜만 밀려요."} 이번 주 목표는 <b>${g}회차</b>예요 (최소 하루 ${DAY_MIN}회차 × 7일 = ${WEEK_MIN}).</p>
+    <div class="bar"><button class="primary" id="wk-keep">${g}회차로 시작</button><button id="wk-less">하나 줄이기</button><button id="wk-more">하나 늘리기</button></div></div>`;
 }
 /* 오늘 header scene (board v3 direction D): the study bench at this hour. Window shows sun by day, moon at night; lamp light is stronger at night. */
 function sceneHtml(wk){
@@ -859,10 +860,10 @@ function todayHtml(){
   const d=new Date(), dstr=`${d.getMonth()+1}월 ${d.getDate()}일 ${"일월화수목금토"[d.getDay()]}`;
   const qn=nx?((nx.nx.q||[]).length):0, pcN=(typeof pcList==="function")?pcList().length:0;
   const ctitle=nx?esc(nx.c.title.replace(/^\d+b?\.\s*/,"").split(/[:：]/)[0].slice(0,18)):"";
-  return `${sceneHtml(wk)}<div class="dateline"><span class="note">바쁜 날은 1블록이나 복습 10문항이면 성공한 날이에요.</span></div>
+  return `${sceneHtml(wk)}<div class="dateline"><span class="note">하루 최소 2회차. 홀수 회차 뒤엔 잠깐 쉬고 이어 가요.</span></div>
   ${nx?`<section class="hero"><svg class="tex" viewBox="0 0 350 196" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><filter id="hz" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.018" numOctaves="3" seed="11"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .36  0 0 0 0 .86  1.7 0 0 0 -.62"/></filter><filter id="hg" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.011 0.02" numOctaves="3" seed="4"/><feColorMatrix values="0 0 0 0 .86  0 0 0 0 .78  0 0 0 0 .56  1.9 0 0 0 -.8"/></filter><filter id="hn" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.6 0 0 0 -.62"/></filter><radialGradient id="hrg" cx="0.85" cy="0.95" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient><mask id="hm"><rect width="350" height="196" fill="url(#hrg)"/></mask><linearGradient id="hs" x1="0" y1="0" x2="1" y2="0.6"><stop offset="0.25" stop-color="#fff" stop-opacity="0"/><stop offset="0.42" stop-color="#fff" stop-opacity=".16"/><stop offset="0.58" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><rect width="350" height="196" filter="url(#hz)" opacity=".6"/><g mask="url(#hm)"><rect width="350" height="196" filter="url(#hg)" opacity=".55"/></g><rect width="350" height="196" filter="url(#hn)" opacity=".16"/><rect width="350" height="196" fill="url(#hs)"/><path d="M-10 60L120 -10M-10 140L200 -10M60 210L342 20M180 210L350 90M250 -10L350 70" stroke="#fff" stroke-opacity=".09" stroke-width="1" fill="none"/></svg><span class="eyebrow">지금 할 것</span><h2 class="t">이 장 ${nx.done}/${nx.total}회차</h2><p class="s">${nx.c.num}장 ${ctitle} · ${nx.nx.n}회차</p><span class="left">${nx.total}회차 중 ${nx.done}회차 끝 · 남은 ${nx.total-nx.done}회차, 약 ${(nx.total-nx.done)*15}분</span>
     <span class="acts"><button id="go-sess" class="go">블록 준비</button>${NMAP&&notionUrl(nx.c.num,nx.nx.steps[0])?`<a class="go2" href="${notionUrl(nx.c.num,nx.nx.steps[0])}" target="_blank" rel="noopener">노션에서 ${esc(nx.nx.steps[0])} 열기</a>`:""}</span></section>
-  ${tBlocks>=4?`<div class="strip"><span>오늘 읽기는 충분해요 (${tBlocks}블록)</span><span>더 하려면 실전 1문제나 복습으로</span></div>`:""}
+  ${sessToday()>=DAY_MIN?`<div class="strip"><span>오늘 분량 끝 (${sessToday()}회차)</span><span>더 하려면 실전 1문제나 복습으로</span></div>`:""}
   <p class="note" style="margin:0">${esc(nx.nx.steps.join(", ").slice(0,48))} · ${qn?`30초 체크 ${qn}개로 시작`:"읽기부터 시작"}</p>
   ${NMAP?"":`<span class="note">노션 바로가기는 이 기기에서 GitHub 동기화를 연결하면 나타나요(아틀리에 탭).</span>`}`
      :`<div class="card"><p class="q">지금 할 것</p><p class="note">이어서 할 회차가 없어요. 체크 탭에서 장을 골라요.</p></div>`}
@@ -874,7 +875,7 @@ function todayHtml(){
   <div class="card"><div class="meta"><span style="color:var(--text);font-weight:800;font-size:18px">이번 주 보석</span><span>연속 ${weekStreak()}주</span></div>
     <div class="gems" title="이번 주 회차 목표">${Array.from({length:Math.max(wkOf(ws).goal,wSess+1)},(_,i)=>gem(i<wSess?"done":i===wSess?"on":"empty",30)).join("")}</div>
     ${weekLines(ws,wSess,due,tBlocks)}
-    <div class="meta"><span>회차 목표 ${wkRange(ws)[0]}~${wkRange(ws)[1]}${finishDate(ws)?` · 이 속도면 ${scopeParts()?"범위":"본 경로"} 끝 ${finishDate(ws).slice(2).replace(/-/g,".")}`:""}</span><span class="bar" style="gap:6px"><button id="wg-minus" class="round" aria-label="목표 줄이기">−</button><button id="wg-plus" class="round" aria-label="목표 늘리기">+</button></span></div>
+    <div class="meta"><span>회차 목표 ${wkRange(ws)[0]===wkRange(ws)[1]?wkRange(ws)[0]:wkRange(ws)[0]+"~"+wkRange(ws)[1]}${finishDate(ws)?` · 이 속도면 ${scopeParts()?"범위":"본 경로"} 끝 ${finishDate(ws).slice(2).replace(/-/g,".")}`:""}</span><span class="bar" style="gap:6px"><button id="wg-minus" class="round" aria-label="목표 줄이기">−</button><button id="wg-plus" class="round" aria-label="목표 늘리기">+</button></span></div>
     <div class="meta"><span>이번 주 ${wBlocks}블록</span><span>오늘 ${tBlocks}블록</span></div>
     ${row?`<div class="kv"><span>알고리즘</span><span>${esc(row[0])}</span><span>CS</span><span>${esc(row[1])}</span></div><div class="strip"><span>토요일 오후</span><span>${esc(row[2])}</span></div>`:""}
     ${weekCardExtra(ws)}
@@ -886,7 +887,7 @@ function todayHtml(){
 function bindToday(){
   const $=id=>document.getElementById(id);
   if($("go-rev")) $("go-rev").onclick=()=>startReview();
-  const ws=weekStart(), setGoal=d=>{const g=Math.min(14,Math.max(2,wkOf(ws).goal+d)); store.wk[ws]={goal:g,t:now()}; save(); home();};
+  const ws=weekStart(), setGoal=d=>{const g=Math.min(WEEK_MAX,Math.max(WEEK_MIN,wkOf(ws).goal+d)); store.wk[ws]={goal:g,t:now()}; save(); home();};
   if($("wg-minus")) $("wg-minus").onclick=()=>setGoal(-1);
   if($("wk-keep")) $("wk-keep").onclick=()=>setGoal(0);
   if($("wk-less")) $("wk-less").onclick=()=>setGoal(-1);
@@ -1135,22 +1136,24 @@ function startMix(){
   ask();
 }
 /* ---------- 주간 목표와 주간 테스트 (근거: docs/research/notion-weekly.md) ----------
-   월요일: 12주 계획의 이번 주 장으로 회차 목표(기본 8, 여유 1). 토요일(정한 시각): 20문항 15분, 떠올린 뒤 바로 정답.
+   월요일: 이번 주 회차 목표(기본 15 = 장 3개, 최소 14 = 하루 2회차 × 7일). 토요일(정한 시각): 20문항 15분, 떠올린 뒤 바로 정답.
    이번 주 장 70% + 예전 약한 문항 30%를 섞어요. 80%는 목표일 뿐 잠금이 아니에요.
    틀린 문항: 일요일에 맞을 때까지 다시 익히고, 이후 주간 테스트에서 세 번 맞힐 때까지 다시 나와요. */
 const WT_N=20, WT_MIN=15, WT_BAR=0.8, WT_NEW=0.7;
-/* 주간 목표 = 지난 4주 회차의 중앙값(최대 8, 기록 없으면 8), 범위로 보여 줘요(예: 6~8). 못 채운 회차는 다음 주에 얹지 않고 끝나는 날짜가 밀려요 */
+/* 하루 최소 2회차 (2026-10-21, Danny): 장 하나 ≈ 5회차, 주 3장이면 하루 2회차로 이틀에 한 장. 최소가 낮으면 거기에 머무르게 돼서 줄이는 방향의 자동 조정은 없앴어요.
+   주간 목표 = max(최소 14, 지난 4주 중앙값), 기본 15. 이 규칙 전 주(RULE_FROM 이전)는 예전 목표로 판정해서 연속 기록을 지켜요. 못 채운 회차는 다음 주에 얹지 않고 끝나는 날짜가 밀려요 */
+const DAY_MIN=2, WEEK_MIN=DAY_MIN*7, WEEK_DEF=15, WEEK_MAX=21, RULE_FROM="2026-10-19";
 const sessIn=ws=>store.steps.filter(x=>x.date>=ws&&x.date<addDays(ws,7)).length;
 const activeWeek=ws=>store.log.some(x=>x.date>=ws&&x.date<addDays(ws,7));
-function defaultGoal(ws){ const past=[1,2,3,4].map(k=>addDays(ws,-7*k)).filter(activeWeek).map(sessIn).sort((a,b)=>a-b); if(!past.length) return 8; const m=past[Math.floor((past.length-1)/2)]; return Math.min(8,Math.max(2,m)); }
-const wkOf=ws=>store.wk[ws]||{goal:defaultGoal(ws)};
-const wkRange=ws=>{const g=wkOf(ws).goal; return [Math.max(1,g-2),g];};
+function defaultGoal(ws){ if(ws<RULE_FROM) return 8; const past=[1,2,3,4].map(k=>addDays(ws,-7*k)).filter(activeWeek).map(sessIn).sort((a,b)=>a-b); const m=past.length?past[Math.floor((past.length-1)/2)]:WEEK_DEF; return Math.min(WEEK_MAX,Math.max(WEEK_DEF,m)); }
+const wkOf=ws=>{const w=store.wk[ws]; if(ws<RULE_FROM) return w||{goal:defaultGoal(ws)}; return {goal:Math.max(WEEK_MIN,(w&&w.goal)||defaultGoal(ws))};};
+const wkRange=ws=>{const g=wkOf(ws).goal; return ws<RULE_FROM?[Math.max(1,g-2),g]:[WEEK_MIN,g];};
 function weekStreak(){ let n=0, miss=0; if(sessIn(weekStart())>=wkRange(weekStart())[0]) n++; let w=addDays(weekStart(),-7); for(let k=0;k<52;k++,w=addDays(w,-7)){ if(sessIn(w)>=wkRange(w)[0]) n++; else if(activeWeek(w)&&!miss) miss=1; else break; } return n; } // 주 단위, 한 번 놓친 주는 이어 줘요
 function pathLeft(){ return pathChapters().reduce((a,n)=>{const c=chapterOf(n); return a+((c&&c.sessions)||[]).length-(store.sess[n]||[]).length;},0); }
 function finishDate(ws){ const pace=defaultGoal(ws), left=pathLeft(); if(!left) return null; const weeks=Math.ceil(left/Math.max(1,pace)); return addDays(ws,7*weeks); }
 function weekAdvice(ws){ const a=addDays(ws,-7), b=addDays(ws,-14); if(!activeWeek(a)||!activeWeek(b)) return "";
   const [la]=wkRange(a), [lb]=wkRange(b), ha=wkOf(a).goal, hb=wkOf(b).goal;
-  if(sessIn(a)<la&&sessIn(b)<lb) return `두 주 연속 목표 아래예요. 이번 주 목표를 ${Math.max(2,wkOf(ws).goal-1)}로 줄이고, 매일 같은 시각(예: 20:30)을 정해 1블록부터 해요.`;
+  if(sessIn(a)<la&&sessIn(b)<lb) return `두 주 연속 목표 아래예요. 목표는 줄이지 않아요. 매일 같은 시각(예: 20:30)을 정해 2회차를 이어서 해요.`;
   if(sessIn(a)>ha&&sessIn(b)>hb) return "두 주 연속 목표를 넘었어요. 읽기를 더 늘리기보다 남는 블록을 실전(문제·드릴)으로 돌려요.";
   return ""; }
 const pracTarget=()=>{ if(scopeParts()) return 2; const w=weekNo(); return !w||w<=4?2:w<=8?3:4; };
