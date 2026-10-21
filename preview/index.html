@@ -257,7 +257,7 @@ button.primary{min-height:52px;border-radius:16px;font-weight:800;font-size:16px
 .scene .greet small{display:block;font-size:12px;line-height:16px;font-weight:600;letter-spacing:.12em;color:var(--gold);margin-bottom:2px}
 .hero .left{display:block;margin-top:2px;font-size:13px;opacity:.75;font-weight:600}
 .lampline{display:flex;justify-content:flex-end;margin:-6px 6px -22px 0;position:relative;z-index:1;pointer-events:none}.lampline .lamp{width:120px;height:64px}
-.tstone{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:62px 0 4px}.tstone .lamp{position:absolute;top:0;left:50%;width:120px;height:64px;margin-left:-80px}.tstone .ts-gem{position:relative}.tstone .ts-cap{font-size:13px;font-weight:600;color:var(--text-2);padding-top:6px;border-top:1.5px solid var(--goldA);min-width:150px;text-align:center}
+.tstone{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 0 4px}.tst{position:relative;width:300px;height:250px;max-width:100%}.tst svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.tst .ts-gem{position:absolute;left:104px;top:84px;width:132px;height:132px}.tst .tst-hi{mix-blend-mode:screen}.tstone .ts-cap{font-size:13px;font-weight:600;color:var(--text-2);padding-top:6px;border-top:1.5px solid var(--goldA);min-width:150px;text-align:center}
 .tag{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:6px 16px 16px 6px;padding:14px 14px 14px 30px;display:flex;flex-direction:column;gap:8px;margin-left:10px}
 .tag::before{content:"";position:absolute;left:11px;top:22px;width:9px;height:9px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 1.5px var(--goldA)}
 .tag::after{content:"";position:absolute;left:-11px;top:26px;width:22px;height:1px;background:var(--goldA)}
@@ -698,6 +698,14 @@ function pushBox(){ // 알림 켜기·테스트
     <div class="bar">${on?`<button id="push-test">테스트 (10초 뒤 알림)</button>`:`<button class="primary" id="push-on">알림 켜기</button>`}</div>${msg}</details>`;
 }
 function holdTip(){ const m=(Date.now()-tim.hold)/60000; return m<3?"3분까지는 그냥 쉬어도 돼요. 시간은 멈춰 있어요.":m<15?"3분이 넘었어요. 돌아올 수 있으면 지금 다시 시작해요.":"15분이 넘었어요. 이어서 읽거나, 읽은 만큼만 기록하고 끝낼 수 있어요."; }
+/* Timer stage: the desk lamp leans over the current chapter's gem and its beam lights it (cone + pool on the desk + a soft glow on the gem's lit side). */
+function timStage(num){ return `<div class="tst"><svg viewBox="0 0 300 250" aria-hidden="true"><defs><linearGradient id="tcone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE3A8" stop-opacity=".42"/><stop offset=".55" stop-color="#FFD696" stop-opacity=".16"/><stop offset="1" stop-color="#FFD696" stop-opacity="0"/></linearGradient><radialGradient id="tpool"><stop offset="0" stop-color="#FFD696" stop-opacity=".45"/><stop offset="1" stop-color="#FFD696" stop-opacity="0"/></radialGradient></defs>
+  <ellipse cx="170" cy="230" rx="92" ry="9" fill="url(#tpool)"/><path d="M14 232h272" stroke="var(--gold)" stroke-opacity=".55" stroke-width="1.5"/>
+  <path d="M36 232v-6h40v6" fill="none" stroke="var(--text-2)" stroke-width="1.8"/><path d="M56 226L36 120L100 44" fill="none" stroke="var(--text-2)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="36" cy="120" r="3" fill="var(--surface-2)" stroke="var(--text-2)" stroke-width="1.5"/>
+  <g transform="translate(100 44) rotate(-35)"><path d="M-18 26L18 26L66 196L-66 196Z" fill="url(#tcone)"/><path d="M-8 -4h16l12 30h-40z" fill="var(--surface-2)" stroke="var(--text-2)" stroke-width="1.6" stroke-linejoin="round"/><path d="M-17 26h34" stroke="#FFE3A8" stroke-width="2" stroke-linecap="round"/></g>
+  <circle cx="100" cy="44" r="2.6" fill="var(--gold)"/></svg>
+  <div class="ts-gem">${polyGem(num,132)}</div>
+  <svg class="tst-hi" viewBox="0 0 300 250" aria-hidden="true"><defs><radialGradient id="thi" cx="140" cy="120" r="80" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFE7B0" stop-opacity=".38"/><stop offset="1" stop-color="#FFE7B0" stop-opacity="0"/></radialGradient></defs><rect width="300" height="250" fill="url(#thi)"/></svg></div>`; }
 const resetBar=()=>`<div class="bar"><button id="tim-reset">타이머 초기화</button><span class="note">30분 동안 손대지 않으면 자동으로 정리돼요</span></div>`;
 function timerHtml(){
   const t=today(), ws=weekStart();
@@ -743,7 +751,7 @@ function timerHtml(){
 }
 function bindTimer(){
   const $=id=>document.getElementById(id);
-  const fillSess=()=>{ if(!$("tim-sess")) return; const c=DATA.find(x=>x.num===$("tim-ch").value); if($("tim-stone")) $("tim-stone").innerHTML=`${LAMP}<div class="ts-gem">${polyGem(c.num,132)}</div><div class="ts-cap">${esc(c.num)}장 · ${(store.sess[c.num]||[]).length}/${(c.sessions||[]).length}회차</div>`; const ss=c.sessions||[]; const done=store.sess[c.num]||[];
+  const fillSess=()=>{ if(!$("tim-sess")) return; const c=DATA.find(x=>x.num===$("tim-ch").value); if($("tim-stone")) $("tim-stone").innerHTML=`${timStage(c.num)}<div class="ts-cap">${esc(c.num)}장 · ${(store.sess[c.num]||[]).length}/${(c.sessions||[]).length}회차</div>`; const ss=c.sessions||[]; const done=store.sess[c.num]||[];
     $("tim-sess").innerHTML=ss.length?ss.map(x=>`<option value="${x.n}" ${done.includes(x.n)?"":""}>${x.n}회차${done.includes(x.n)?" ✓":""} · ${esc(x.steps.join(", ").slice(0,40))}</option>`).join(""):`<option value="0">회차 안내 준비 중</option>`;
     const next=ss.find(x=>!done.includes(x.n)); if(next) $("tim-sess").value=next.n;
     const sel=ss.find(x=>x.n===+$("tim-sess").value), qs=sel?(sel.q||[]):[];
