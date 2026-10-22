@@ -170,6 +170,15 @@ code{font-family:var(--f-mono);font-size:.85em;background:var(--surface-2);borde
 .gate{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;line-height:1.5}
 .gate input{margin-top:4px;width:18px;height:18px;accent-color:var(--primary);flex:none}
 .prow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--border)}
+.prow>.row{display:block;min-height:0}
+.pitem{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--border)}
+.popen{display:grid;grid-template-columns:1fr auto;column-gap:12px;row-gap:3px;align-items:center;color:inherit;text-decoration:none;min-width:0}
+.popen .ptitle{grid-column:1;font-size:.95rem;font-weight:600;line-height:1.4;overflow-wrap:anywhere}
+.popen .pmeta{grid-column:1;font-size:.8rem;color:var(--text-3)}
+.popen .pgo{grid-column:2;grid-row:1/3;font-size:.82rem;font-weight:700;color:var(--primary-ink);background:var(--primary-tint);padding:8px 14px;border-radius:999px;white-space:nowrap}
+.pact{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.pact .sp{flex:1}
+.pbtn{min-height:36px;padding:6px 12px;font-size:.8rem;font-weight:600;border-radius:999px;background:transparent;border:1px solid var(--border);color:var(--text-2)}
+.pbtn.on{border-color:var(--primary);color:var(--primary-ink)}
 .pform{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:4px 0 12px}
 .pform input[type=number]{width:5.5em}
 .mdx{font-size:.92rem;line-height:1.6;min-width:0}.mdx table{border-collapse:collapse;display:block;overflow-x:auto;font-size:.85rem}.mdx td,.mdx th{border:1px solid var(--border);padding:4px 8px;vertical-align:top}.mdx pre{background:var(--surface-2);padding:10px;border-radius:var(--r-s);overflow-x:auto;font-size:.82rem}.mdx code{font-family:var(--f-mono);font-size:.88em}.mdx details{border:1px solid var(--border);border-radius:var(--r-m);padding:6px 12px;margin:8px 0}.mdx h2{font-size:1rem;color:var(--text);margin:16px 0 6px}.mdx h3{font-size:.95rem;margin:12px 0 4px}
@@ -910,8 +919,9 @@ function pracHtml(){
   const solved=APP.problems.filter(p=>pracStatus(p.id)).length, pd=pracDue();
   const chs=[...new Set(APP.problems.map(p=>p.ch))];
   let h=`<div class="card"><div class="meta"><span>알고리즘 ${solved} / ${APP.problems.length}문제</span><span>다시 풀 날 ${pd.length}개</span></div>
-  <p class="note">코딩은 PC에서: PC 브라우저로 <b>a1ba-tross.github.io/cs-notes-app</b>을 열고 기록 탭에서 같은 GitHub 동기화를 한 번 연결하면, 등급·쓰던 코드·아래 "PC에서 풀 문제"가 폰과 맞춰져요. 폰에서는 문제·힌트·해설 읽기와 접근법 생각을 하고 <b>💻</b>를 눌러 PC 목록에 넣어요. 통과하면 등급이 자동으로 남아요: A 힌트 없이 · B 힌트 봄 · C 해설 봄. 다시 풀 날은 C 1·3·7일, B 3·10일, A 30일 뒤예요.</p>
-  ${pcList().length?`<p class="q" style="font-size:.95rem">💻 PC에서 풀 문제 ${pcList().length}개</p><div class="rows">${pcList().map(prow).join("")}</div>`:""}
+  <p class="note" style="margin:0">문제를 누르면 풀이 화면이 열려요. 문제·힌트·해설을 보고 코드를 채점까지 해요. 통과하면 등급이 저절로 남아요.</p>
+  <details><summary class="note"><b>폰과 PC 같이 쓰기 · 등급과 다시 풀 날</b></summary><p class="note">폰에서는 문제와 힌트를 읽고 접근법을 생각한 뒤 <b>PC에서 풀기</b>를 눌러 둬요. PC 브라우저로 <b>a1ba-tross.github.io/cs-notes-app</b>을 열고 기록 탭에서 같은 GitHub 동기화를 한 번 연결하면, 그 목록과 쓰던 코드가 PC에도 떠요. 다른 곳(백준·프로그래머스)에서 풀었다면 <b>직접 기록</b>으로 남겨요.<br>등급: A 힌트 없이 · B 힌트 봄 · C 해설 봄. 다시 풀 날: C 1·3·7일, B 3·10일, A 30일 뒤.</p></details>
+  ${pcList().length?`<p class="q" style="font-size:.95rem">PC에서 풀 문제 ${pcList().length}개</p><div class="rows">${pcList().map(prow).join("")}</div>`:""}
   ${pd.length?`<p class="q" style="font-size:.95rem">오늘 다시 풀 문제</p><div class="rows">${pd.map(prow).join("")}</div>`:""}</div>`;
   for(const ch of chs){
     const ps=APP.problems.filter(p=>p.ch===ch), c=chapterOf(ch);
@@ -935,9 +945,10 @@ function pracHtml(){
 }
 const pcList=()=>APP.problems.filter(p=>store.pcq[p.id]&&store.pcq[p.id].on&&!(pracStatus(p.id)&&pracStatus(p.id).date>=(store.pcq[p.id].date||"")));
 function prow(p){
-  const st=pracStatus(p.id), t=today();
-  const chip=st?`<span class="chip ${st.grade==="A"?"pass":st.grade==="C"?"fail":""}">${st.grade} · ${st.date.slice(5)}</span>${st.due?`<span class="chip ${st.due<=t?"fail":""}">다음 ${st.due.slice(5)}</span>`:`<span class="chip pass">졸업</span>`}`:`<span class="chip">${esc(p.target||"")}</span>`;
-  return `<div><div class="prow"><a class="row" style="border:0;padding:0;background:none;color:inherit;text-decoration:none" href="${PRAC}#${p.id}"><span class="ttl">${esc(p.title)} <span class="note">· ${esc(p.tier)} · ${esc(p.role)}</span></span></a><span class="chips">${chip}<button class="chip ${store.pcq[p.id]&&store.pcq[p.id].on?"pass":""}" data-pc="${p.id}" title="PC에서 풀 문제로 표시" aria-label="PC에서 풀기">💻</button><button class="chip" data-p="${p.id}" title="다른 곳에서 풀었을 때 직접 기록" aria-label="직접 기록">✎</button></span></div>
+  const st=pracStatus(p.id), t=today(), pc=store.pcq[p.id]&&store.pcq[p.id].on;
+  const state=st?`<span class="chip ${st.grade==="A"?"pass":st.grade==="C"?"fail":""}">${st.grade} · ${st.date.slice(5)}</span>${st.due?`<span class="chip ${st.due<=t?"fail":""}">다음 ${st.due.slice(5)}</span>`:`<span class="chip pass">졸업</span>`}`:`<span class="chip">아직 안 풂</span>`;
+  return `<div class="pitem"><a class="popen" href="${PRAC}#${p.id}"><span class="ptitle">${esc(p.title)}</span><span class="pmeta">${esc(p.tier)} · ${esc(p.role)}${p.target?` · 목표 ${esc(p.target)}`:""}</span><span class="pgo">풀기 ›</span></a>
+  <div class="pact">${state}<span class="sp"></span><button class="pbtn ${pc?"on":""}" data-pc="${p.id}" aria-pressed="${pc?"true":"false"}">${pc?"✓ PC 목록에 있음":"PC에서 풀기"}</button><button class="pbtn" data-p="${p.id}">직접 기록</button></div>
   ${openP===p.id?`<div class="pform"><input type="number" id="pmin" min="1" max="300" placeholder="분" aria-label="걸린 분"><button data-g="A" class="g-ok">A 힌트 없이</button><button data-g="B">B 힌트</button><button data-g="C">C 해설</button></div>`:""}</div>`;
 }
 /* ---------- 설계 드릴 (design/drills): 45분을 5·5·5·10·15·5분으로 나눠요 ---------- */
@@ -1015,15 +1026,15 @@ function bindPrac(){
 let noteQ="";
 /* ---------- 요약 서재: 부(선반) → 장(책등) → 회차 카드. 카드를 열면 먼저 떠올리고, 그다음 내 요약을 봐요 ----------
    근거: docs/research/archive-ux.md (스스로 쓴 요약이 효과의 대부분, 다시 읽기만 하면 약함 → 떠올리기 먼저) */
-let archCh=null, archOpen=null, archShown={};
+let archCh=null, archOpen=null, archRun=null; // archRun: 감정 진행 {i, shown, scores, phase:"q"|"w"}
 const archId=(ch,step)=>ch+"|"+step;
 function archNotes(ch,step){ return store.log.filter(x=>x.note&&x.ch===ch&&x.step===step); }
 function archChapters(){ const m={}; for(const x of store.log) if(x.note&&x.ch){ (m[x.ch]=m[x.ch]||new Set()).add(x.step); } return m; }
 function archDue(){ const t=today(); return Object.entries(store.arch).filter(([id,v])=>v&&v.due&&v.due<=t).map(([id])=>id); }
 function archShelves(){ // 서재 탭 맨 위: 부(선반)마다 장 원석, 누르면 그 장의 감정서
   const m=archChapters(), scp=scopeParts(), path=pathChapters(), due=archDue().length, n=Object.values(m).reduce((a,x)=>a+x.size,0);
-  return `<section class="bench" style="padding-bottom:0"><p class="eng" style="margin:0">아틀리에</p><h2 class="t" style="color:var(--text);font-size:28px;line-height:34px;font-weight:800;margin:0">감정서 ${n}장</h2><p class="note" style="margin:0">변 하나가 회차 하나, 칸 하나가 블록 하나예요. 장을 누르면 회차별 한 줄 요약이 숨겨진 채 나와요.</p></section>
-  ${due?`<div class="act"><button class="primary" id="arch-due">오늘 떠올릴 감정서 ${due}장</button></div>`:""}
+  return `<section class="bench" style="padding-bottom:0"><p class="eng" style="margin:0">아틀리에</p><h2 class="t" style="color:var(--text);font-size:28px;line-height:34px;font-weight:800;margin:0">감정서 ${n}장</h2><p class="note" style="margin:0">변 하나가 회차 하나, 칸 하나가 블록 하나예요. 장을 누르면 회차마다 내 요약이 있고, 질문으로 꺼내 본 뒤 요약을 다듬는 감정을 할 수 있어요.</p></section>
+  ${due?`<div class="act"><button class="primary" id="arch-due">오늘 감정할 회차 ${due}개</button></div>`:""}
   <div class="loupe"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><input type="search" id="nq" placeholder="요약에서 찾기" value="${esc(noteQ)}" aria-label="요약에서 찾기"></div>
   ${noteQ?`<div class="card notes">${store.log.filter(x=>x.note&&(x.note+" "+x.ch).includes(noteQ)).slice(-30).reverse().map(x=>`<div><span class="note">${x.date.slice(5)} · ${esc(x.ch||"")}장 ${esc(x.step||"")}</span><br>${esc(x.note)}</div>`).join("")||`<p class="note">찾는 요약이 없어요.</p>`}</div>`:""}
   ${PARTS.map(([nm,test],pi)=>{ if(scp&&!scp.includes(pi)) return ""; const chs=DATA.filter(c=>test(numOfS(c.num))&&(c.sessions||[]).length); if(!chs.some(c=>m[c.num]||path.includes(c.num))) return "";
@@ -1033,24 +1044,36 @@ function archShelves(){ // 서재 탭 맨 위: 부(선반)마다 장 원석, 누
 function archCard(){
   const m=archChapters(), nCh=Object.keys(m).length, nCards=Object.values(m).reduce((a,s)=>a+s.size,0), due=archDue().length;
   return `<div class="card"><div class="meta"><span style="color:var(--text);font-weight:800;font-size:18px">아틀리에</span><span>${nCh}장 · 카드 ${nCards}장</span></div>
-  <p class="note">타이머에서 쓴 한 줄 요약이 부 → 장 → 회차 순으로 꽂혀 있어요. 카드를 열면 내 요약을 먼저 떠올린 뒤 확인해요. 장 전체를 다시 읽는 대신 반쯤 요약으로 빠르게 훑을 때 써요.</p>
-  ${due?`<div class="strip"><span>떠올릴 카드 ${due}장</span><span>오늘</span></div>`:""}
+  <p class="note">타이머에서 쓴 한 줄 요약이 부 → 장 → 회차 순으로 꽂혀 있어요. 회차마다 질문에 먼저 답해 본 뒤, 빠진 걸 넣어 내 요약을 다시 써요. 장 전체를 다시 읽지 않고 빠르게 훑을 때도 써요.</p>
+  ${due?`<div class="strip"><span>감정할 회차 ${due}개</span><span>오늘</span></div>`:""}
   <div class="bar"><button class="primary" id="arch-open">아틀리에 열기</button></div></div>`;
 }
 function archHtml(){
   const m=archChapters(), path=pathChapters();
   if(archCh){ const c=chapterOf(archCh), ss=(c.sessions||[]);
     return `<div class="bar"><button id="arch-back">← 아틀리에</button></div><section class="bench" style="flex-direction:row;justify-content:flex-start;text-align:left;gap:14px">${polyGem(c.num,84)}<div><p class="eng" style="margin:0 0 2px">${esc(c.num)}장 · 감정서</p><h2 class="t" style="color:var(--text);font-size:20px;margin:0;letter-spacing:-.2px">${esc(c.title.replace(/^\\d+b?\\.\\s*/,"").split(/[:：]/)[0])}</h2><p class="note" style="margin:0">${ss.length}회차 · 요약 ${ss.filter(se=>archNotes(c.num,se.n+"회차").length).length}장</p></div></section><div class="hair"></div><div style="display:flex;flex-direction:column;gap:10px">
-    ${ss.map(se=>{ const st=se.n+"회차", ns=archNotes(c.num,st), id=archId(c.num,st), v=store.arch[id], open=archOpen===id;
+    ${ss.map(se=>{ const st=se.n+"회차", ns=archNotes(c.num,st), id=archId(c.num,st), v=store.arch[id], open=archOpen===id&&archRun;
       if(!ns.length) return `<div class="tag empty"><p class="note" style="margin:0">${st} · ${esc(se.steps.join(", ").slice(0,40))}</p><p class="note" style="margin:0">아직 요약이 없어요. 이 회차를 읽으면 여기에 꽂혀요.</p></div>`;
-      const last=ns[ns.length-1];
-      return `<div class="tag"><div class="meta"><span style="color:var(--text);font-weight:700">${gem(!v?"new":v.box>=4?"done":"on",18)} ${st} · ${esc(se.steps.join(", ").slice(0,30))}</span><span>${v&&v.due?"다음 "+v.due.slice(5):""}</span></div>
-        ${open?(archShown[id]?`<div class="ans" style="white-space:normal">${ns.map(x=>`<div><span class="note">${x.date.slice(5)}${x.upgrade?" · 고쳐 씀":""}</span><br>${esc(x.note)}</div>`).join("")}</div>
-          <div class="grade"><button class="g-ok" data-ag="1">떠올림</button><button class="g-half" data-ag="0.5">반쯤</button><button class="g-no" data-ag="0">못 함</button></div>
-          <label class="note" for="arch-up">더 나은 한 줄로 고쳐 쓰기 (예전 것도 남아요)</label><div class="bar"><input id="arch-up" placeholder="${esc(last.note.slice(0,40))}"><button id="arch-save">저장</button></div>
-          <div class="bar">${nlink(c.num,se.steps[0],"노션에서 이 회차 보기")}${(se.q||[]).length?`<button id="arch-quiz">이 회차 30초 체크 ${se.q.length}개</button>`:""}</div>`
-          :`<p class="note">이 회차에서 무엇을 배웠는지 먼저 떠올려요(소리 내어 또는 머릿속으로).</p><div class="bar"><button class="primary" id="arch-show">내 요약 보기</button></div>`)
-        :`<div class="veil"></div><div class="veil" style="width:58%"></div><div class="bar"><button data-arch="${id}">떠올려 보기</button></div>`}</div>`; }).join("")}</div>`;
+      const last=ns[ns.length-1], qs=se.q||[], t=today();
+      const due=v&&v.due?(v.due<=t?`<span style="color:var(--gold)">오늘 감정</span>`:"다음 감정 "+v.due.slice(5)):"아직 감정 전";
+      const vers=x=>`<div><span class="note">${x.date.slice(5)}${x.upgrade?" · 다듬음":""}</span><br>${esc(x.note)}</div>`, ups=ns.filter(x=>x.upgrade), blk=ns.filter(x=>!x.upgrade);
+      const sumBox=ups.length?`<div class="ans" style="white-space:normal;padding:12px 14px"><span class="lbl">다듬은 요약</span>${esc(ups[ups.length-1].note)}</div><details><summary class="note">블록 요약 ${blk.length}개${ups.length>1?` · 이전 다듬기 ${ups.length-1}개`:""}</summary><div class="notes">${[...blk,...ups.slice(0,-1)].map(vers).join("")}</div></details>`
+        :`<div class="ans" style="white-space:normal;padding:12px 14px"><span class="lbl">블록 요약 ${blk.length}개</span>${blk.map(vers).join("")}</div>`;
+      const head=`<div class="meta"><span style="color:var(--text);font-weight:700">${gem(!v?"new":v.box>=4?"done":"on",18)} ${st} · ${esc(se.steps.join(", ").slice(0,30))}</span><span>${due}</span></div>`;
+      if(!open) return `<div class="tag">${head}${sumBox}
+        <div class="bar"><button data-arch="${id}">감정하기 · ${qs.length?`질문 ${qs.length}개`:"설명하기"}</button>${nlink(c.num,se.steps[0],"노션에서 보기")}</div></div>`;
+      const r=archRun, step=`<p class="eng" style="margin:0">${r.phase==="q"?"1 / 2 · 꺼내기":"2 / 2 · 다듬기"}</p>`;
+      if(r.phase==="q"&&qs.length){ const it=c.quick[qs[r.i]];
+        return `<div class="tag">${head}${step}<p class="note" style="margin:0">질문 ${r.i+1} / ${qs.length} · 노트를 보지 않고 소리 내어 답한 뒤 답을 열어 비교해요.</p><p class="q" style="margin:0">${md(it.q)}</p>
+          ${r.shown?`<div class="ans"><span class="lbl">답</span>${md(it.a)}</div><div class="grade"><button class="g-ok" data-ag="1">맞음</button><button class="g-half" data-ag="0.5">반쯤</button><button class="g-no" data-ag="0">틀림</button></div>`
+          :`<div class="bar"><button class="primary" id="arch-show">답 보기</button><button id="arch-stop">그만</button></div>`}</div>`; }
+      if(r.phase==="q") return `<div class="tag">${head}${step}<p class="note" style="margin:0">이 회차에는 질문이 없어서 설명으로 점검해요. 아래 요약을 보고 <b>왜 그런지</b>, <b>이게 없으면 무엇이 깨지는지</b>를 소리 내어 설명해 보세요. 막힌 곳은 노션에서 그 부분만 다시 읽어요.</p>
+          ${sumBox}
+          <div class="grade"><button class="g-ok" data-ag="1">설명됨</button><button class="g-half" data-ag="0.5">반쯤</button><button class="g-no" data-ag="0">막힘</button></div>${nlink(c.num,se.steps[0],"노션에서 이 회차 보기")}</div>`;
+      return `<div class="tag">${head}${step}<p class="note" style="margin:0">방금 꺼낸 답과 비교해 빠졌거나 틀린 걸 넣어 이 회차 전체를 한 줄로 다시 써요. 끝에 "왜냐하면…"을 붙이면 더 단단해져요. 예전 요약도 남아요.</p>
+        ${sumBox}
+        <textarea id="arch-up" style="min-height:64px" placeholder="더 나은 한 줄"></textarea>
+        <div class="bar"><button class="primary" id="arch-save">저장하고 마치기</button><button id="arch-keep">그대로 두고 마치기</button></div>${nlink(c.num,se.steps[0],"노션에서 이 회차 보기")}</div>`; }).join("")}</div>`;
   }
   const scp=scopeParts();
   return `<div class="bar"><button id="arch-close">← 기록</button></div>
@@ -1065,15 +1088,21 @@ let archView=false;
 function bindArch(){
   const $=id=>document.getElementById(id);
   if($("arch-close")) $("arch-close").onclick=()=>{archView=false; home(); window.scrollTo(0,0);};
-  if($("arch-back")) $("arch-back").onclick=()=>{archCh=null; archOpen=null; archView=false; home(); window.scrollTo(0,0);};
+  if($("arch-back")) $("arch-back").onclick=()=>{archCh=null; archOpen=null; archRun=null; archView=false; home(); window.scrollTo(0,0);};
   app.querySelectorAll("[data-arch-ch]").forEach(b=>b.onclick=()=>{archCh=b.dataset.archCh; home(); window.scrollTo(0,0);});
-  app.querySelectorAll("[data-arch]").forEach(b=>b.onclick=()=>{archOpen=b.dataset.arch; archShown={}; const y=window.scrollY; home(); window.scrollTo(0,y);});
-  if($("arch-show")) $("arch-show").onclick=()=>{archShown[archOpen]=true; const y=window.scrollY; home(); window.scrollTo(0,y);};
-  app.querySelectorAll("[data-ag]").forEach(b=>b.onclick=()=>{ const s=+b.dataset.ag, cur=store.arch[archOpen];
-    if(s===0){ const [ch,step]=archOpen.split("|"), c=chapterOf(ch), se=c&&(c.sessions||[]).find(x=>x.n+"회차"===step); for(const i of (se&&se.q)||[]){ const id=qid(c.num,c.quick[i].q), v=store.srs[id]; if(v&&v.due>today()) store.srs[id]={...v,due:today(),t:now()}; } }
-    let box=cur?cur.box:1; box=s===1?Math.min(cur?box+1:2,5):s===0.5?Math.max(1,box):1; store.arch[archOpen]={box,due:addDays(today(),GAP[box]),t:now()}; save(); archOpen=null; const y=window.scrollY; home(); window.scrollTo(0,y); });
-  if($("arch-save")) $("arch-save").onclick=()=>{ const v=$("arch-up").value.trim(); if(!v) return; const [ch,step]=archOpen.split("|"); store.log.push({ts:now(),date:today(),ch,step,note:v,upgrade:true,nb:1}); save(); const y=window.scrollY; home(); window.scrollTo(0,y); };
-  if($("arch-quiz")) $("arch-quiz").onclick=()=>{ const [ch,step]=archOpen.split("|"), c=chapterOf(ch), se=(c.sessions||[]).find(x=>x.n+"회차"===step); const items=(se.q||[]).map(i=>({...c.quick[i],from:c.num})); run={kind:"mix",title:`${ch}장 ${step} 30초 체크`,items,i:0,scores:[],shown:false}; ask(); };
+  const keep=()=>{const y=window.scrollY; home(); window.scrollTo(0,y);};
+  const archSe=()=>{ const [ch,step]=archOpen.split("|"), c=chapterOf(ch); return {c,se:c&&(c.sessions||[]).find(x=>x.n+"회차"===step)}; };
+  const archEnd=()=>{ const sc=archRun.scores, avg=sc.length?sc.reduce((a,b)=>a+b,0)/sc.length:0.5, s=avg>=0.9?1:avg>=0.5?0.5:0, cur=store.arch[archOpen];
+    let box=cur?cur.box:1; box=s===1?Math.min(cur?box+1:2,5):s===0.5?Math.max(1,box):1; store.arch[archOpen]={box,due:addDays(today(),GAP[box]),t:now()}; save(); archOpen=null; archRun=null; keep(); };
+  app.querySelectorAll("[data-arch]").forEach(b=>b.onclick=()=>{archOpen=b.dataset.arch; archRun={i:0,shown:false,scores:[],phase:"q"}; keep();});
+  if($("arch-show")) $("arch-show").onclick=()=>{archRun.shown=true; keep();};
+  if($("arch-stop")) $("arch-stop").onclick=()=>{archOpen=null; archRun=null; keep();};
+  app.querySelectorAll("[data-ag]").forEach(b=>b.onclick=()=>{ const s=+b.dataset.ag, {c,se}=archSe(), qs=(se&&se.q)||[];
+    archRun.scores.push(s);
+    if(qs.length){ srsUpdate({from:c.num,q:c.quick[qs[archRun.i]].q},s); save(); archRun.i++; archRun.shown=false; if(archRun.i<qs.length) return keep(); }
+    archRun.phase="w"; keep(); });
+  if($("arch-save")) $("arch-save").onclick=()=>{ const v=$("arch-up").value.trim(); if(v){ const [ch,step]=archOpen.split("|"); store.log.push({ts:now(),date:today(),ch,step,note:v,upgrade:true,nb:1}); } archEnd(); };
+  if($("arch-keep")) $("arch-keep").onclick=archEnd;
   if($("nq")) $("nq").oninput=e=>{noteQ=e.target.value;const p=e.target.selectionStart;home();const n=$("nq");n.focus();n.setSelectionRange(p,p)};
 }
 function statsHtml(){
@@ -1110,7 +1139,7 @@ function bindStats(){
   if($("arch-open")) $("arch-open").onclick=()=>{archView=true; archCh=null; home(); window.scrollTo(0,0);};
   app.querySelectorAll("[data-arch-ch]").forEach(b=>b.onclick=()=>{archView=true; archCh=b.dataset.archCh; home(); window.scrollTo(0,0);});
   if($("nq")) $("nq").oninput=e=>{noteQ=e.target.value;const p=e.target.selectionStart;home();const n=$("nq");n.focus();n.setSelectionRange(p,p)};
-  if($("arch-due")) $("arch-due").onclick=()=>{ const id=archDue()[0]; if(!id) return; archView=true; archCh=id.split("|")[0]; archOpen=id; archShown={}; home(); };
+  if($("arch-due")) $("arch-due").onclick=()=>{ const id=archDue()[0]; if(!id) return; archView=true; archCh=id.split("|")[0]; archOpen=id; archRun={i:0,shown:false,scores:[],phase:"q"}; home(); };
   const setScope=v=>{store.settings=Object.assign({},store.settings,{scope:v,t:now()}); save(); home();};
   app.querySelectorAll("[data-scope]").forEach(cb=>cb.onchange=()=>setScope([...app.querySelectorAll("[data-scope]:checked")].map(x=>+x.dataset.scope)));
   if($("scope-all")) $("scope-all").onclick=()=>setScope(null);
