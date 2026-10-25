@@ -524,7 +524,7 @@ function guideHtml(){
     ${row("바쁜 날","그래도 2회차가 최소예요. 블록 사이 쉬는 시간을 지키면 생각보다 덜 지쳐요.")}
     <p class="note">하루 새로 읽기는 4블록까지. 그 뒤로는 실전이나 복습이 더 남아요.</p></div>
   <div class="card"><p class="q">한 주</p>
-    ${row("월요일","지난주 결과를 보고 이번 주 회차 목표(범위)를 정해요. 못 채운 회차는 얹지 않고, 끝나는 날짜만 밀려요.")}
+    ${row("월요일","지난주 결과를 보고 이번 주 회차 목표(범위)를 정해요. 못 끝낸 장은 버리지 않고 이번 주 계획 앞으로 넘어와요(한 주 장 3개까지). 대신 끝나는 날짜가 밀려요.")}
     ${row("평일","회차 + 매일 복습. 오늘 탭의 세 줄(회차·복습·실전)이 꿀빛이 되면 그 주 몫을 한 거예요.")}
     ${row("토요일","정한 시각에 <b>주간 테스트</b> 20문항(이번 주 장 70% + 예전 약한 문항 30%). 80점은 목표일 뿐 잠금이 아니에요. 오후엔 실전·모의고사·프로젝트.")}
     ${row("일요일","주간 테스트에서 틀린 문항 <b>다시 익히기</b>(맞을 때까지). 요약 서재 카드 몇 장 떠올리기. 반나절은 비워요.")}</div>
@@ -821,7 +821,7 @@ function runTick(){
 const MAIN=new Set(APP.main);
 function chapterOf(n){return DATA.find(c=>c.num===n)}
 function nextSession(){ // 이어서 할 회차: 마지막으로 공부한 장 → 본 경로 순서
-  const path=pathChapters(); const order=[...(store.lastCh&&path.includes(store.lastCh)?[store.lastCh]:[]),...path];
+  const path=pathChapters(); const wp=weekPlan(weekStart()); const order=[...(store.lastCh&&path.includes(store.lastCh)?[store.lastCh]:[]),...(wp?wp.chs:[]),...path];
   for(const n of order){const c=chapterOf(n); if(!c||!(c.sessions||[]).length) continue; if((store.attempts[n]||[]).some(x=>x.pass)) continue;
     const done=store.sess[n]||[]; const nx=c.sessions.find(x=>!done.includes(x.n)); if(nx) return {c,nx,done:done.length,total:c.sessions.length};}
   return null;
@@ -836,6 +836,24 @@ function pracDue(){const t=today();return APP.problems.filter(p=>{const s=pracSt
 function activeDays(){const d=new Set();for(const e of store.log)d.add(e.date);for(const a of Object.values(store.attempts))for(const x of a)d.add(x.date);for(const a of Object.values(store.prac))for(const x of a)d.add(x.date);return d}
 function streak(){const d=activeDays();let n=0,t=today();if(!d.has(t))t=addDays(t,-1);while(d.has(t)){n++;t=addDays(t,-1)}return n}
 function weekNo(){const st=store.settings&&store.settings.start;if(!st)return null;const ms=new Date(today()+"T00:00:00")-new Date(st+"T00:00:00");return Math.floor(ms/864e5/7)+1}
+/* 이월 (2026-10-25, Danny): 지난 주 계획에서 못 끝낸 장은 버리지 않고 이번 주 계획 앞에 넣어요. 한 주는 장 3개까지(≈15회차, 하루 2회차),
+   거기 못 들어간 이번 주 장은 다음 주로 넘어가서 계획 전체가 밀려요. 이번 주에 끝낸 장은 목록에 남겨서 주 중간에 장이 바뀌지 않아요 */
+const WEEK_CH=3, PLAN_RE=/(^|[\s,])(\d{2}b?)(?=\s)/g;
+const planChs=i=>{const r=APP.plan[i]; return r?[r[0],r[1]].flatMap(t=>[...t.matchAll(PLAN_RE)].map(m=>m[2])).filter(n=>chapterOf(n)):[];};
+function chDone(n){ if((store.attempts[n]||[]).some(x=>x.pass)) return true; const c=chapterOf(n), s=(c&&c.sessions)||[], d=store.sess[n]||[]; return s.length>0&&s.every(x=>d.includes(x.n)); }
+function weekPlan(ws){ // {chs: 이번 주 장, carried: 그중 지난 주들에서 넘어온 장, row: 달력상 이번 주 계획 행}
+  const wk=weekNo(); if(scopeParts()||!wk||wk<1||!APP.plan.length) return null;
+  const cur=Math.min(wk,APP.plan.length), row=wk<=APP.plan.length?APP.plan[wk-1]:null, mine=new Set(row?planChs(wk-1):[]);
+  const doneNow=n=>store.steps.some(x=>x.ch===n&&x.date>=ws)||(store.attempts[n]||[]).some(x=>x.pass&&x.date>=ws);
+  const all=[...new Set([...Array(cur)].flatMap((_,i)=>planChs(i)))].filter(n=>!chDone(n)||doneNow(n));
+  const chs=all.slice(0,Math.max(WEEK_CH,mine.size));
+  return {chs,carried:chs.filter(n=>!mine.has(n)),row};
+}
+function planHtml(wp){ // 이번 주 장: 넘어온 장이 먼저, 장마다 끝낸 회차
+  const li=n=>{const c=chapterOf(n), t=((c&&c.sessions)||[]).length, d=(store.sess[n]||[]).length, ok=chDone(n);
+    return `<span style="white-space:nowrap">${wp.carried.includes(n)?"넘어온 장":"이번 주"}</span><span style="color:${ok?"var(--honey-ink)":"var(--text)"}">${esc(n)}장 ${esc(c.title.replace(/^\d+b?\.\s*/,"").split(/[:：]/)[0].slice(0,16))} · ${ok?"끝":`${d}/${t}회차`}</span>`;};
+  return `<div class="kv" style="grid-template-columns:auto 1fr;margin-top:4px">${wp.chs.map(li).join("")}</div>`+(wp.carried.length?`<p class="note">지난 주에 못 끝낸 장 ${wp.carried.length}개를 먼저 넣었어요. 한 주는 장 ${WEEK_CH}개까지라, 이번 주 계획에서 빠진 장은 다음 주로 넘어가요.</p>`:"");
+}
 const sessToday=()=>store.steps.filter(x=>x.date===today()).length;
 function weekLines(ws,wSess,due,tBlocks){
   const [lo,hi]=wkRange(ws), t=lastTest(ws), pt=pracTarget(), pw=pracThisWeek(ws);
@@ -846,7 +864,7 @@ function weekLines(ws,wSess,due,tBlocks){
 function mondayCard(ws){ // 새 주의 첫 화면: 지난주 결과와 이번 주 목표 정하기 (정하면 사라져요)
   if(store.wk[ws]) return ""; const lw=addDays(ws,-7); if(!activeWeek(lw)) return "";
   const s=sessIn(lw), [lo,hi]=wkRange(lw), g=defaultGoal(ws);
-  return `<div class="card"><p class="q">새 주예요. 지난주 회차 ${s} (목표 ${lo}~${hi})</p><p class="note">${s>=lo?"목표를 지켰어요.":"목표 아래였어요. 남은 회차는 다음 주에 얹지 않고 끝나는 날짜만 밀려요."} 이번 주 목표는 <b>${g}회차</b>예요 (최소 하루 ${DAY_MIN}회차 × 7일 = ${WEEK_MIN}).</p>
+  return `<div class="card"><p class="q">새 주예요. 지난주 회차 ${s} (목표 ${lo}~${hi})</p><p class="note">${s>=lo?"목표를 지켰어요.":"목표 아래였어요. 못 끝낸 장은 이번 주 계획 앞으로 넘어가고, 끝나는 날짜가 그만큼 밀려요."} 이번 주 목표는 <b>${g}회차</b>예요 (최소 하루 ${DAY_MIN}회차 × 7일 = ${WEEK_MIN}).</p>
     <div class="bar"><button class="primary" id="wk-keep">${g}회차로 시작</button><button id="wk-less">하나 줄이기</button><button id="wk-more">하나 늘리기</button></div></div>`;
 }
 /* 오늘 header scene (board v3 direction D): the study bench at this hour. Window shows sun by day, moon at night; lamp light is stronger at night. */
@@ -868,7 +886,7 @@ function sceneHtml(wk){
 function todayHtml(){
   const due=dueIds().length, nx=nextSession(), pd=pracDue(), ws=weekStart();
   const wBlocks=store.log.filter(x=>x.date>=ws).length, wSess=store.steps.filter(x=>x.date>=ws).length, tBlocks=store.log.filter(x=>x.date===today()).length;
-  const wk=weekNo(), row=!scopeParts()&&wk&&wk>=1&&wk<=12?APP.plan[wk-1]:null;
+  const wk=weekNo(), wp=weekPlan(ws), row=wp&&wp.row;
   const d=new Date(), dstr=`${d.getMonth()+1}월 ${d.getDate()}일 ${"일월화수목금토"[d.getDay()]}`;
   const qn=nx?((nx.nx.q||[]).length):0, pcN=(typeof pcList==="function")?pcList().length:0;
   const ctitle=nx?esc(nx.c.title.replace(/^\d+b?\.\s*/,"").split(/[:：]/)[0].slice(0,18)):"";
@@ -889,10 +907,10 @@ function todayHtml(){
     ${weekLines(ws,wSess,due,tBlocks)}
     <div class="meta"><span>회차 목표 ${wkRange(ws)[0]===wkRange(ws)[1]?wkRange(ws)[0]:wkRange(ws)[0]+"~"+wkRange(ws)[1]}${finishDate(ws)?` · 이 속도면 ${scopeParts()?"범위":"본 경로"} 끝 ${finishDate(ws).slice(2).replace(/-/g,".")}`:""}</span><span class="bar" style="gap:6px"><button id="wg-minus" class="round" aria-label="목표 줄이기">−</button><button id="wg-plus" class="round" aria-label="목표 늘리기">+</button></span></div>
     <div class="meta"><span>이번 주 ${wBlocks}블록</span><span>오늘 ${tBlocks}블록</span></div>
-    ${row?`<div class="kv"><span>알고리즘</span><span>${esc(row[0])}</span><span>CS</span><span>${esc(row[1])}</span></div><div class="strip"><span>토요일 오후</span><span>${esc(row[2])}</span></div>`:""}
+    ${wp&&wp.chs.length?planHtml(wp):""}${row?`<div class="strip"><span>토요일 오후</span><span>${esc(row[2])}</span></div>`:""}
     ${weekCardExtra(ws)}
     <details><summary class="note">테스트 시각 바꾸기</summary><div class="bar" style="margin-top:8px"><select id="wt-day" aria-label="요일"><option value="6" ${testCfg().day===6?"selected":""}>토요일</option><option value="0" ${testCfg().day===0?"selected":""}>일요일</option></select><input type="time" id="wt-time" value="${esc(testCfg().time)}" aria-label="시각"></div><p class="note">"토 10:00이 되면 책상에서 주간 테스트를 연다"처럼 정해 두면 실제로 하는 비율이 크게 올라가요.</p></details>
-    <p class="note">못 채운 회차는 다음 주에 얹지 않아요. 대신 끝나는 날짜가 밀려요. 회차를 못 채웠어도 주간 테스트는 봐요.</p></div>
+    <p class="note">못 끝낸 장은 다음 주 계획 앞으로 넘어가요. 한 주는 장 3개까지라 끝나는 날짜가 밀려요. 회차를 못 채웠어도 주간 테스트는 봐요.</p></div>
   <div class="card">${wk!==null&&wk<1?`<p class="q">1기는 ${esc(store.settings.start.slice(5))}에 시작해요</p><p class="note">1주차: ${esc(APP.plan[0][0])} · ${esc(APP.plan[0][1])}</p>`:wk?`<p class="q">${wk<=12?`1기 ${wk}주차`:wk<=24?`2기 ${wk}주차`:`${wk}주차`}</p>${wk>12?`<p class="note">2기: 49 → 51b → 52 → 53 → 54 → 57 → 65 → 58b, 그리고 P1·P2 프로젝트예요.</p>`:""}`:`<p class="q">시작일을 정하면 이번 주 계획을 보여 줘요</p>`}
     <div class="bar"><label class="note" for="start">1기 1주차 월요일</label><input type="date" id="start" value="${esc((store.settings&&store.settings.start)||"")}"></div></div>`;
 }
@@ -1174,7 +1192,7 @@ function startMix(){
    틀린 문항: 일요일에 맞을 때까지 다시 익히고, 이후 주간 테스트에서 세 번 맞힐 때까지 다시 나와요. */
 const WT_N=20, WT_MIN=15, WT_BAR=0.8, WT_NEW=0.7;
 /* 하루 최소 2회차 (2026-10-21, Danny): 장 하나 ≈ 5회차, 주 3장이면 하루 2회차로 이틀에 한 장. 최소가 낮으면 거기에 머무르게 돼서 줄이는 방향의 자동 조정은 없앴어요.
-   주간 목표 = max(최소 14, 지난 4주 중앙값), 기본 15. 이 규칙 전 주(RULE_FROM 이전)는 예전 목표로 판정해서 연속 기록을 지켜요. 못 채운 회차는 다음 주에 얹지 않고 끝나는 날짜가 밀려요 */
+   주간 목표 = max(최소 14, 지난 4주 중앙값), 기본 15. 이 규칙 전 주(RULE_FROM 이전)는 예전 목표로 판정해서 연속 기록을 지켜요. 못 끝낸 장은 다음 주 계획 앞으로 넘어가요(weekPlan) */
 const DAY_MIN=2, WEEK_MIN=DAY_MIN*7, WEEK_DEF=15, WEEK_MAX=21, RULE_FROM="2026-10-19";
 const sessIn=ws=>store.steps.filter(x=>x.date>=ws&&x.date<addDays(ws,7)).length;
 const activeWeek=ws=>store.log.some(x=>x.date>=ws&&x.date<addDays(ws,7));
@@ -1193,13 +1211,12 @@ const pracTarget=()=>{ if(scopeParts()) return 2; const w=weekNo(); return !w||w
 const pracThisWeek=ws=>Object.values(store.prac).reduce((a,arr)=>a+arr.filter(x=>x.date>=ws).length,0);
 const testCfg=()=>Object.assign({day:6,time:"10:00"},(store.settings&&store.settings.test)||{});
 function testAtOf(ws){ const c=testCfg(), d=addDays(ws,c.day===0?6:c.day-1); return new Date(d+"T"+c.time+":00"); }
-function weekChapters(ws){ // 이번 주에 손댄 장 + 12주 계획의 이번 주 장
+function weekChapters(ws){ // 이번 주에 손댄 장 + 이번 주 계획의 장 (넘어온 장 포함)
   const set=new Set();
   for(const x of store.log) if(x.date>=ws&&x.ch) set.add(x.ch);
   for(const x of store.steps) if(x.date>=ws&&x.ch) set.add(x.ch);
   for(const [n,a] of Object.entries(store.attempts)) if(a.some(x=>x.date>=ws)) set.add(n);
-  const wkn=weekNo(), row=!scopeParts()&&wkn&&wkn>=1&&wkn<=12?APP.plan[wkn-1]:null;
-  if(row) for(const t of [row[0],row[1]]) for(const m of t.matchAll(/(^|[\s,])(\d{2}b?)(?=\s)/g)) if(chapterOf(m[2])) set.add(m[2]);
+  const wp=weekPlan(ws); if(wp) for(const n of wp.chs) set.add(n);
   return [...set].filter(n=>chapterOf(n));
 }
 function weekTestItems(ws){
