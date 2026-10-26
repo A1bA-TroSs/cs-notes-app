@@ -257,6 +257,9 @@ button.primary{min-height:52px;border-radius:16px;font-weight:800;font-size:16px
 .stones::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:2px;background:var(--border);box-shadow:0 1px 0 var(--goldA)}
 .stonebtn{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:auto;padding:2px;background:transparent;font-size:11px;font-weight:700;color:var(--text-2)}
 .stonebtn.empty{opacity:.55}
+.tree{margin:4px -4px 8px}.tree svg{display:block;max-width:440px;margin:0 auto;overflow:visible}.tgem{cursor:pointer;transform-box:view-box;animation:sway 7s ease-in-out infinite alternate}.tgem.dim{opacity:.55}.tgem:focus-visible{outline:none}.tgem:focus-visible svg{filter:drop-shadow(0 0 3px var(--gold))}
+.tlab{font:700 11px/1 "SUIT Variable",sans-serif;letter-spacing:.08em;fill:var(--text-2)}
+@keyframes sway{from{transform:rotate(-2.2deg)}to{transform:rotate(2.2deg)}}
 .gem-done{filter:drop-shadow(0 2px 8px rgba(255,214,120,.28))}
 .gem-done .spark{opacity:0;transform-box:fill-box;transform-origin:center;animation:spark 3.6s ease-in-out infinite}
 @keyframes spark{0%,70%,100%{opacity:0;transform:scale(.4)}80%{opacity:.95;transform:scale(1)}90%{opacity:.2;transform:scale(.7)}}
@@ -302,6 +305,10 @@ const pathChapters=()=>scopeChapters()||APP.main;
 const scopeLabel=()=>{const sc=scopeParts(); return sc?sc.map(i=>PARTS[i][0].split(" · ")[0]).join(", "):"본 경로 "+APP.main.length+"장";};
 const APP = Object.assign({problems:[],projects:[],plan:[],main:[],drills:[],rubric:[],mocks:[]}, CART.app||{});
 if(!APP.main.length) APP.main=DATA.map(c=>c.num); // 기본 경로가 없으면 장 순서 그대로
+/* 하루 분량: 카트리지가 정해요(docs/CARTRIDGE.md). 기본은 CS 노트 규칙(하루 2회차, 주 15, 한 주 장 3개) */
+const PACE=Object.assign({day:2,week:15,weekMax:21,weekCh:3,min:15},CART.pace||{});
+/* 데일리 경로: 카트리지에 days가 있으면 "지금 할 것"이 그 순서(하루 한 칸)를 따라가요. [["101",1],["101",2],...] */
+const DAYS=(APP.days||[]).filter(([n,k])=>{const c=chapterOf(n); return c&&(c.sessions||[]).some(x=>x.n===k);});
 /* Iolite = 서재, 노트 = 카트리지. 지금은 노트 하나(CS 인터뷰 노트). 노트마다 기록 키와 GitHub 기록 파일을 따로 써요(docs/NOTEBOOKS.md). */
 /* 기록 키와 기록 파일은 카트리지가 정해요. CS 인터뷰 노트는 예전 그대로 csnotes-selfcheck-v1 · records.json */
 const NOTEBOOKS=[{id:CART.id,title:CART.title,sub:CART.sub||"",key:CART.key||("iolite-"+CART.id+"-v1"),records:CART.records||(CART.id+".records.json")}];
@@ -674,7 +681,7 @@ function polyCells(num){ const c=chapterOf(num); if(!c||!(c.sessions||[]).length
     if(!bx.length) return Array(k).fill(chapterDone(c)?"honey":passed?"violet":"water");
     const h=bx.filter(b=>b>=4).length/bx.length, v=bx.filter(b=>b>=2&&b<4).length/bx.length, nh=Math.round(k*h), nv=Math.min(k-nh,Math.round(k*(h+v))-nh);
     return Array.from({length:k},(_,j)=>j<nh?"honey":j<nh+nv?"violet":(passed?"violet":"water")); }); }
-function polyGem(num,size=40,label){ let sides=polyCells(num); if(sides.length===2) sides=sides.flatMap(x=>{ if(!x) return [null,null]; const h=Math.ceil(x.length/2); return [x.slice(0,h),x.length>1?x.slice(h):x]; }); const n=Math.max(3,sides.length), cx=size/2, R=size/2-1.5, r=R*.58, gw=size>90?2.4:size>60?1.8:1.1;
+function polyGem(num,size=40,label,hex){ let sides=polyCells(num); if(sides.length===2||(hex&&sides.length===3)) sides=sides.flatMap(x=>{ if(!x) return [null,null]; const h=Math.ceil(x.length/2); return [x.slice(0,h),x.length>1?x.slice(h):x]; }); const n=Math.max(3,sides.length), cx=size/2, R=size/2-1.5, r=R*.58, gw=size>90?2.4:size>60?1.8:1.1;
   const V=(rad,i)=>{const a=-Math.PI/2+(n%2?0:Math.PI/n)+2*Math.PI*i/n; return [cx+rad*Math.cos(a),cx+rad*Math.sin(a)];}, L=(p,q,t)=>[p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t], f=p=>p.map(v=>v.toFixed(1)).join(",");
   const all=sides.length&&sides.every(x=>x&&x.every(y=>y==="honey")); let g=""; const gid="pg"+(++polyGem.k);
   for(let i=0;i<n;i++){ const cells=sides[i]||null, k=cells?cells.length:1, o0=V(R,i),o1=V(R,i+1),i0=V(r,i),i1=V(r,i+1);
@@ -832,7 +839,9 @@ function runTick(){
 /* ---------- 오늘 ---------- */
 const MAIN=new Set(APP.main);
 function chapterOf(n){return DATA.find(c=>c.num===n)}
-function nextSession(){ // 이어서 할 회차: 마지막으로 공부한 장 → 본 경로 순서
+function nextSession(){ // 이어서 할 회차: 데일리 경로가 있으면 그 순서, 없으면 마지막으로 공부한 장 → 본 경로 순서
+  if(DAYS.length&&!scopeParts()){ for(let i=0;i<DAYS.length;i++){ const [n,k]=DAYS[i], c=chapterOf(n), done=store.sess[n]||[]; if(done.includes(k)||(store.attempts[n]||[]).some(x=>x.pass)) continue;
+    return {c,nx:c.sessions.find(x=>x.n===k),done:done.length,total:c.sessions.length,day:i+1,days:DAYS.length}; } return null; }
   const path=pathChapters(); const wp=weekPlan(weekStart()); const order=[...(store.lastCh&&path.includes(store.lastCh)?[store.lastCh]:[]),...(wp?wp.chs:[]),...path];
   for(const n of order){const c=chapterOf(n); if(!c||!(c.sessions||[]).length) continue; if((store.attempts[n]||[]).some(x=>x.pass)) continue;
     const done=store.sess[n]||[]; const nx=c.sessions.find(x=>!done.includes(x.n)); if(nx) return {c,nx,done:done.length,total:c.sessions.length};}
@@ -850,7 +859,7 @@ function streak(){const d=activeDays();let n=0,t=today();if(!d.has(t))t=addDays(
 function weekNo(){const st=store.settings&&store.settings.start;if(!st)return null;const ms=new Date(today()+"T00:00:00")-new Date(st+"T00:00:00");return Math.floor(ms/864e5/7)+1}
 /* 이월 (2026-10-25, Danny): 지난 주 계획에서 못 끝낸 장은 버리지 않고 이번 주 계획 앞에 넣어요. 한 주는 장 3개까지(≈15회차, 하루 2회차),
    거기 못 들어간 이번 주 장은 다음 주로 넘어가서 계획 전체가 밀려요. 이번 주에 끝낸 장은 목록에 남겨서 주 중간에 장이 바뀌지 않아요 */
-const WEEK_CH=3, PLAN_RE=/(^|[\s,])(\d{2}b?)(?=\s)/g;
+const WEEK_CH=PACE.weekCh, PLAN_RE=/(^|[\s,])(\d{2,3}b?)(?=\s)/g;
 const planChs=i=>{const r=APP.plan[i]; return r?[r[0],r[1]].flatMap(t=>[...t.matchAll(PLAN_RE)].map(m=>m[2])).filter(n=>chapterOf(n)):[];};
 function chDone(n){ if((store.attempts[n]||[]).some(x=>x.pass)) return true; const c=chapterOf(n), s=(c&&c.sessions)||[], d=store.sess[n]||[]; return s.length>0&&s.every(x=>d.includes(x.n)); }
 function weekPlan(ws){ // {chs: 이번 주 장, carried: 그중 지난 주들에서 넘어온 장, row: 달력상 이번 주 계획 행}
@@ -902,8 +911,8 @@ function todayHtml(){
   const d=new Date(), dstr=`${d.getMonth()+1}월 ${d.getDate()}일 ${"일월화수목금토"[d.getDay()]}`;
   const qn=nx?((nx.nx.q||[]).length):0, pcN=(typeof pcList==="function")?pcList().length:0;
   const ctitle=nx?esc(nx.c.title.replace(/^\d+b?\.\s*/,"").split(/[:：]/)[0].slice(0,18)):"";
-  return `${sceneHtml(wk)}<div class="dateline"><span class="note">하루 최소 2회차. 홀수 회차 뒤엔 잠깐 쉬고 이어 가요.</span></div>
-  ${nx?`<section class="hero"><svg class="tex" viewBox="0 0 350 196" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><filter id="hz" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.018" numOctaves="3" seed="11"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .36  0 0 0 0 .86  1.7 0 0 0 -.62"/></filter><filter id="hg" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.011 0.02" numOctaves="3" seed="4"/><feColorMatrix values="0 0 0 0 .86  0 0 0 0 .78  0 0 0 0 .56  1.9 0 0 0 -.8"/></filter><filter id="hn" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.6 0 0 0 -.62"/></filter><radialGradient id="hrg" cx="0.85" cy="0.95" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient><mask id="hm"><rect width="350" height="196" fill="url(#hrg)"/></mask><linearGradient id="hs" x1="0" y1="0" x2="1" y2="0.6"><stop offset="0.25" stop-color="#fff" stop-opacity="0"/><stop offset="0.42" stop-color="#fff" stop-opacity=".16"/><stop offset="0.58" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><rect width="350" height="196" filter="url(#hz)" opacity=".6"/><g mask="url(#hm)"><rect width="350" height="196" filter="url(#hg)" opacity=".55"/></g><rect width="350" height="196" filter="url(#hn)" opacity=".16"/><rect width="350" height="196" fill="url(#hs)"/><path d="M-10 60L120 -10M-10 140L200 -10M60 210L342 20M180 210L350 90M250 -10L350 70" stroke="#fff" stroke-opacity=".09" stroke-width="1" fill="none"/></svg><span class="eyebrow">지금 할 것</span><h2 class="t">이 장 ${nx.done}/${nx.total}회차</h2><p class="s">${nx.c.num}장 ${ctitle} · ${nx.nx.n}회차</p><span class="left">${nx.total}회차 중 ${nx.done}회차 끝 · 남은 ${nx.total-nx.done}회차, 약 ${(nx.total-nx.done)*15}분</span>
+  return `${sceneHtml(wk)}<div class="dateline"><span class="note">${DAY_MIN>1?`하루 최소 ${DAY_MIN}회차. 홀수 회차 뒤엔 잠깐 쉬고 이어 가요.`:"하루 한 레슨. 매일 이어 가는 게 분량보다 중요해요."}</span></div>
+  ${nx?`<section class="hero"><svg class="tex" viewBox="0 0 350 196" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><filter id="hz" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.018" numOctaves="3" seed="11"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .36  0 0 0 0 .86  1.7 0 0 0 -.62"/></filter><filter id="hg" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.011 0.02" numOctaves="3" seed="4"/><feColorMatrix values="0 0 0 0 .86  0 0 0 0 .78  0 0 0 0 .56  1.9 0 0 0 -.8"/></filter><filter id="hn" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.6 0 0 0 -.62"/></filter><radialGradient id="hrg" cx="0.85" cy="0.95" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient><mask id="hm"><rect width="350" height="196" fill="url(#hrg)"/></mask><linearGradient id="hs" x1="0" y1="0" x2="1" y2="0.6"><stop offset="0.25" stop-color="#fff" stop-opacity="0"/><stop offset="0.42" stop-color="#fff" stop-opacity=".16"/><stop offset="0.58" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><rect width="350" height="196" filter="url(#hz)" opacity=".6"/><g mask="url(#hm)"><rect width="350" height="196" filter="url(#hg)" opacity=".55"/></g><rect width="350" height="196" filter="url(#hn)" opacity=".16"/><rect width="350" height="196" fill="url(#hs)"/><path d="M-10 60L120 -10M-10 140L200 -10M60 210L342 20M180 210L350 90M250 -10L350 70" stroke="#fff" stroke-opacity=".09" stroke-width="1" fill="none"/></svg><span class="eyebrow">${nx.day?`오늘의 레슨 · ${nx.day}일째 / ${nx.days}`:"지금 할 것"}</span><h2 class="t">이 장 ${nx.done}/${nx.total}회차</h2><p class="s">${nx.c.num}장 ${ctitle} · ${nx.nx.n}회차</p><span class="left">${nx.total}회차 중 ${nx.done}회차 끝 · 남은 ${nx.total-nx.done}회차, 약 ${(nx.total-nx.done)*PACE.min}분</span>
     <span class="acts"><button id="go-sess" class="go">블록 준비</button>${notionUrl(nx.c.num,nx.nx.steps[0])?`<a class="go2" href="${notionUrl(nx.c.num,nx.nx.steps[0])}" target="_blank" rel="noopener">노션에서 ${esc(nx.nx.steps[0])} 열기</a>`:""}</span></section>
   ${sessToday()>=DAY_MIN?`<div class="strip"><span>오늘 분량 끝 (${sessToday()}회차)</span><span>더 하려면 실전 1문제나 복습으로</span></div>`:""}
   <p class="note" style="margin:0">${esc(nx.nx.steps.join(", ").slice(0,48))} · ${qn?`30초 체크 ${qn}개로 시작`:"읽기부터 시작"}</p>
@@ -1070,9 +1079,30 @@ function archShelves(){ // 서재 탭 맨 위: 부(선반)마다 장 원석, 누
   ${due?`<div class="act"><button class="primary" id="arch-due">오늘 감정할 회차 ${due}개</button></div>`:""}
   <div class="loupe"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><input type="search" id="nq" placeholder="요약에서 찾기" value="${esc(noteQ)}" aria-label="요약에서 찾기"></div>
   ${noteQ?`<div class="card notes">${store.log.filter(x=>x.note&&(x.note+" "+x.ch).includes(noteQ)).slice(-30).reverse().map(x=>`<div><span class="note">${x.date.slice(5)} · ${esc(x.ch||"")}장 ${esc(x.step||"")}</span><br>${esc(x.note)}</div>`).join("")||`<p class="note">찾는 요약이 없어요.</p>`}</div>`:""}
-  ${PARTS.map(([nm,test],pi)=>{ if(scp&&!scp.includes(pi)) return ""; const chs=DATA.filter(c=>test(numOfS(c.num))&&(c.sessions||[]).length); if(!chs.some(c=>m[c.num]||path.includes(c.num))) return "";
+  ${CART.atelier==="tree"&&!scp?gemTree(m):PARTS.map(([nm,test],pi)=>{ if(scp&&!scp.includes(pi)) return ""; const chs=DATA.filter(c=>test(numOfS(c.num))&&(c.sessions||[]).length); if(!chs.some(c=>m[c.num]||path.includes(c.num))) return "";
     return `<div><p class="eng">${esc(nm)}</p><div class="stones">${chs.map(c=>`<button class="stonebtn ${m[c.num]?"":"empty"}" data-arch-ch="${c.num}" aria-label="${c.num}장 감정서 ${m[c.num]?m[c.num].size:0}장">${polyGem(c.num,44)}${c.num}</button>`).join("")}</div></div>`; }).join("")}
   <div class="hair"></div><p class="eng">기록과 설정</p>`;
+}
+/* 보석 나무 (카트리지 atelier:"tree", 성경 원어 노트): 금실로 꼰 보석 진열 나무. 왼쪽 가지 = 첫째 부, 오른쪽 = 둘째 부.
+   아래 가지부터 장 4개씩 매달리고, 아직 안 쓴 장(parts[].total까지)은 작은 고리로 남아요. 보석은 다른 아틀리에와 같은 polyGem */
+function gemTree(m){
+  const P=(CART.parts||[]).slice(0,2), W=360, cx=W/2, G=34, per=4;
+  const slots=P.map(p=>Math.max(p.total||0,p.chapters.length)), tiers=Math.max(1,...slots.map(n=>Math.ceil(n/per))), gap=78, top=40, base=top+tiers*gap+64, H=base+36;
+  const wire="var(--goldA)", f=v=>v.toFixed(1); let br="", gems="", lab="";
+  // 줄기: 금실 세 가닥이 꼬여 올라가요
+  for(const d of [-5,0,5]) br+=`<path d="M${cx+d*1.6} ${base} C${cx+d*1.6} ${base-60}, ${cx-d} ${base-120}, ${cx+d*.4} ${top+tiers*gap*.5} S${cx-d*.3} ${top+12}, ${cx} ${top-6}" fill="none" stroke="${wire}" stroke-width="${d?1.1:1.6}"/>`;
+  br+=`<ellipse cx="${cx}" cy="${base+4}" rx="62" ry="7" fill="none" stroke="${wire}" stroke-width="1.2"/><ellipse cx="${cx}" cy="${base+4}" rx="34" ry="3.5" fill="var(--goldA)" fill-opacity=".25"/>`;
+  P.forEach((p,pi)=>{ const s=pi?1:-1;
+    for(let t=0;t<Math.ceil(slots[pi]/per);t++){ const y=base-84-t*gap, L=150-t*(60/Math.max(1,tiers-1||1)), x0=cx+s*4, x1=cx+s*L, ty=y-16-t*2;
+      br+=`<path d="M${f(x0)} ${f(y+10)} C${f(cx+s*L*.35)} ${f(y-2)}, ${f(cx+s*L*.7)} ${f(y-4)}, ${f(x1)} ${f(ty)}" fill="none" stroke="${wire}" stroke-width="1.3" stroke-linecap="round"/><path d="M${f(x1)} ${f(ty)} q${f(s*7)} -3 ${f(s*5)} -9 q-${f(s*2)} -4 -${f(s*5)} -1" fill="none" stroke="${wire}" stroke-width="1"/>`;
+      for(let j=0;j<per;j++){ const k=t*per+j; if(k>=slots[pi]) break;
+        const u=.3+j*.21, bx=(1-u)**3*x0+3*(1-u)**2*u*(cx+s*L*.35)+3*(1-u)*u*u*(cx+s*L*.7)+u**3*x1, by=(1-u)**3*(y+10)+3*(1-u)**2*u*(y-2)+3*(1-u)*u*u*(y-4)+u**3*ty;
+        const len=j%2?34:10, gy=by+len, num=p.chapters[k], c=num&&chapterOf(num);
+        if(!c){ gems+=`<line x1="${f(bx)}" y1="${f(by)}" x2="${f(bx)}" y2="${f(gy-3)}" stroke="${wire}" stroke-width=".6" stroke-opacity=".6"/><circle cx="${f(bx)}" cy="${f(gy)}" r="2.4" fill="none" stroke="${wire}" stroke-width=".8"/>`; continue; }
+        const g=polyGem(num,G,"",true).replace("<svg ",`<svg x="${f(bx-G/2)}" y="${f(gy)}" `);
+        gems+=`<g class="tgem${m[num]||(store.sess[num]||[]).length?"":" dim"}" style="transform-origin:${f(bx)}px ${f(by)}px;animation-delay:-${(k*1.7+pi*2.3)%6}s" data-arch-ch="${esc(num)}" role="button" tabindex="0" aria-label="${esc(num)}장 감정서"><line x1="${f(bx)}" y1="${f(by)}" x2="${f(bx)}" y2="${f(gy+2)}" stroke="var(--gold)" stroke-width=".7" stroke-opacity=".7"/>${g}</g>`; } }
+    lab+=`<text x="${cx+s*92}" y="${base+26}" text-anchor="middle" class="tlab">${esc(p.name)}</text>`; });
+  return `<div class="tree"><svg viewBox="0 0 ${W} ${H}" width="100%" role="group" aria-label="보석 나무">${br}${gems}${lab}</svg></div>`;
 }
 function archCard(){
   const m=archChapters(), nCh=Object.keys(m).length, nCards=Object.values(m).reduce((a,s)=>a+s.size,0), due=archDue().length;
@@ -1122,7 +1152,7 @@ function bindArch(){
   const $=id=>document.getElementById(id);
   if($("arch-close")) $("arch-close").onclick=()=>{archView=false; home(); window.scrollTo(0,0);};
   if($("arch-back")) $("arch-back").onclick=()=>{archCh=null; archOpen=null; archRun=null; archView=false; home(); window.scrollTo(0,0);};
-  app.querySelectorAll("[data-arch-ch]").forEach(b=>b.onclick=()=>{archCh=b.dataset.archCh; home(); window.scrollTo(0,0);});
+  app.querySelectorAll("[data-arch-ch]").forEach(b=>b.onclick=()=>{archCh=b.dataset.archCh; home(); window.scrollTo(0,0);}); app.querySelectorAll("g[data-arch-ch]").forEach(b=>b.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();b.onclick();}});
   const keep=()=>{const y=window.scrollY; home(); window.scrollTo(0,y);};
   const archSe=()=>{ const [ch,step]=archOpen.split("|"), c=chapterOf(ch); return {c,se:c&&(c.sessions||[]).find(x=>x.n+"회차"===step)}; };
   const archEnd=()=>{ const sc=archRun.scores, avg=sc.length?sc.reduce((a,b)=>a+b,0)/sc.length:0.5, s=avg>=0.9?1:avg>=0.5?0.5:0, cur=store.arch[archOpen];
@@ -1171,7 +1201,7 @@ function bindStats(){
   if(archView) return bindArch();
   const $=id=>document.getElementById(id);
   if($("arch-open")) $("arch-open").onclick=()=>{archView=true; archCh=null; home(); window.scrollTo(0,0);};
-  app.querySelectorAll("[data-arch-ch]").forEach(b=>b.onclick=()=>{archView=true; archCh=b.dataset.archCh; home(); window.scrollTo(0,0);});
+  app.querySelectorAll("[data-arch-ch]").forEach(b=>b.onclick=()=>{archView=true; archCh=b.dataset.archCh; home(); window.scrollTo(0,0);}); app.querySelectorAll("g[data-arch-ch]").forEach(b=>b.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();b.onclick();}});
   if($("nq")) $("nq").oninput=e=>{noteQ=e.target.value;const p=e.target.selectionStart;home();const n=$("nq");n.focus();n.setSelectionRange(p,p)};
   if($("arch-due")) $("arch-due").onclick=()=>{ const id=archDue()[0]; if(!id) return; archView=true; archCh=id.split("|")[0]; archOpen=id; archRun={i:0,shown:false,scores:[],phase:"q"}; home(); };
   const setScope=v=>{store.settings=Object.assign({},store.settings,{scope:v,t:now()}); save(); home();};
@@ -1205,7 +1235,7 @@ function startMix(){
 const WT_N=20, WT_MIN=15, WT_BAR=0.8, WT_NEW=0.7;
 /* 하루 최소 2회차 (2026-10-21, Danny): 장 하나 ≈ 5회차, 주 3장이면 하루 2회차로 이틀에 한 장. 최소가 낮으면 거기에 머무르게 돼서 줄이는 방향의 자동 조정은 없앴어요.
    주간 목표 = max(최소 14, 지난 4주 중앙값), 기본 15. 이 규칙 전 주(RULE_FROM 이전)는 예전 목표로 판정해서 연속 기록을 지켜요. 못 끝낸 장은 다음 주 계획 앞으로 넘어가요(weekPlan) */
-const DAY_MIN=2, WEEK_MIN=DAY_MIN*7, WEEK_DEF=15, WEEK_MAX=21, RULE_FROM="2026-10-19";
+const DAY_MIN=PACE.day, WEEK_MIN=DAY_MIN*7, WEEK_DEF=PACE.week, WEEK_MAX=PACE.weekMax, RULE_FROM="2026-10-19";
 const sessIn=ws=>store.steps.filter(x=>x.date>=ws&&x.date<addDays(ws,7)).length;
 const activeWeek=ws=>store.log.some(x=>x.date>=ws&&x.date<addDays(ws,7));
 function defaultGoal(ws){ if(ws<RULE_FROM) return 8; const past=[1,2,3,4].map(k=>addDays(ws,-7*k)).filter(activeWeek).map(sessIn).sort((a,b)=>a-b); const m=past.length?past[Math.floor((past.length-1)/2)]:WEEK_DEF; return Math.min(WEEK_MAX,Math.max(WEEK_DEF,m)); }
