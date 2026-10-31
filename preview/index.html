@@ -389,7 +389,8 @@ button.nlink.ax-go{background:none;border:0;padding:0;font:inherit;cursor:pointe
  --tabbg:#FFFFFF;--tabline:#E3DAF5;--dia-off:#C9BDD9;--dia-on:#9A81FF;--tab-off:#514467;--tab-on:#1A1033;
  --tray:#FFFFFF;--sheet:#FFFFFF;--scrim:rgba(26,16,51,.38);--seam:#F6F3FD;--slate:#D9D2E8;--table:#FBFAFE;--tally:#7354E8}}
 body{margin:0;background:var(--bg);font-family:var(--f-body);font-size:14px;line-height:22px}
-.wrap{padding-inline:20px;padding-block:0 calc(92px + env(safe-area-inset-bottom,0px))}
+:root{--col:430px;--sh:calc(min(100vw,var(--col))*300/393)}
+.wrap{max-width:var(--col);margin-inline:auto;padding-inline:20px;padding-block:0 calc(92px + env(safe-area-inset-bottom,0px))}
 .card,.rows,details.box,.qcard,.whenbox{background:var(--tray);border:1px solid var(--border);border-radius:17px}
 h2,.part h2,.eng{color:var(--gold);letter-spacing:.06em;font-size:12px}
 button.primary{background:var(--primary);color:var(--on-primary);border-radius:13px;min-height:52px;font-size:16px;font-weight:700}
@@ -409,17 +410,16 @@ button.primary{background:var(--primary);color:var(--on-primary);border-radius:1
 .nbchip b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nbchip span{font-size:9px;opacity:.8}
 /* 오늘: 작업대 장면 */
-.v7scene{position:relative;height:300px;margin:0 -20px -62px;overflow:hidden;padding:0 20px;isolation:isolate}
+.v7scene{position:relative;height:var(--sh);margin:0 -20px -62px;overflow:hidden;padding:0 20px;isolation:isolate}
 .v7scene .art{position:absolute;inset:0;z-index:-1}
-.v7scene .art svg{position:absolute;left:50%;top:0;width:max(100%,393px);height:300px;transform:translateX(-50%)}
-.v7scene .art svg:first-child{height:auto;min-height:300px}
+.v7scene .art svg{position:absolute;left:0;top:0;width:100%;height:auto}
 .v7scene .greet{margin:23px 0 0 4px;color:#F4F0FF}
 .v7scene .greet small{display:block;font-size:12px;line-height:17px;font-weight:700;color:#F4D28A;letter-spacing:0;margin:0 0 9px}
 .v7scene .greet h1{margin:0;font-size:27px;line-height:35px;font-weight:700;letter-spacing:-.3px}
 .v7scene.morning .greet,.v7scene.morning .v7top .word{color:#1A1033}
 .v7scene.morning .greet small{color:#73501C}
 .v7scene .nbchip{margin-top:26px}
-.v7ground{position:absolute;left:0;right:0;top:300px;height:483px;z-index:-2;pointer-events:none}
+.v7ground{position:absolute;left:0;right:0;top:var(--sh);height:calc(var(--sh)*483/300);z-index:-2;pointer-events:none}
 .v7ground svg{width:100%;height:100%}
 .v7today{position:relative;display:flex;flex-direction:column;gap:13px}
 /* 지금 할 것 */
@@ -445,7 +445,7 @@ button.primary{background:var(--primary);color:var(--on-primary);border-radius:1
 :root[data-theme="light"] .v7day::before{background:#7354E8}
 .v7day .t{font-size:16px;line-height:23px;font-weight:700;margin:0}
 .v7day .s{font-size:12px;line-height:17px;color:var(--text-2);margin:6px 0 0}
-.v7day .ring{margin-left:auto;width:62px;height:62px;aspect-ratio:auto;display:grid;place-items:center;flex:none}
+.v7day .ring{margin:0 0 0 auto;width:62px;height:62px;aspect-ratio:auto;display:grid;place-items:center;flex:none}
 .v7day .ring svg{grid-area:1/1;width:62px;height:62px}
 .v7day .ring b{grid-area:1/1;font-size:13px;font-weight:700}
 /* 도구 네 칸 */
@@ -477,7 +477,7 @@ button.primary{background:var(--primary);color:var(--on-primary);border-radius:1
 .v7strip{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--card-day);border-radius:14px;padding:10px 14px;font-size:13px;color:var(--text-2)}
 .v7strip b{color:var(--text)}
 /* 탭 막대: 오늘 · 아카이브 · 아틀리에 */
-.nav.v7nav{position:fixed;left:0;right:0;bottom:0;transform:none;width:auto;display:flex;gap:0;padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));border:0;border-top:1px solid var(--tabline);border-radius:0;background:var(--tabbg);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;z-index:20}
+.nav.v7nav{position:fixed;left:0;right:0;bottom:0;transform:none;width:auto;display:flex;gap:0;padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));border:0;border-top:1px solid var(--tabline);border-radius:0;background:var(--tabbg);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;z-index:20;padding-inline:max(0px,calc((100vw - var(--col))/2))}
 .nav.v7nav::before{display:none}
 .nav.v7nav button{flex:1;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:9px;padding:6px 0 0;background:transparent;border-radius:0;color:var(--tab-off);font-size:12px;font-weight:500;box-shadow:none}
 .nav.v7nav button::before{display:none}
@@ -491,7 +491,7 @@ button.primary{background:var(--primary);color:var(--on-primary);border-radius:1
 .v7focus .cr{margin-left:auto;font-size:12px;color:var(--text-3);font-weight:500}
 /* 시트 */
 .v7scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;animation:v7fade .2s ease both}
-.v7sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;max-height:88vh;overflow:auto;overscroll-behavior:contain;background:var(--sheet);border-radius:24px 24px 0 0;padding:10px 24px calc(28px + env(safe-area-inset-bottom,0px));color:var(--text);animation:v7up .26s var(--ease) both;max-width:640px;margin:0 auto}
+.v7sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;max-height:88vh;overflow:auto;overscroll-behavior:contain;background:var(--sheet);border-radius:24px 24px 0 0;padding:10px 24px calc(28px + env(safe-area-inset-bottom,0px));color:var(--text);animation:v7up .26s var(--ease) both;max-width:var(--col);margin:0 auto}
 .v7sheet.card-s{left:22px;right:22px;bottom:auto;top:max(56px,12vh);border-radius:20px;border:1px solid #514467;padding:20px 22px 22px;max-width:420px}
 :root[data-theme="light"] .v7sheet.card-s{border-color:#D9D0ED}
 .v7sheet .grab{display:block;width:44px;height:4px;border-radius:2px;background:#6C627C;margin:0 auto 16px}
