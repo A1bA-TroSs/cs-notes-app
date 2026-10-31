@@ -1010,7 +1010,7 @@ function polyCells(num){ const c=chapterOf(num); if(!c||!(c.sessions||[]).length
     const h=bx.filter(b=>b>=4).length/bx.length, v=bx.filter(b=>b>=2&&b<4).length/bx.length, nh=Math.round(k*h), nv=Math.min(k-nh,Math.round(k*(h+v))-nh);
     return Array.from({length:k},(_,j)=>j<nh?"honey":j<nh+nv?"violet":(passed?"violet":"water")); }); }
 function polyGem(num,size=40,label,hex){ let sides=polyCells(num); if(sides.length===2||(hex&&sides.length===3)) sides=sides.flatMap(x=>{ if(!x) return [null,null]; const h=Math.ceil(x.length/2); return [x.slice(0,h),x.length>1?x.slice(h):x]; }); const n=Math.max(3,sides.length), cx=size/2, R=size/2-1.5, r=R*.58, gw=size>90?2.4:size>60?1.8:1.1;
-  const V=(rad,i)=>{const a=-Math.PI/2+(n%2?0:Math.PI/n)+2*Math.PI*i/n; return [cx+rad*Math.cos(a),cx+rad*Math.sin(a)];}, L=(p,q,t)=>[p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t], f=p=>p.map(v=>v.toFixed(1)).join(",");
+  const V=(rad,i)=>{const a=-Math.PI/2+(n%2||polyGem.plain?0:Math.PI/n)+2*Math.PI*i/n; return [cx+rad*Math.cos(a),cx+rad*Math.sin(a)];}, L=(p,q,t)=>[p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t], f=p=>p.map(v=>v.toFixed(1)).join(",");
   const full=sides.length&&sides.every(x=>x&&x.every(y=>y==="honey")), all=full&&!polyGem.plain; let g=""; const gid="pg"+(++polyGem.k);
   for(let i=0;i<n;i++){ const cells=sides[i]||null, k=cells?cells.length:1, o0=V(R,i),o1=V(R,i+1),i0=V(r,i),i1=V(r,i+1);
     for(let j=0;j<k;j++){ const a=j/k,b=(j+1)/k, pts=`${f(L(o0,o1,a))} ${f(L(o0,o1,b))} ${f(L(i0,i1,b))} ${f(L(i0,i1,a))}`;
