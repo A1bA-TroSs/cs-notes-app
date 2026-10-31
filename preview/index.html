@@ -641,6 +641,17 @@ button.primary{background:var(--primary);color:var(--on-primary);border-radius:1
 #app.v8f .whenbox+.card .boxes *{color:#fff}
 #app.v8f .whenbox+.card .tstone .ts-cap{border-top-color:rgba(244,210,138,.6)}
 #app.v8f .whenbox+.card a,#app.v8f .whenbox+.card .nlink{color:#fff}
+/* 타이머 가운데(누르면 멈춤)는 테두리 없이 */
+#app.v8f .whenbox+.card button.core{border:0;border-radius:50%;background:transparent}
+/* 아카이브로 가는 표식: 책 아이콘 + 반투명 알약 */
+.nlink.ax-go,#app.v8f .whenbox+.card button.nlink.ax-go,.v7hero .more .nlink{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:0 14px 0 12px;border:0;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font-size:13px;font-weight:600;line-height:1;white-space:nowrap}
+.nlink.ax-go::before,.v7hero .more .nlink::before{content:"";width:15px;height:15px;flex:none;background:currentColor;-webkit-mask:var(--ic-book) center/contain no-repeat;mask:var(--ic-book) center/contain no-repeat}
+:root{--ic-book:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5z'/%3E%3Cpath d='M12 6v13'/%3E%3C/svg%3E")}
+#app:not(.v8f) .card .nlink.ax-go,.v8ax .nlink.ax-go{background:transparent;box-shadow:inset 0 0 0 1px var(--chip-line);color:var(--text)}
+.v7hero .more{justify-content:flex-start}
+.v7hero .fnow{animation:v8now 2.4s ease-in-out infinite}
+@keyframes v8now{50%{fill-opacity:.32}}
+@media (prefers-reduced-motion:reduce){.v7hero .fnow{animation:none}}
 
 </style>
 </head><body><div class="wrap" id="app"></div>
@@ -1920,9 +1931,10 @@ const v7chip=()=>`<button class="nbchip" id="to-shelf" aria-label="노트 바꾸
 function v7gem(num,size=52,onCard=false){ const cells=polyCells(num), n=Math.max(3,cells.length||5), cx=size/2, cy=size/2+size*.02, R=size*.46, r=R*.55;
   const all=cells.length>0&&cells.every(x=>x&&x.every(y=>y==="honey"));
   const V=(rad,i)=>{const a=-Math.PI/2+2*Math.PI*i/n; return [cx+rad*Math.cos(a),cy+rad*Math.sin(a)];}, f=p=>p.map(v=>v.toFixed(1)).join(",");
-  const sw=Math.max(1.1,size/52*1.4).toFixed(2), off=onCard?"rgba(255,255,255,.42)":"var(--gline)", HON="#E9BC5C", VIO=onCard?"#E4DBFF":"#A58BFF"; let g="";
-  for(let i=0;i<n;i++){ const c=cells[i], col=all?HON:!c?null:c.every(y=>y==="honey")?HON:VIO;
-    g+=`<polygon points="${f(V(R,i))} ${f(V(R,i+1))} ${f(V(r,i+1))} ${f(V(r,i))}" fill="${col||"none"}" fill-opacity="${col?(onCard?.28:.2):0}" stroke="${col||off}" stroke-width="${sw}" stroke-linejoin="round"/>`; }
+  const sw=Math.max(1.1,size/52*1.4).toFixed(2), off=onCard?"rgba(255,255,255,.42)":"var(--gline)", HON=onCard?"#F4C96A":"#E9BC5C", VIO=onCard?"#B9A4FF":"#A58BFF"; let g="";
+  const nxt=onCard?cells.findIndex(x=>!x):-1;
+  for(let i=0;i<n;i++){ const c=cells[i], col=all?HON:!c?null:c.every(y=>y==="honey")?HON:VIO, now=i===nxt;
+    g+=`<polygon class="${now?"fnow":""}" points="${f(V(R,i))} ${f(V(R,i+1))} ${f(V(r,i+1))} ${f(V(r,i))}" fill="${col||(now?"#FFFFFF":"none")}" fill-opacity="${col?(onCard?.78:.2):now?.16:0}" stroke="${col?(onCard?"#FFFFFF":col):now?"#FFFFFF":off}" stroke-opacity="${col&&onCard?.9:1}" stroke-width="${now?(+sw*1.3).toFixed(2):sw}" stroke-linejoin="round" ${now?'stroke-dasharray="3 2.5"':""}/>`; }
   const tb=Array.from({length:n},(_,i)=>f(V(r,i))).join(" ");
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true" class="gem${all?" all":""}">${g}<polygon points="${tb}" fill="${all?HON:"none"}" fill-opacity="${all?.18:0}" stroke="${all?HON:onCard?"#F4D28A":"var(--gold)"}" stroke-opacity="${all?1:.85}" stroke-width="${sw}" stroke-linejoin="round"/></svg>`; }
 const v7blocks=num=>store.log.filter(x=>x.ch===num&&!x.upgrade).length;
