@@ -585,7 +585,7 @@ button.primary{background:var(--primary);color:var(--on-primary);border-radius:1
 .v7hero .ch{color:#fff;font-weight:600;font-size:16px;line-height:23px;opacity:.95}
 .v7hero .st{color:#fff;font-size:30px;line-height:38px;font-weight:800;letter-spacing:-.5px;margin-top:4px}
 .v7hero .left{color:rgba(255,255,255,.8)}
-.v7hero .gemw{top:58px;right:22px;filter:drop-shadow(0 0 14px rgba(228,219,255,.25))}
+.v7hero .gemw{--facet-off:#2A2639;--facet-gap:#12101C;--facet-table:#171522;--goldA:rgba(201,174,124,.38);--water:#5BB0E6;--violet:#7B61E5;--honey:#F2BC52;top:40px;right:12px;width:116px;height:116px;filter:drop-shadow(0 6px 18px rgba(12,8,30,.45))}
 .v7hero .go{width:auto;align-self:flex-start;min-height:48px;padding:0 26px;border-radius:24px;background:#fff;color:#2B2674;font-weight:800}
 .v7hero .more{justify-content:flex-start;gap:16px;margin-top:10px}
 .v7hero .more .nlink,.v7hero .more a{color:rgba(255,255,255,.78)}
@@ -1986,7 +1986,7 @@ function todayHtml(){
   let hero;
   if(tim) hero=`<section class="v7hero"><div class="fx">${fx}</div><p class="eb">지금 하는 중</p><p class="ch">${esc(tim.ch||"")}장 ${esc(tim.step||"")}</p><p class="st">${tim.phase==="read"?"읽는 중":tim.phase==="rest"?"쉬는 중":"블록 정리"}</p><button class="go" id="go-tim">블록으로 돌아가기 &nbsp;→</button></section>`;
   else if(nx){ const left=nx.total-nx.done;
-    hero=`<section class="v7hero"><div class="fx">${fx}</div><span class="gemw">${v7gem(nx.c.num,76,true)}</span>
+    hero=`<section class="v7hero"><div class="fx">${fx}</div><span class="gemw">${(polyGem.plain=true,(g=>(polyGem.plain=false,g))(polyGem(nx.c.num,116)))}</span>
     <p class="eb">${nx.day?`오늘의 레슨 · ${nx.day}일째 / ${nx.days}`:"지금 할 것"}</p><p class="ch">${esc(nx.c.num)}장 ${v7title(nx.c)}</p><p class="st">이 장 ${nx.done}/${nx.total}회차</p>
     <p class="left">${left?`남은 ${left}회차 · ${PACE.min}분씩, 약 ${left*PACE.min}분`:"마지막 회차"}</p>
     <button class="go" id="go-sess">블록 준비 &nbsp;→</button>
