@@ -286,6 +286,85 @@ button.primary{min-height:52px;border-radius:16px;font-weight:800;font-size:16px
 /* 화면 확대 고정(Danny 요청): 입력창 글자 16px(포커스 확대 방지), 두 번 탭 확대 방지, 핀치 확대 막기 */
 html{touch-action:manipulation;-webkit-text-size-adjust:100%}
 input,textarea,select{font-size:16px!important}
+/* 아카이브: 노션 풀 노트 읽기 (archive.js) */
+.card.ax-head{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px}
+.ax-head .q{margin:0 0 4px}
+.ax-head>button{flex:none;white-space:nowrap}
+.ax-ph{font:inherit;color:inherit;padding:0;text-align:left}
+.row.ax-hitrow{display:block;text-align:left}
+.ax-hitrow .ttl{display:flex;flex-direction:column;gap:2px;white-space:normal;width:100%}
+.ax-hitrow .note{margin:0;font-size:13px;line-height:18px}
+body.ax-lock{overflow:hidden}
+#ax-reader{position:fixed;inset:0;z-index:50;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg);overscroll-behavior:contain}
+.ax-top{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;background:var(--glass);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.ax-top .crumb{min-height:44px}
+.ax-tt{flex:1;min-width:0;font-size:14px;font-weight:600;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.ax-doc{max-width:680px;margin:0 auto;padding:16px 20px calc(48px + env(safe-area-inset-bottom,0px));font-size:17px;line-height:1.75;color:var(--text);word-break:keep-all;overflow-wrap:anywhere}
+.ax-doc h1{font-size:26px;line-height:1.3;margin:4px 0 20px;letter-spacing:-.01em}
+.ax-doc h2,.ax-doc h3,.ax-doc h4{line-height:1.4;margin:32px 0 10px;scroll-margin-top:72px}
+.ax-doc h2{font-size:22px}.ax-doc h3{font-size:19px}.ax-doc h4{font-size:17px}
+.ax-doc p{margin:6px 0}
+.ax-doc [id^="ax-"]{scroll-margin-top:72px}
+.ax-gap{height:10px}
+.ax-ind{padding-left:22px}
+.ax-doc ul,.ax-doc ol{margin:6px 0;padding-left:24px}
+.ax-doc li{margin:3px 0}
+.ax-doc ol ol{list-style:lower-alpha}.ax-doc ol ol ol{list-style:lower-roman}
+.ax-doc a{color:var(--primary)}
+.ax-doc code{font-family:var(--f-mono);font-size:.86em;background:var(--surface-2);border-radius:5px;padding:1px 5px}
+.ax-doc blockquote{margin:12px 0;padding:2px 0 2px 16px;border-left:3px solid var(--primary)}
+.ax-doc hr{border:0;border-top:1px solid var(--border);margin:24px 0}
+.ax-trail{font-size:13px;margin:0;color:var(--text-3)}
+.ax-trail a{color:var(--text-2);text-decoration:none}
+.ax-tg{margin:6px 0}
+.ax-tg>summary{cursor:pointer;list-style:none;position:relative;padding-left:22px}
+.ax-tg>summary::-webkit-details-marker{display:none}
+.ax-tg>summary::before{content:"";position:absolute;left:4px;top:.62em;border:5px solid transparent;border-left:7px solid var(--text-2);transition:transform .15s}
+.ax-tg[open]>summary::before{transform:rotate(90deg);transform-origin:3px 5px}
+.ax-tgh>summary>h2,.ax-tgh>summary>h3,.ax-tgh>summary>h4{display:inline;margin:0}
+.ax-tgh{margin:28px 0 10px}
+.ax-todo{display:flex;gap:10px;align-items:flex-start;margin:4px 0}
+.ax-todo .box{flex:none;width:18px;height:18px;margin-top:.35em;border:1.5px solid var(--text-2);border-radius:4px;font-size:12px;line-height:15px;text-align:center}
+.ax-todo.on .box{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.ax-todo.on>span:last-child{color:var(--text-2);text-decoration:line-through}
+.ax-call{display:flex;gap:10px;margin:12px 0;padding:14px 16px;border-radius:var(--r-m)}
+.ax-call .ic{flex:none;font-size:20px;line-height:1.5}
+.ax-call>div{min-width:0;flex:1}
+.ax-call p:first-child{margin-top:0}
+.ax-code,.ax-mer{margin:12px 0;position:relative}
+.ax-code pre,.ax-mer pre{margin:0;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-m);overflow-x:auto;font-size:13.5px;line-height:1.55}
+.ax-code pre code,.ax-mer pre code{background:none;padding:0;font-size:inherit}
+.ax-code .lang{position:absolute;right:10px;top:6px;font-size:11px;color:var(--text-3)}
+.ax-doc figcaption{font-size:13px;color:var(--text-2);margin-top:6px}
+.ax-mer .ax-merd{overflow-x:auto;text-align:center}
+.ax-mer .ax-merd svg{max-width:100%;height:auto}
+.ax-mer:not(.ok) .ax-merd,.ax-mer.ok pre{display:none}
+.ax-eqb{margin:12px 0;overflow-x:auto;text-align:center}
+.ax-img{margin:14px 0}
+.ax-img img{display:block;max-width:100%;height:auto;border-radius:var(--r-s);margin:0 auto}
+.ax-card{display:flex;flex-direction:column;gap:2px;width:100%;margin:10px 0;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-m);background:var(--surface);text-decoration:none;text-align:left;color:var(--text);font:inherit;font-size:15px;line-height:1.45}
+.ax-card .u{font-size:12px;color:var(--text-2)}
+.ax-tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--border);border-radius:var(--r-m)}
+.ax-tbl table{border-collapse:collapse;min-width:100%;font-size:14.5px;line-height:1.5}
+.ax-tbl td,.ax-tbl th{border-bottom:1px solid var(--border);border-right:1px solid var(--border);padding:8px 10px;vertical-align:top;text-align:left;min-width:88px}
+.ax-tbl tr:last-child>*{border-bottom:0}.ax-tbl tr>*:last-child{border-right:0}
+.ax-tbl th{background:var(--surface-2);font-weight:700}
+.ax-cols{display:flex;flex-wrap:wrap;gap:0 20px}.ax-col{flex:1 1 260px;min-width:0}
+.ax-toc{display:flex;flex-direction:column;margin:0 0 16px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-m)}
+.ax-toc a{color:var(--text);text-decoration:none;padding:7px 0;font-size:15px;line-height:1.4}
+.ax-toc a.l2{padding-left:14px;color:var(--text-2)}.ax-toc a.l3{padding-left:28px;color:var(--text-2);font-size:14px}
+.ax-sub{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;min-height:48px;margin:6px 0;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r-m);background:var(--surface);color:var(--text);font:inherit;font-size:15px;text-align:left}
+.ax-pn{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:36px 0 12px}
+.ax-pn button{display:flex;flex-direction:column;gap:2px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-m);background:var(--surface);color:var(--text);font:inherit;font-size:14px;line-height:1.4;text-align:left;min-height:56px}
+.ax-pn button:nth-child(2){align-items:flex-end;text-align:right}
+.ax-pn .note{margin:0;font-size:12px}
+.ax-foot{text-align:center}
+.ax-hit{animation:axhit 1.6s ease-out}
+@keyframes axhit{0%,40%{background:var(--primary-tint)}100%{background:transparent}}
+button.nlink.ax-go{background:none;border:0;padding:0;font:inherit;cursor:pointer}
+.ax-fg-gray{color:#9B97A8}.ax-fg-brown{color:#B8957A}.ax-fg-orange{color:#E39A5A}.ax-fg-yellow{color:#DDBB55}.ax-fg-green{color:#6FBF8E}.ax-fg-blue{color:#6EA8E6}.ax-fg-purple{color:#B49CF0}.ax-fg-pink{color:#E58DBA}.ax-fg-red{color:#EE7B70}
+.ax-bg-gray{background:rgba(155,151,168,.13)}.ax-bg-brown{background:rgba(184,149,122,.15)}.ax-bg-orange{background:rgba(227,154,90,.15)}.ax-bg-yellow{background:rgba(221,187,85,.14)}.ax-bg-green{background:rgba(111,191,142,.14)}.ax-bg-blue{background:rgba(110,168,230,.14)}.ax-bg-purple{background:rgba(180,156,240,.15)}.ax-bg-pink{background:rgba(229,141,186,.14)}.ax-bg-red{background:rgba(238,123,112,.14)}
+:root[data-theme="light"] .ax-fg-gray{color:#6E6A7C}:root[data-theme="light"] .ax-fg-brown{color:#8A5A3A}:root[data-theme="light"] .ax-fg-orange{color:#B85E14}:root[data-theme="light"] .ax-fg-yellow{color:#8F6D00}:root[data-theme="light"] .ax-fg-green{color:#2E7D4F}:root[data-theme="light"] .ax-fg-blue{color:#2563A8}:root[data-theme="light"] .ax-fg-purple{color:#6A44C8}:root[data-theme="light"] .ax-fg-pink{color:#B03A7A}:root[data-theme="light"] .ax-fg-red{color:#C0362C}
 </style>
 </head><body><div class="wrap" id="app"></div>
 <script id="iolite-main" type="text/plain">
@@ -413,7 +492,7 @@ const NKEY="iolite-notion-map"; let NMAP=null; try{NMAP=JSON.parse(localStorage.
 async function loadNotionMap(){ if(!gh||!gh.token) return; try{ const r=await fetch(`https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/notion-map.json?t=${Date.now()}`,{headers:{"Authorization":"Bearer "+gh.token,"Accept":"application/vnd.github+json"}}); if(!r.ok) return; const j=await r.json(); const m=JSON.parse(b64d(j.content)); const ch=JSON.stringify(m)!==JSON.stringify(NMAP); NMAP=m; try{localStorage.setItem(NKEY,JSON.stringify(m))}catch(e){} if(ch&&!run) home(); }catch(e){} }
 function notionUrl(num,step){ const M=CART.notion||NMAP; /* 카트리지가 노션 위치표를 직접 가지면 그걸 써요(docs/CARTRIDGE.md) */ if(!M||!M.pages||!M.pages[num]) return null; let u="https://www.notion.so/"+M.pages[num]; const hs=M.heads&&M.heads[num];
   if(step&&hs){ const bare=h=>h.replace(/^[^\p{L}\p{N}]+/u,""); const k=Object.keys(hs).find(h0=>{const h=bare(h0); return h.startsWith(step)&&(h.length===step.length||!/\d/.test(h[step.length]));}); if(k) u+="#"+hs[k]; } return u; }
-const nlink=(num,step,label)=>{const u=notionUrl(num,step); return u?`<a class="nlink" href="${u}" target="_blank" rel="noopener">${label} ›</a>`:"";};
+const nlink=(num,step,label)=>{const u=notionUrl(num,step), a=alink(num,step,"아카이브에서 읽기"); return (u?`<a class="nlink" href="${u}" target="_blank" rel="noopener">${label} ›</a>`:"")+a;};
 async function ghSync(){
   if(!gh||!gh.token||ghBusy) return; ghBusy=true; setGh("동기화 중…");
   try{
@@ -466,9 +545,9 @@ function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor
 let tab="today", filter="";
 const PRAC=location.protocol.startsWith("http")?"practice.html":"../algo/web/practice.html"; // 같은 앱 창에서 열리는 알고리즘 실전 화면
 const MD=t=>{try{return window.marked?marked.parse(t):"<pre>"+esc(t)+"</pre>"}catch(e){return "<pre>"+esc(t)+"</pre>"}};
-const NAV=[["today","오늘"],["self","체크"],["rev","복습"],["tim","타이머"],["prac","실전"],["stats","아틀리에"]];
+const NAV=[["today","오늘"],["self","체크"],["rev","복습"],["tim","타이머"],["prac","실전"],["ax","아카이브"],["stats","아틀리에"]];
 const LOGO="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";
-const ICON={today:'<path d="M12 3l8 9-8 9-8-9z"/>',self:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',rev:'<path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/>',tim:'<circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l2.5 2M9.5 3h5"/>',prac:'<rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 9h6M9 13h6M9 17h3"/>',stats:'<path d="M4 6h16M4 18h16"/><path d="M7 6v12M11 6v12M15.5 6.5l3 11"/>'};
+const ICON={today:'<path d="M12 3l8 9-8 9-8-9z"/>',self:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',rev:'<path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/>',tim:'<circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l2.5 2M9.5 3h5"/>',prac:'<rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 9h6M9 13h6M9 17h3"/>',stats:'<path d="M4 6h16M4 18h16"/><path d="M7 6v12M11 6v12M15.5 6.5l3 11"/>',ax:'<path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/>'};
 const ICON_OLD={today:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',self:'<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9"/>',rev:'<path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5"/><path d="M3.5 3.5v5h5"/>',tim:'<circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.5l2.5 2M9.5 2.5h5"/>',prac:'<path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5"/>',stats:'<path d="M5 20v-8M11 20V5M17 20v-5M3 20.5h18"/>'};
 function navHtml(){const due=dueIds().length; return `<nav class="nav" aria-label="메뉴">`+NAV.map(([t,l])=>`<button data-tab="${t}" ${tab===t?'aria-current="page"':""}><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[t]}</svg><span>${l}</span>${t==="rev"&&due?`<span class="badge">${due}</span>`:""}</button>`).join("")+`</nav>`}
 function bindTabs(){ app.querySelectorAll(".nav [data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;archView=false;archCh=null;guideView=false;try{history.replaceState(null,"","#"+tab)}catch(e){}home();window.scrollTo(0,0)}); }
@@ -494,13 +573,13 @@ function home(){
     document.getElementById("cart-remove").onclick=()=>{ if(confirm(`'${NB.title}' 카트리지를 이 기기에서 뺄까요? 공부 기록은 지워지지 않아요. 다시 꽂으면 이어서 해요.`)) IoliteCart.remove(NB.id); };
     return; }
   let h=`<header><img class="logo" src="data:image/png;base64,${LOGO}" alt=""><h1 class="word">Iolite</h1><span id="sync" aria-live="polite" class="sync ${syncState==="ok"||(gh&&gh.token)?"ok":""}">${headSync()}</span></header>`+navHtml();
-  const view={today:todayHtml,tim:timerHtml,rev:revHtml,prac:pracHtml,stats:statsHtml,self:selfHtml}[tab]||selfHtml;
+  const view={today:todayHtml,tim:timerHtml,rev:revHtml,prac:pracHtml,stats:statsHtml,self:selfHtml,ax:axHtml}[tab]||selfHtml;
   app.innerHTML=h+`<div class="bar" style="justify-content:space-between"><button class="crumb" id="to-shelf">‹ Iolite · ${esc(NB.title)}</button><button class="crumb" data-guide>사용법</button></div>`+(guideView?guideHtml():whenBox(tab)+view());
   document.getElementById("to-shelf").onclick=()=>{shelf=true; guideView=false; home(); window.scrollTo(0,0);};
   app.querySelectorAll("[data-guide]").forEach(b=>b.onclick=()=>{guideView=true; home(); window.scrollTo(0,0);});
   if(guideView){ document.getElementById("guide-close").onclick=()=>{guideView=false; home(); window.scrollTo(0,0);}; bindTabs(); return; }
   bindTabs();
-  ({today:bindToday,tim:bindTimer,rev:bindRev,prac:bindPrac,stats:bindStats,self:bindSelf}[tab]||bindSelf)();
+  ({today:bindToday,tim:bindTimer,rev:bindRev,prac:bindPrac,stats:bindStats,self:bindSelf,ax:bindAx}[tab]||bindSelf)();
 }
 function selfHtml(){
   const passed=Object.values(store.attempts).filter(a=>a.some(x=>x.pass)).length;
@@ -913,7 +992,7 @@ function todayHtml(){
   const ctitle=nx?esc(nx.c.title.replace(/^\d+b?\.\s*/,"").split(/[:：]/)[0].slice(0,18)):"";
   return `${sceneHtml(wk)}<div class="dateline"><span class="note">${DAY_MIN>1?`하루 최소 ${DAY_MIN}회차. 홀수 회차 뒤엔 잠깐 쉬고 이어 가요.`:"하루 한 레슨. 매일 이어 가는 게 분량보다 중요해요."}</span></div>
   ${nx?`<section class="hero"><svg class="tex" viewBox="0 0 350 196" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><filter id="hz" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.018" numOctaves="3" seed="11"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .36  0 0 0 0 .86  1.7 0 0 0 -.62"/></filter><filter id="hg" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.011 0.02" numOctaves="3" seed="4"/><feColorMatrix values="0 0 0 0 .86  0 0 0 0 .78  0 0 0 0 .56  1.9 0 0 0 -.8"/></filter><filter id="hn" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.6 0 0 0 -.62"/></filter><radialGradient id="hrg" cx="0.85" cy="0.95" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient><mask id="hm"><rect width="350" height="196" fill="url(#hrg)"/></mask><linearGradient id="hs" x1="0" y1="0" x2="1" y2="0.6"><stop offset="0.25" stop-color="#fff" stop-opacity="0"/><stop offset="0.42" stop-color="#fff" stop-opacity=".16"/><stop offset="0.58" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><rect width="350" height="196" filter="url(#hz)" opacity=".6"/><g mask="url(#hm)"><rect width="350" height="196" filter="url(#hg)" opacity=".55"/></g><rect width="350" height="196" filter="url(#hn)" opacity=".16"/><rect width="350" height="196" fill="url(#hs)"/><path d="M-10 60L120 -10M-10 140L200 -10M60 210L342 20M180 210L350 90M250 -10L350 70" stroke="#fff" stroke-opacity=".09" stroke-width="1" fill="none"/></svg><span class="eyebrow">${nx.day?`오늘의 레슨 · ${nx.day}일째 / ${nx.days}`:"지금 할 것"}</span><h2 class="t">이 장 ${nx.done}/${nx.total}회차</h2><p class="s">${nx.c.num}장 ${ctitle} · ${nx.nx.n}회차</p><span class="left">${nx.total}회차 중 ${nx.done}회차 끝 · 남은 ${nx.total-nx.done}회차, 약 ${(nx.total-nx.done)*PACE.min}분</span>
-    <span class="acts"><button id="go-sess" class="go">블록 준비</button>${notionUrl(nx.c.num,nx.nx.steps[0])?`<a class="go2" href="${notionUrl(nx.c.num,nx.nx.steps[0])}" target="_blank" rel="noopener">노션에서 ${esc(nx.nx.steps[0])} 열기</a>`:""}</span></section>
+    <span class="acts"><button id="go-sess" class="go">블록 준비</button>${axOfNum(nx.c.num)?`<button class="go2" data-axnum="${esc(nx.c.num)}" data-axstep="${esc(nx.nx.steps[0])}">아카이브에서 ${esc(nx.nx.steps[0])} 읽기</button>`:""}${notionUrl(nx.c.num,nx.nx.steps[0])?`<a class="go2" href="${notionUrl(nx.c.num,nx.nx.steps[0])}" target="_blank" rel="noopener">노션에서 ${esc(nx.nx.steps[0])} 열기</a>`:""}</span></section>
   ${sessToday()>=DAY_MIN?`<div class="strip"><span>오늘 분량 끝 (${sessToday()}회차)</span><span>더 하려면 실전 1문제나 복습으로</span></div>`:""}
   <p class="note" style="margin:0">${esc(nx.nx.steps.join(", ").slice(0,48))} · ${qn?`30초 체크 ${qn}개로 시작`:"읽기부터 시작"}</p>
   ${NMAP||CART.notion?"":`<span class="note">노션 바로가기는 이 기기에서 GitHub 동기화를 연결하면 나타나요(아틀리에 탭).</span>`}`
@@ -1385,7 +1464,166 @@ function result(){
   document.getElementById("back").onclick=home;
   const ag=document.getElementById("again"); if(ag) ag.onclick=()=>run.kind==="chapter"?startChapter(run.num):run.kind==="review"?startReview():startMix();
 }
-{const h=location.hash.slice(1); if(["today","self","rev","tim","prac","stats"].includes(h)){tab=h; shelf=false; history.replaceState(null,"",location.pathname);}}
+/* ---------- 아카이브: 노션 풀 노트를 이 기기에 저장해 두고 앱 안에서 읽어요 (docs/ARCHIVE.md) ----------
+   노트는 비공개 기록 저장소의 archive/<카트리지 id>/ 에 있어요(tools/notion_archive.py). 공개 앱에는 노트가 없어요.
+   기록 동기화와 같은 토큰으로 바뀐 페이지만 받아 IndexedDB에 넣어요. 한 번 받으면 인터넷 없이도 읽혀요. */
+const AX={db:null, idx:null, busy:false, msg:"", text:null, page:null, q:"", open:null};
+const AXKEY="iolite-archive-"+CART.id; // 목차(작아서 localStorage), 페이지 본문은 IndexedDB
+try{AX.idx=JSON.parse(localStorage.getItem(AXKEY)||"null")}catch(e){}
+function axDb(){ if(AX.db) return AX.db; AX.db=new Promise((ok,no)=>{const r=indexedDB.open("iolite-archive",1); r.onupgradeneeded=()=>{r.result.createObjectStore("pages",{keyPath:"k"}); r.result.createObjectStore("files",{keyPath:"k"});}; r.onsuccess=()=>ok(r.result); r.onerror=()=>no(r.error);}); return AX.db; }
+async function axTx(st,mode,fn){ const d=await axDb(); return new Promise((ok,no)=>{const t=d.transaction(st,mode); const q=fn(t.objectStore(st)); t.oncomplete=()=>ok(q&&q.result); t.onerror=()=>no(t.error);}); }
+const axGet=(st,k)=>axTx(st,"readonly",s=>s.get(k)), axPut=(st,v)=>axTx(st,"readwrite",s=>s.put(v)), axDel=(st,k)=>axTx(st,"readwrite",s=>s.delete(k));
+const axAll=()=>axTx("pages","readonly",s=>s.getAll(IDBKeyRange.bound(CART.id+"/",CART.id+"/￿")));
+async function axGh(path,raw){
+  const r=await fetch(`https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/archive/${CART.id}/${path}?t=${Date.now()}`,{headers:{"Authorization":"Bearer "+gh.token,"Accept":raw==="blob"||raw?"application/vnd.github.raw":"application/vnd.github+json"}});
+  if(r.status===404) return null; if(!r.ok) throw new Error("GitHub "+r.status); return raw==="blob"?r.blob():raw?r.text():r.json();
+}
+async function axSync(say){ // 바뀐 페이지(sha)만 받아요
+  if(!gh||!gh.token||AX.busy) return 0; AX.busy=true; say=say||(()=>{});
+  try{
+    const list=await axGh("p"); if(!Array.isArray(list)){ AX.msg="아직 올린 아카이브가 없어요"; return 0; }
+    const idx=JSON.parse(await axGh("index.json",true)), have=Object.fromEntries((await axAll()).map(x=>[x.k,x.sha]));
+    const todo=list.filter(f=>/\.json$/.test(f.name)&&have[CART.id+"/"+f.name.slice(0,-5)]!==f.sha); let n=0;
+    const one=async f=>{ const p=JSON.parse(await axGh("p/"+f.name,true)); await axPut("pages",{k:CART.id+"/"+p.id,sha:f.sha,page:p}); n++; say(`받는 중… ${n}/${todo.length}`); };
+    for(let i=0;i<todo.length;i+=4) await Promise.all(todo.slice(i,i+4).map(one));
+    const keep=new Set(list.map(f=>CART.id+"/"+f.name.slice(0,-5)));
+    for(const k of Object.keys(have)) if(!keep.has(k)) await axDel("pages",k);
+    idx.got=new Date().toISOString(); AX.idx=idx; AX.text=null; try{localStorage.setItem(AXKEY,JSON.stringify(idx))}catch(e){}
+    AX.msg=n?`새로 받은 페이지 ${n}개`:"이미 최신이에요"; return n;
+  }catch(e){ AX.msg="못 받았어요: "+e.message; return 0; }
+  finally{ AX.busy=false; }
+}
+const axPages=()=>(AX.idx&&AX.idx.pages)||[];
+const axInfo=id=>axPages().find(p=>p.id===id);
+const axKids=id=>axPages().filter(p=>p.parent===id);
+const axOfNum=num=>axPages().find(p=>p.num===num);
+const axTitle=p=>p?(p.icon?p.icon+" ":"")+p.title:"";
+/* 노션 블록 그리기 */
+const AXCOL={gray:1,brown:1,orange:1,yellow:1,green:1,blue:1,purple:1,pink:1,red:1};
+const axCol=c=>{ if(!c) return ""; const bg=/_background$/.test(c), n=c.replace(/_background$/,""); return AXCOL[n]?` ax-${bg?"bg":"fg"}-${n}`:""; };
+function axRich(r){ return (r||[]).map(([t,a="",h=""])=>{ const [f,c]=a.split(":"); let s=esc(t).replace(/\n/g,"<br>");
+  if(f.includes("e")) s=`<span class="ax-eq" data-tex="${esc(t)}">${esc(t)}</span>`;
+  if(f.includes("c")) s=`<code>${s}</code>`; if(f.includes("b")) s=`<strong>${s}</strong>`; if(f.includes("i")) s=`<em>${s}</em>`;
+  if(f.includes("s")) s=`<s>${s}</s>`; if(f.includes("u")) s=`<u>${s}</u>`; if(c) s=`<span class="${axCol(c).trim()}">${s}</span>`;
+  if(h.startsWith("#p:")){ const [,pid,bid]=h.split(":"); s=`<a href="#" class="ax-in" data-axp="${pid}" data-axb="${bid||""}">${s}</a>`; }
+  else if(h) s=`<a href="${esc(h)}" target="_blank" rel="noopener">${s}</a>`;
+  return s; }).join(""); }
+const axPlain=r=>(r||[]).map(x=>x[0]).join("");
+function axLink(url,cap){ let host=url; try{host=new URL(url).hostname.replace(/^www\./,"")}catch(e){} return `<a class="ax-card" href="${esc(url)}" target="_blank" rel="noopener"><span class="t">${cap?axRich(cap):esc(host)}</span><span class="u">${esc(host)} ›</span></a>`; }
+function axBlocks(bs,heads){ let h="", i=0;
+  while(i<bs.length){ const b=bs[i];
+    if(b.t==="bulleted_list_item"||b.t==="numbered_list_item"){ const tag=b.t==="bulleted_list_item"?"ul":"ol"; let li="";
+      while(i<bs.length&&bs[i].t===b.t){ li+=`<li id="ax-${bs[i].id}" class="${axCol(bs[i].color).trim()}">${axRich(bs[i].r)}${bs[i].c?axBlocks(bs[i].c,heads):""}</li>`; i++; }
+      h+=`<${tag}>${li}</${tag}>`; continue; }
+    h+=axBlock(b,heads); i++; }
+  return h; }
+function axBlock(b,heads){ const kids=b.c&&b.c.length?axBlocks(b.c,heads):"", id=`id="ax-${b.id}"`, col=axCol(b.color);
+  switch(b.t){
+    case "paragraph": return b.r&&b.r.length?`<p ${id} class="${col.trim()}">${axRich(b.r)}</p>${kids?`<div class="ax-ind">${kids}</div>`:""}`:`<div class="ax-gap"></div>`;
+    case "heading_1": case "heading_2": case "heading_3": { const n={heading_1:2,heading_2:3,heading_3:4}[b.t], hh=`<h${n} ${b.toggle?"":id} class="ax-h${col}">${axRich(b.r)}</h${n}>`;
+      return b.toggle?`<details ${id} class="ax-tg ax-tgh"><summary>${hh}</summary>${kids}</details>`:hh; }
+    case "toggle": return `<details ${id} class="ax-tg${col}"><summary>${axRich(b.r)}</summary><div class="ax-ind">${kids}</div></details>`;
+    case "to_do": return `<div ${id} class="ax-todo${b.checked?" on":""}"><span class="box" aria-hidden="true">${b.checked?"✓":""}</span><span>${axRich(b.r)}${kids}</span></div>`;
+    case "quote": return `<blockquote ${id} class="${col.trim()}">${axRich(b.r)}${kids}</blockquote>`;
+    case "callout": return `<div ${id} class="ax-call${col||" ax-bg-gray"}">${b.icon?`<span class="ic" aria-hidden="true">${esc(b.icon)}</span>`:""}<div>${axRich(b.r)}${kids}</div></div>`;
+    case "code": return b.lang==="mermaid"?`<figure ${id} class="ax-mer"><div class="ax-merd" data-src="${esc(axPlain(b.r))}"></div><pre><code>${esc(axPlain(b.r))}</code></pre></figure>`
+      :`<figure ${id} class="ax-code">${b.lang&&b.lang!=="plain text"?`<span class="lang">${esc(b.lang)}</span>`:""}<pre><code>${esc(axPlain(b.r))}</code></pre>${b.cap&&b.cap.length?`<figcaption>${axRich(b.cap)}</figcaption>`:""}</figure>`;
+    case "equation": return `<div ${id} class="ax-eqb" data-tex="${esc(b.x||"")}">${esc(b.x||"")}</div>`;
+    case "divider": return `<hr>`;
+    case "image": return `<figure ${id} class="ax-img">${b.f?`<img data-axf="${esc(b.f)}" alt="${esc(axPlain(b.cap))}">`:`<img src="${esc(b.url||"")}" alt="${esc(axPlain(b.cap))}" loading="lazy" referrerpolicy="no-referrer">`}${b.cap&&b.cap.length?`<figcaption>${axRich(b.cap)}</figcaption>`:""}</figure>`;
+    case "file": case "pdf": case "video": case "audio": return b.url?axLink(b.url,b.cap):`<button class="ax-card" data-axfile="${esc(b.f||"")}"><span class="t">${esc(b.name||axPlain(b.cap)||"파일")}</span><span class="u">열기 ›</span></button>`;
+    case "bookmark": case "embed": case "link_preview": return b.url?axLink(b.url,b.cap):"";
+    case "table": { const rows=(b.c||[]).filter(r=>r.t==="table_row"); return `<div ${id} class="ax-tbl"><table>${rows.map((r,ri)=>`<tr>${(r.cells||[]).map((c,ci)=>{const th=(b.colh&&ri===0)||(b.rowh&&ci===0); return `<${th?"th":"td"}>${axRich(c)}</${th?"th":"td"}>`}).join("")}</tr>`).join("")}</table></div>`; }
+    case "column_list": return `<div class="ax-cols">${kids}</div>`;
+    case "column": return `<div class="ax-col">${kids}</div>`;
+    case "table_of_contents": return heads.length?`<nav class="ax-toc">${heads.map(x=>`<a href="#" data-axb="${x.id}" class="l${x.l}">${esc(x.t)}</a>`).join("")}</nav>`:"";
+    case "page": { const p=axInfo(b.p); return `<button class="ax-sub" data-axp="${b.p}"><span>${esc(p?axTitle(p):b.title||"하위 페이지")}</span><span aria-hidden="true">›</span></button>`; }
+    case "link_to_page": { const p=axInfo(b.p); return p?`<button class="ax-sub" data-axp="${b.p}"><span>↗ ${esc(axTitle(p))}</span><span aria-hidden="true">›</span></button>`:""; }
+    default: return kids; // synced_block, breadcrumb, unsupported 등은 안쪽만
+  } }
+function axHeads(bs){ const out=[]; (function w(a){ for(const b of a){ if(/^heading_[123]$/.test(b.t)) out.push({id:b.id,t:axPlain(b.r),l:+b.t.slice(-1)}); if(b.c) w(b.c);} })(bs); return out; }
+/* 읽기 화면: 지금 화면 위에 덮어 열고, 닫으면 하던 곳으로 돌아가요 */
+async function axOpen(pid,bid){
+  const rec=await axGet("pages",CART.id+"/"+pid).catch(()=>null);
+  if(!rec){ alert(AX.idx?"이 페이지는 아직 이 기기에 없어요. 아카이브 탭에서 '새로 받기'를 눌러요.":"아카이브를 아직 받지 않았어요. 아카이브 탭에서 받아요."); return; }
+  const p=rec.page, info=axInfo(pid)||{}, heads=axHeads(p.blocks);
+  const trail=[]; for(let q=axInfo(info.parent);q;q=axInfo(q.parent)) trail.unshift(q);
+  const sib=info.parent?axKids(info.parent):[], si=sib.findIndex(x=>x.id===pid), prev=sib[si-1], next=sib[si+1];
+  let el=document.getElementById("ax-reader"); if(!el){ el=document.createElement("div"); el.id="ax-reader"; el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true"); document.body.appendChild(el); document.body.classList.add("ax-lock"); }
+  AX.open=pid;
+  el.innerHTML=`<div class="ax-top"><button class="crumb" id="ax-close">‹ 닫기</button><span class="ax-tt">${esc(p.title)}</span>${heads.length>2?`<button class="crumb" id="ax-tocb" aria-label="목차">목차</button>`:""}</div>
+  <article class="ax-doc">${trail.length?`<p class="ax-trail">${trail.map(t=>`<a href="#" data-axp="${t.id}">${esc(t.title)}</a>`).join(" › ")}</p>`:""}
+  <h1>${p.icon?`<span aria-hidden="true">${esc(p.icon)}</span> `:""}${esc(p.title)}</h1>
+  ${heads.length>2?`<nav class="ax-toc" id="ax-toc" hidden>${heads.map(x=>`<a href="#" data-axb="${x.id}" class="l${x.l}">${esc(x.t)}</a>`).join("")}</nav>`:""}
+  ${axBlocks(p.blocks,heads)}
+  <div class="ax-pn">${prev?`<button data-axp="${prev.id}"><span class="note">이전</span><span>${esc(prev.title)}</span></button>`:"<span></span>"}${next?`<button data-axp="${next.id}"><span class="note">다음</span><span>${esc(next.title)}</span></button>`:""}</div>
+  <p class="note ax-foot">${p.edited?`노션에서 ${esc(p.edited.slice(0,10))}에 고친 판`:""}${p.url?` · <a href="${esc(p.url)}" target="_blank" rel="noopener">노션에서 열기 ›</a>`:""}</p></article>`;
+  const jump=b=>{ const t=document.getElementById("ax-"+b); if(!t) return; for(let d=t.closest("details");d;d=d.parentElement&&d.parentElement.closest("details")) d.open=true; if(t.tagName==="DETAILS") t.open=true; t.scrollIntoView({block:"start"}); t.classList.add("ax-hit"); setTimeout(()=>t.classList.remove("ax-hit"),1600); };
+  el.querySelector("#ax-close").onclick=axClose;
+  const tb=el.querySelector("#ax-tocb"); if(tb) tb.onclick=()=>{const t=el.querySelector("#ax-toc"); t.hidden=!t.hidden; if(!t.hidden) el.scrollTo({top:0});};
+  el.querySelectorAll("[data-axp]").forEach(a=>a.onclick=e=>{e.preventDefault(); axOpen(a.dataset.axp,a.dataset.axb||null);});
+  el.querySelectorAll("a[data-axb]:not([data-axp])").forEach(a=>a.onclick=e=>{e.preventDefault(); jump(a.dataset.axb);});
+  el.querySelectorAll("[data-axfile]").forEach(b=>b.onclick=async()=>{const u=await axFile(b.dataset.axfile); if(u) window.open(u,"_blank");});
+  el.scrollTop=0; if(bid) requestAnimationFrame(()=>jump(bid));
+  axImages(el); axMermaid(el); axTex(el);
+}
+function axClose(){ const el=document.getElementById("ax-reader"); if(el) el.remove(); document.body.classList.remove("ax-lock"); AX.open=null; }
+async function axFile(name){ // 노션에 올렸던 그림·파일: 처음 볼 때 받아 이 기기에 저장
+  const k=CART.id+"/"+name; let r=await axGet("files",k).catch(()=>null);
+  if(!r&&gh&&gh.token){ try{ const b=await axGh("f/"+name,"blob"); if(b){ r={k,blob:b}; await axPut("files",r); } }catch(e){} }
+  return r?URL.createObjectURL(r.blob):null; }
+function axImages(el){ el.querySelectorAll("img[data-axf]").forEach(async i=>{ const u=await axFile(i.dataset.axf); if(u) i.src=u; else i.replaceWith(Object.assign(document.createElement("p"),{className:"note",textContent:"그림은 인터넷에 연결되면 보여요"})); }); }
+function axLib(src,test){ return test()?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=no; document.head.appendChild(s);}); }
+async function axMermaid(el){ const ds=[...el.querySelectorAll(".ax-merd")]; if(!ds.length) return;
+  try{ await axLib("https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js",()=>window.mermaid);
+    const dark=getComputedStyle(document.documentElement).colorScheme!=="light"; mermaid.initialize({startOnLoad:false,theme:dark?"dark":"neutral",securityLevel:"strict",fontFamily:"inherit"});
+    for(const [i,d] of ds.entries()){ try{ const {svg}=await mermaid.render("axm"+Date.now()+i,d.dataset.src); d.innerHTML=svg; d.parentElement.classList.add("ok"); }catch(e){} }
+  }catch(e){} }
+async function axTex(el){ const xs=[...el.querySelectorAll("[data-tex]")]; if(!xs.length) return;
+  try{ if(!document.getElementById("katex-css")){ const l=document.createElement("link"); l.id="katex-css"; l.rel="stylesheet"; l.href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css"; document.head.appendChild(l); }
+    await axLib("https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js",()=>window.katex);
+    xs.forEach(x=>{ try{ katex.render(x.dataset.tex,x,{displayMode:x.classList.contains("ax-eqb"),throwOnError:false}); }catch(e){} });
+  }catch(e){} }
+/* 다른 화면에서 여는 링크: 장 번호(와 단계 제목)로 아카이브 페이지를 찾아요 */
+async function axOpenNum(num,step){ const p=axOfNum(num); if(!p) return; let bid=null;
+  if(step){ const rec=await axGet("pages",CART.id+"/"+p.id).catch(()=>null); if(rec){ const bare=h=>h.replace(/^[^\p{L}\p{N}]+/u,""); const h=axHeads(rec.page.blocks).find(x=>{const t=bare(x.t); return t.startsWith(step)&&(t.length===step.length||!/\d/.test(t[step.length]));}); if(h) bid=h.id; } }
+  axOpen(p.id,bid); }
+const alink=(num,step,label)=>axOfNum(num)?`<button class="nlink ax-go" data-axnum="${esc(num)}" data-axstep="${esc(step||"")}">${label} ›</button>`:"";
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-axnum]"); if(b){ e.preventDefault(); axOpenNum(b.dataset.axnum,b.dataset.axstep||null); } });
+/* 아카이브 탭: 목차 + 찾기 */
+async function axSearchText(){ if(AX.text) return AX.text; const m={}; for(const r of await axAll()){ const t=[]; (function w(a){for(const b of a){ if(b.r) t.push(axPlain(b.r)); if(b.cells) b.cells.forEach(c=>t.push(axPlain(c))); if(b.c) w(b.c);} })(r.page.blocks); m[r.page.id]=t.join("\n"); } return AX.text=m; }
+function axHtml(){
+  const ps=axPages(), root=ps.find(p=>!p.parent), linked=gh&&gh.token;
+  const head=`<div class="card ax-head"><div><p class="q">${root?esc(axTitle(root)):"아카이브"}</p><p class="note" id="ax-msg" role="status">${AX.idx?`페이지 ${ps.length}개 · 이 기기에 저장됨${AX.idx.got?` · ${esc(AX.idx.got.slice(5,10).replace("-","/"))} 받음`:""}`:linked?"노션 풀 노트를 이 기기에 받아 두면 인터넷 없이 읽을 수 있어요.":"아카이브는 GitHub 동기화를 연결한 기기에서 받아요(아틀리에 탭)."}${AX.msg?` · ${esc(AX.msg)}`:""}</p></div>
+    ${linked?`<button id="ax-sync" ${AX.busy?"disabled":""}>${AX.idx?"새로 받기":"받기"}</button>`:""}</div>`;
+  if(!AX.idx) return head;
+  let h=head+`<div class="bar"><input type="search" id="ax-q" placeholder="제목이나 본문에서 찾기 (예: 3-way, 인덱스)" value="${esc(AX.q)}"></div><div id="ax-res"></div>`;
+  if(AX.q) return h;
+  const row=p=>`<button class="row" data-axp="${p.id}">${p.num?`<span class="num">${esc(p.num)}</span>`:`<span class="num" aria-hidden="true">${esc(p.icon||"·")}</span>`}<span class="ttl">${esc(p.title.replace(/^\d+b?\.\s*/,""))}</span>${axKids(p.id).length&&p.depth>1?`<span class="chip">${axKids(p.id).length}</span>`:""}</button>`;
+  const top=root?axKids(root.id):[], loose=top.filter(p=>!axKids(p.id).length);
+  if(root) h+=`<section class="part"><div class="rows">${row(root)}${loose.filter(p=>!/^부록/.test(p.title)).map(row).join("")}</div></section>`;
+  for(const part of top.filter(p=>axKids(p.id).length)) h+=`<section class="part"><h2><button class="linkbtn ax-ph" data-axp="${part.id}">${esc(part.title)}</button></h2><div class="rows">${axKids(part.id).map(row).join("")}</div></section>`;
+  const tail=loose.filter(p=>/^부록/.test(p.title)); if(tail.length) h+=`<section class="part"><h2>부록</h2><div class="rows">${tail.map(row).join("")}</div></section>`;
+  return h; }
+async function axSearch(){ const box=document.getElementById("ax-res"); if(!box) return; const q=AX.q.trim().toLowerCase(); if(!q){ box.innerHTML=""; return; }
+  const txt=await axSearchText(), hits=[];
+  for(const p of axPages()){ const t=txt[p.id]||"", i=t.toLowerCase().indexOf(q), inT=p.title.toLowerCase().includes(q); if(!inT&&i<0) continue;
+    const snip=i<0?"":(i>30?"…":"")+t.slice(Math.max(0,i-30),i+60).replace(/\n/g," ")+"…"; hits.push({p,snip,inT}); }
+  hits.sort((a,b)=>b.inT-a.inT);
+  box.innerHTML=hits.length?`<div class="rows">${hits.slice(0,40).map(({p,snip})=>`<button class="row ax-hitrow" data-axp="${p.id}" data-axq="1"><span class="ttl"><b>${esc(p.title)}</b>${snip?`<span class="note">${esc(snip)}</span>`:""}</span></button>`).join("")}</div>`:`<p class="note">찾는 말이 없어요.</p>`;
+  box.querySelectorAll("[data-axp]").forEach(b=>b.onclick=()=>axOpenFind(b.dataset.axp,q)); }
+async function axOpenFind(pid,q){ await axOpen(pid); const el=document.getElementById("ax-reader"); if(!el) return; // 찾은 말이 처음 나오는 블록으로
+  const hit=[...el.querySelectorAll(".ax-doc [id^='ax-']")].find(x=>x.textContent.toLowerCase().includes(q)); if(!hit) return;
+  for(let d=hit.closest("details");d;d=d.parentElement&&d.parentElement.closest("details")) d.open=true; hit.scrollIntoView({block:"center"}); hit.classList.add("ax-hit"); }
+function bindAx(){ const $=id=>document.getElementById(id);
+  if($("ax-sync")) $("ax-sync").onclick=async()=>{ $("ax-sync").disabled=true; AX.msg=""; await axSync(t=>{const m=$("ax-msg"); if(m) m.textContent=t;}); if(tab==="ax"&&!run) home(); };
+  const q=$("ax-q"); if(q){ q.oninput=()=>{AX.q=q.value; if(!AX.q.trim()){ home(); const n=$("ax-q"); n.focus(); return; } if(!$("ax-res")) return; app.querySelectorAll(".part").forEach(s=>s.remove()); axSearch();}; if(AX.q) axSearch(); }
+  app.querySelectorAll(".part [data-axp]").forEach(b=>b.onclick=()=>axOpen(b.dataset.axp));
+  if(!AX.idx&&gh&&gh.token&&!AX.busy&&!AX.tried){ AX.tried=true; $("ax-sync")&&$("ax-sync").click(); }
+}
+if(gh&&gh.token&&AX.idx) setTimeout(()=>axSync().then(n=>{ if(n&&tab==="ax"&&!run&&!AX.open) home(); }),6000); // 새 버전은 열 때마다 조용히
+
+{const h=location.hash.slice(1); if(["today","self","rev","tim","prac","ax","stats"].includes(h)){tab=h; shelf=false; history.replaceState(null,"",location.pathname);}}
 if(tim) { shelf=false; tab="tim"; }
 home();
 if(tim) runTick();
