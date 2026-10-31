@@ -567,6 +567,52 @@ button.primary{background:var(--primary);color:var(--on-primary);border-radius:1
 .v7rc>span{flex:1;min-width:0}
 .v7at .due{margin-top:12px}
 .v7at .notes{margin-top:10px}
+/* ===== v8: 예전 Iolite의 선 그림 · 그라데이션 카드 · 웅장한 아틀리에 ===== */
+:root{--gline:#5A4E72;--v8hero:linear-gradient(135deg,#231E64 0%,#352F8E 34%,#3F56AE 70%,#5470BE 100%)}
+:root[data-theme="light"]{--gline:#C9BDD9;--v8hero:linear-gradient(140deg,#6652DC 0%,#5443C8 45%,#3D3EA6 100%)}
+@media (prefers-color-scheme:light){:root[data-theme="system"]{--gline:#C9BDD9;--v8hero:linear-gradient(140deg,#6652DC 0%,#5443C8 45%,#3D3EA6 100%)}}
+.v7scene,.v7scene.morning{background:transparent}
+.v7scene .greet,.v7scene.morning .greet,.v7scene.morning .v7top .word{color:var(--text)}
+.v7scene .greet small,.v7scene.morning .greet small{color:var(--gold);letter-spacing:.06em}
+.v7top .sync{background:transparent;color:var(--text-2);border:1px solid var(--chip-line)}
+.v7top .opt{background:transparent;box-shadow:inset 0 0 0 1px var(--chip-line)}
+.nbchip{background:transparent}
+/* 지금 할 것: 예전 그라데이션 */
+.v7hero{background:var(--v8hero);color:#fff;border-radius:26px;padding:22px 22px 16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 0 0 1px rgba(255,255,255,.07)}
+:root[data-theme="light"] .v7hero{box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.v7hero .fx svg{width:100%;height:100%}
+.v7hero .eb{color:#fff;opacity:.9}
+.v7hero .ch{color:#fff;font-weight:600;font-size:16px;line-height:23px;opacity:.95}
+.v7hero .st{color:#fff;font-size:30px;line-height:38px;font-weight:800;letter-spacing:-.5px;margin-top:4px}
+.v7hero .left{color:rgba(255,255,255,.8)}
+.v7hero .gemw{top:58px;right:22px;filter:drop-shadow(0 0 14px rgba(228,219,255,.25))}
+.v7hero .go{width:auto;align-self:flex-start;min-height:48px;padding:0 26px;border-radius:24px;background:#fff;color:#2B2674;font-weight:800}
+.v7hero .more{justify-content:flex-start;gap:16px;margin-top:10px}
+.v7hero .more .nlink,.v7hero .more a{color:rgba(255,255,255,.78)}
+/* 아래 카드: 면 대신 테두리 */
+.v7day,.v7tool,.v7week{background:var(--cardsheen,transparent),transparent;border:1px solid var(--border)}
+.v7day::before,.v7tool::before{display:none}
+.v7tool{min-height:56px;padding:8px 10px;gap:8px;border-radius:16px}
+.v7tool .ic{width:36px;height:36px}
+.v7week .hd i{background:transparent;box-shadow:inset 0 0 0 1px var(--chip-line)}
+.v7week .bars i{width:12px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--lav)}
+.v7week .bars i:not(.fut)[style*="5px"]{box-shadow:inset 0 0 0 1px var(--chip-line)}
+.v7week .bars i:not([style*="5px"]){background:linear-gradient(180deg,rgba(185,154,255,.35),rgba(185,154,255,.08))}
+/* 아틀리에: 예전의 웅장함 */
+.v7at .spot{top:40px;height:330px;width:460px;background:radial-gradient(150px 120px at 50% 40%,rgba(216,180,106,.16),rgba(216,180,106,0) 70%),radial-gradient(230px 160px at 50% 48%,rgba(162,123,207,.18),rgba(107,77,150,0) 100%)}
+.v7at .nbchip{background:transparent;border:1px solid var(--chip-line)}
+.v7at .ttl{margin:30px 0 0}
+.v7at .ttl small{letter-spacing:.24em;font-size:12px}
+.v7at .ttl h2{font-size:40px;line-height:50px;font-weight:800;letter-spacing:.06em;margin-top:6px}
+.v7at .arc{margin-top:8px}
+.v7at .find{background:transparent;margin-top:18px}
+.v7at .div{height:1px;margin:22px 0 0;background:linear-gradient(90deg,rgba(216,180,106,0),rgba(216,180,106,.55) 20%,rgba(216,180,106,.55) 80%,rgba(216,180,106,0))}
+:root[data-theme="light"] .v7at .div{background:linear-gradient(90deg,rgba(154,116,50,0),rgba(154,116,50,.4) 20%,rgba(154,116,50,.4) 80%,rgba(154,116,50,0))}
+.v7at .pl{letter-spacing:.14em;margin-top:16px;font-size:12.5px}
+.v7at .gems{gap:14px 4px;padding-top:16px}
+.v7stone::before{top:40px}
+.v7stone svg.gem.all{filter:drop-shadow(0 0 8px rgba(233,188,92,.55))}
+.v7rc{background:transparent;border:1px solid var(--border)}
 
 </style>
 </head><body><div class="wrap" id="app"></div>
@@ -1843,14 +1889,14 @@ function v7top(){ const ok=syncState==="ok"||(gh&&gh.token);
 const v7chip=()=>`<button class="nbchip" id="to-shelf" aria-label="노트 바꾸기"><b>${esc(NB.title)}</b><span aria-hidden="true">▾</span></button>`;
 
 /* 보석: I3. 바깥 면 하나 = 회차 하나(끝낸 회차는 보랏빛, 그 회차 문항이 다 익으면 꿀빛), 장이 다 익으면 통째로 꿀빛 */
-function v7gem(num,size=52){ const cells=polyCells(num), n=Math.max(3,cells.length||5), cx=size/2, cy=size/2+size*.02, R=size*.47, r=R*.56;
+function v7gem(num,size=52,onCard=false){ const cells=polyCells(num), n=Math.max(3,cells.length||5), cx=size/2, cy=size/2+size*.02, R=size*.46, r=R*.55;
   const all=cells.length>0&&cells.every(x=>x&&x.every(y=>y==="honey"));
   const V=(rad,i)=>{const a=-Math.PI/2+2*Math.PI*i/n; return [cx+rad*Math.cos(a),cy+rad*Math.sin(a)];}, f=p=>p.map(v=>v.toFixed(1)).join(",");
-  const sw=(size/52*1.6).toFixed(2); let g="";
-  for(let i=0;i<n;i++){ const c=cells[i], fill=all?"#F2BC52":!c?"var(--slate)":c.every(y=>y==="honey")?"#E7B65A":"#7B61E5";
-    g+=`<polygon points="${f(V(R,i))} ${f(V(R,i+1))} ${f(V(r,i+1))} ${f(V(r,i))}" fill="${fill}" stroke="var(--seam)" stroke-width="${sw}" stroke-linejoin="round"/>`; }
-  const tb=Array.from({length:n},(_,i)=>f(V(r*.96,i))).join(" ");
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">${g}<polygon points="${tb}" fill="${all?"#E2A23C":"var(--table)"}" stroke="#C9AE7C" stroke-width="${(size/52*1.45).toFixed(2)}"/></svg>`; }
+  const sw=Math.max(1.1,size/52*1.4).toFixed(2), off=onCard?"rgba(255,255,255,.42)":"var(--gline)", HON="#E9BC5C", VIO=onCard?"#E4DBFF":"#A58BFF"; let g="";
+  for(let i=0;i<n;i++){ const c=cells[i], col=all?HON:!c?null:c.every(y=>y==="honey")?HON:VIO;
+    g+=`<polygon points="${f(V(R,i))} ${f(V(R,i+1))} ${f(V(r,i+1))} ${f(V(r,i))}" fill="${col||"none"}" fill-opacity="${col?(onCard?.28:.2):0}" stroke="${col||off}" stroke-width="${sw}" stroke-linejoin="round"/>`; }
+  const tb=Array.from({length:n},(_,i)=>f(V(r,i))).join(" ");
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true" class="gem${all?" all":""}">${g}<polygon points="${tb}" fill="${all?HON:"none"}" fill-opacity="${all?.18:0}" stroke="${all?HON:onCard?"#F4D28A":"var(--gold)"}" stroke-opacity="${all?1:.85}" stroke-width="${sw}" stroke-linejoin="round"/></svg>`; }
 const v7blocks=num=>store.log.filter(x=>x.ch===num&&!x.upgrade).length;
 /* 블록 줄: 블록 하나에 줄 하나. 다섯 개마다 묶어서(넷 + 가로지르는 하나) 한눈에 셀 수 있게 */
 function v7tally(k,w=56,col="var(--tally)"){ if(!k) return ""; const gw=19, per=Math.max(1,Math.floor((w+4)/(gw+4))), rows=Math.ceil(Math.ceil(k/5)/per), H=rows*12; let p="";
@@ -1892,19 +1938,18 @@ function todayHtml(){
   const due=dueIds().length, nx=nextSession(), pd=pracDue(), ws=weekStart(), wSess=store.steps.filter(x=>x.date>=ws).length, goal=wkOf(ws).goal;
   const d=new Date(), hr=d.getHours(), dp=v7part(), lt=v7light(), wk=weekNo();
   const greet=hr<5?"새벽에도 한 면":hr<12?"좋은 아침이에요":hr<18?"오후의 한 블록":"오늘 저녁도 한 면";
-  const A=V7ART[lt&&dp==="morning"?"light":dp]; let art=A.scene+A.light, ground=A.ground, fx=A.facets;
-  if(lt&&dp!=="morning"){ art=art.split("#14111D").join("#F6F3FD"); ground=V7ART.light.ground; fx=V7ART.light.facets; }
+  const art=v8scene(dp,lt), ground="", fx=V8TEX;
   const dstr=`${d.getMonth()+1}월 ${d.getDate()}일 ${"일월화수목금토"[d.getDay()]}${wk&&wk>=1?" · "+wk+"주차":""} · 작업대`;
-  const st=sessToday(), I=V7ART.icons;
+  const st=sessToday(), I=V8IC;
   let hero;
-  if(tim) hero=`<section class="v7hero"><div class="fx">${fx}</div><i class="spine"></i><p class="eb">지금 하는 중</p><p class="ch">${esc(tim.ch||"")}장 ${esc(tim.step||"")}</p><p class="st">${tim.phase==="read"?"읽는 중":tim.phase==="rest"?"쉬는 중":"블록 정리"}</p><button class="go" id="go-tim">블록으로 돌아가기 &nbsp;→</button></section>`;
+  if(tim) hero=`<section class="v7hero"><div class="fx">${fx}</div><p class="eb">지금 하는 중</p><p class="ch">${esc(tim.ch||"")}장 ${esc(tim.step||"")}</p><p class="st">${tim.phase==="read"?"읽는 중":tim.phase==="rest"?"쉬는 중":"블록 정리"}</p><button class="go" id="go-tim">블록으로 돌아가기 &nbsp;→</button></section>`;
   else if(nx){ const left=nx.total-nx.done;
-    hero=`<section class="v7hero"><div class="fx">${fx}</div><i class="spine"></i><span class="gemf"></span><span class="gemw">${v7gem(nx.c.num,76)}</span>
+    hero=`<section class="v7hero"><div class="fx">${fx}</div><span class="gemw">${v7gem(nx.c.num,76,true)}</span>
     <p class="eb">${nx.day?`오늘의 레슨 · ${nx.day}일째 / ${nx.days}`:"지금 할 것"}</p><p class="ch">${esc(nx.c.num)}장 ${v7title(nx.c)}</p><p class="st">이 장 ${nx.done}/${nx.total}회차</p>
     <p class="left">${left?`남은 ${left}회차 · ${PACE.min}분씩, 약 ${left*PACE.min}분`:"마지막 회차"}</p>
     <button class="go" id="go-sess">블록 준비 &nbsp;→</button>
     <div class="more">${axOfNum(nx.c.num)?`<button class="nlink" data-axnum="${esc(nx.c.num)}" data-axstep="${esc(nx.nx.steps[0])}">아카이브에서 ${esc(nx.nx.steps[0])} 읽기 ›</button>`:""}${notionUrl(nx.c.num,nx.nx.steps[0])?`<a href="${notionUrl(nx.c.num,nx.nx.steps[0])}" target="_blank" rel="noopener">노션에서 열기 ›</a>`:""}</div></section>`; }
-  else hero=`<section class="v7hero empty"><i class="spine"></i><p class="eb">지금 할 것</p><p class="ch">이어서 할 회차가 없어요</p><p class="left">아카이브에서 장을 골라 읽거나, 아틀리에에서 지난 장을 다시 봐요.</p></section>`;
+  else hero=`<section class="v7hero empty"><div class="fx">${fx}</div><p class="eb">지금 할 것</p><p class="ch">이어서 할 회차가 없어요</p><p class="left">아카이브에서 장을 골라 읽거나, 아틀리에에서 지난 장을 다시 봐요.</p></section>`;
   const ring=(()=>{const p=Math.min(1,st/Math.max(1,DAY_MIN)), C=2*Math.PI*24; return `<span class="ring"><svg viewBox="0 0 62 62" aria-hidden="true"><circle cx="31" cy="31" r="24" fill="none" stroke="${lt?"#E3DAF5":"#3B3350"}" stroke-width="8"/><circle cx="31" cy="31" r="24" fill="none" stroke="${lt?"#7354E8":"#9A81FF"}" stroke-width="8" stroke-linecap="${p>0&&p<1?"round":"butt"}" stroke-dasharray="${(C*p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 31 31)"/></svg><b>${st}/${DAY_MIN}</b></span>`;})();
   const days=v7weekDays(ws), bar=x=>x.fut?`<i class="fut" style="height:5px"></i>`:`<i style="height:${x.n?Math.min(38,10+x.n*8):5}px"></i>`;
   const tst=testCfg(), at=testAtOf(ws), t=lastTest(ws), open=Date.now()>=at.getTime()-3*3600*1000&&!t;
@@ -2016,7 +2061,7 @@ function statsHtml(){
   const arc=(()=>{const p=all.length?done/all.length:0, a0=Math.PI, a=a0+Math.PI*p, R=22, cx=32, cy=30, P=t=>`${(cx+R*Math.cos(t)).toFixed(1)} ${(cy+R*Math.sin(t)).toFixed(1)}`;
     return `<svg class="arc" viewBox="0 0 64 43" aria-hidden="true"><path d="M${P(a0)} A${R} ${R} 0 0 1 ${P(2*Math.PI)}" fill="none" stroke="var(--chip-line)" stroke-width="7" stroke-linecap="round"/>${p>0?`<path d="M${P(a0)} A${R} ${R} 0 0 1 ${P(a)}" fill="none" stroke="#9A81FF" stroke-width="7" stroke-linecap="round"/>`:""}<text x="32" y="36" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text)">${done}/${all.length}</text></svg>`;})();
   const stone=c=>{ const k=v7blocks(c.num), cells=polyCells(c.num), lit=chapterDone(c), on=!lit&&cells.some(Boolean), now=nx&&nx.c.num===c.num;
-    return `<button class="v7stone ${lit?"lit":on?"on":""} ${now?"now":""}" data-arch-ch="${c.num}" aria-label="${c.num}장 ${v7title(c)} · 블록 ${k}개">${v7gem(c.num,52)}${v7tally(k,56,lit?"var(--gold)":"var(--tally)")}<span class="n">${esc(c.num)}</span></button>`; };
+    return `<button class="v7stone ${lit?"lit":on?"on":""} ${now?"now":""}" data-arch-ch="${c.num}" aria-label="${c.num}장 ${v7title(c)} · 블록 ${k}개">${v7gem(c.num,58)}${v7tally(k,56,lit?"var(--gold)":"var(--tally)")}<span class="n">${esc(c.num)}</span></button>`; };
   const seen=[]; for(let i=store.log.length-1;i>=0&&seen.length<3;i--){ const x=store.log[i]; if(x.ch&&!seen.some(s=>s.ch===x.ch)) seen.push(x); }
   const recent=seen.map(x=>{const c=chapterOf(x.ch); if(!c) return ""; const d=(store.sess[c.num]||[]).length, t=(c.sessions||[]).length;
     return `<button class="v7rc" data-arch-ch="${c.num}"><span><span class="d">${x.date.slice(5).replace("-",".")}</span><b>${esc(c.num)}장 ${v7title(c)}${chapterDone(c)?"":` · ${d}/${t}회차`}</b></span>${v7gem(c.num,30)}</button>`;}).join("");
@@ -2036,6 +2081,51 @@ function bindStats(){
   if($("nq")) $("nq").oninput=e=>{noteQ=e.target.value;const p=e.target.selectionStart;home();const n=$("nq");n.focus();n.setSelectionRange(p,p)};
   if($("arch-due")) $("arch-due").onclick=()=>{ const id=archDue()[0]; if(!id) return; archView=true; archCh=id.split("|")[0]; archOpen=id; archRun={i:0,shown:false,scores:[],phase:"q"}; home(); };
 }
+
+/* ===== v8: 예전 Iolite의 선 그림 + 그라데이션 '지금 할 것' + 웅장한 아틀리에를 v7 뼈대에 섞어요 (2026-10-31) ===== */
+/* 작업대 장면: 면을 채우지 않은 선 그림. 때(아침·오후·저녁)마다 창밖과 빛 색만 바뀌어요 */
+function v8scene(dp,lt){
+  const G=lt?"#9A7432":"#D8B46A", L=lt?"#6A4FD8":"#B99AFF", S=lt?"#8A80A0":"#8F84A8";
+  const glow={morning:lt?"#C9B6FF":"#9C86E8",afternoon:"#F0A060",evening:"#7B61E5"}[dp], sun={morning:"#F2C14E",afternoon:"#F29A5C",evening:"#EDE6FF"}[dp];
+  const sl=(x,y,w,d,h)=>{const a=[x,y],b=[x+w,y-w*.16],c=[x+w+d*.8,y-w*.16+d*.42],e=[x+d*.8,y+d*.42],P=p=>p.map(v=>v.toFixed(1)).join(" ");
+    return `M${P(a)}L${P(b)}L${P(c)}L${P(e)}Z M${P(e)}L${P([e[0],e[1]+h])}L${P([c[0],c[1]+h])}L${P(c)} M${P([c[0],c[1]+h])}L${P([b[0],b[1]+h])}L${P(b)}`;};
+  const sky=dp==="evening"?`<path d="M330 70a16 16 0 1 0 8 30a13 13 0 1 1 -8 -30z" fill="${sun}" fill-opacity=".14" stroke="${sun}" stroke-width="1.5"/>
+      <path d="M262 76v10M257 81h10M346 136v8M342 140h8M282 104v6M279 107h6" stroke="${sun}" stroke-opacity=".8" stroke-width="1.3" stroke-linecap="round"/>`
+    :dp==="afternoon"?`<circle cx="316" cy="104" r="18" fill="${sun}" fill-opacity=".16" stroke="${sun}" stroke-width="1.5"/><path d="M252 132h36M300 140h44" stroke="${sun}" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round"/>`
+    :`<circle cx="322" cy="86" r="15" fill="${sun}" fill-opacity=".16" stroke="${sun}" stroke-width="1.5"/><path d="M256 84h30M266 94h26" stroke="${S}" stroke-opacity=".6" stroke-width="1.2" stroke-linecap="round"/>`;
+  return `<svg viewBox="0 0 393 300" preserveAspectRatio="xMidYMin slice" aria-hidden="true"><defs>
+    <radialGradient id="v8g" cx="0.75" cy="0.36" r="0.62"><stop offset="0" stop-color="${glow}" stop-opacity="${lt?.30:.26}"/><stop offset="1" stop-color="${glow}" stop-opacity="0"/></radialGradient>
+    <linearGradient id="v8b" x1="0.8" y1="0" x2="0.2" y2="1"><stop offset="0" stop-color="${glow}" stop-opacity="${lt?.22:.16}"/><stop offset="1" stop-color="${glow}" stop-opacity="0"/></linearGradient>
+    <linearGradient id="v8l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD696" stop-opacity="${dp==="evening"?.34:.2}"/><stop offset="1" stop-color="#FFD696" stop-opacity="0"/></linearGradient>
+    <clipPath id="v8w"><rect x="240" y="54" width="112" height="134"/></clipPath></defs>
+  <rect width="393" height="300" fill="url(#v8g)"/>
+  <path d="M240 188L352 188L250 252L96 256Z" fill="url(#v8b)"/>
+  <rect x="232" y="46" width="128" height="150" rx="6" fill="none" stroke="${G}" stroke-opacity=".7" stroke-width="1.5"/>
+  <rect x="240" y="54" width="112" height="134" rx="2" fill="none" stroke="${G}" stroke-opacity=".4" stroke-width="1.2"/>
+  <g clip-path="url(#v8w)">${sky}<path d="M240 176L262 158L280 168L304 146L328 166L352 154" fill="none" stroke="${S}" stroke-opacity=".7" stroke-width="1.3" stroke-linejoin="round"/></g>
+  <path d="M296 54V188M240 120H352" stroke="${G}" stroke-opacity=".55" stroke-width="1.4"/>
+  <path d="M224 196H368M220 202H372" stroke="${G}" stroke-opacity=".5" stroke-width="1.2"/>
+  <path d="M0 218L393 210M0 258L393 250" stroke="${G}" stroke-opacity=".6" stroke-width="1.4"/>
+  <g fill="none" stroke="${L}" stroke-width="1.4" stroke-linejoin="round" stroke-opacity=".9">
+    <path d="${sl(190,212,50,20,7)}"/><path d="${sl(196,204,40,16,6)}" stroke="${G}" stroke-opacity=".85"/>
+    <path d="M252 224L290 216L318 228L280 237Z M290 216L298 232 M262 225L280 221M266 229L284 225M298 222L310 227"stroke="${S}"/>
+  </g>
+  <path d="M345 214v-8M335 216h20" stroke="${S}" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M345 206L330 168L352 140" fill="none" stroke="${S}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M340 132L364 122L372 142L348 150Z" fill="${lt?"#fff":"#1C1728"}" fill-opacity=".7" stroke="${L}" stroke-width="1.4" stroke-linejoin="round"/>
+  <path d="M348 150L372 142L380 214L300 222Z" fill="url(#v8l)"/>
+  <circle cx="64" cy="232" r="9" fill="none" stroke="${G}" stroke-width="1.5"/><path d="M71 239l8 7" stroke="${G}" stroke-width="2" stroke-linecap="round"/>
+  <path d="M112 236l9-11h14l9 11-16 9z" fill="${L}" fill-opacity=".22" stroke="${L}" stroke-width="1.4" stroke-linejoin="round"/><path d="M121 225l7 11 7-11M112 236h32" fill="none" stroke="${L}" stroke-opacity=".7" stroke-width="1"/>
+  <path d="M150 240l34-5" stroke="${S}" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>`; }
+/* 지금 할 것: 예전 그라데이션 카드의 결(노이즈 + 사선 광) */
+const V8TEX=`<svg viewBox="0 0 350 223" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><filter id="v8hz" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.018" numOctaves="3" seed="11"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .36  0 0 0 0 .86  1.7 0 0 0 -.62"/></filter><filter id="v8hn" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.6 0 0 0 -.62"/></filter><linearGradient id="v8hs" x1="0" y1="0" x2="1" y2="0.6"><stop offset="0.25" stop-color="#fff" stop-opacity="0"/><stop offset="0.42" stop-color="#fff" stop-opacity=".14"/><stop offset="0.58" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><rect width="350" height="223" filter="url(#v8hz)" opacity=".6"/><rect width="350" height="223" filter="url(#v8hn)" opacity=".14"/><rect width="350" height="223" fill="url(#v8hs)"/><path d="M-10 60L120 -10M-10 150L200 -10M60 240L342 20M180 240L350 100M250 -10L350 70" stroke="#fff" stroke-opacity=".09" stroke-width="1" fill="none"/></svg>`;
+/* 도구 아이콘: 선 그림 */
+const V8IC=(()=>{const w=(d)=>`<svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="var(--lav)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  return {cards:w(`<rect x="5" y="10" width="17" height="13" rx="2.5"/><path d="M9 6.5h14.5a2.5 2.5 0 0 1 2.5 2.5v10" stroke="var(--gold)"/><path d="M9 15h9M9 18.5h6"/>`),
+    loupe:w(`<circle cx="13.5" cy="13.5" r="7.5"/><path d="M19 19l7 7" stroke="var(--gold)" stroke-width="2"/><path d="M10.5 13.5l2.2 2.2 4-4.4"/>`),
+    scroll:w(`<path d="M8 5h12l5 5v17H8z"/><path d="M20 5v5h5" /><path d="M12 15l3 3 6-6" stroke="var(--gold)"/>`),
+    timer:w(`<circle cx="16" cy="18" r="9"/><path d="M13 5h6M16 5v4" stroke="var(--gold)"/><path d="M16 13v5l3 2"/>`)};})();
 
 {const h=location.hash.slice(1); if(["today","self","rev","tim","prac","ax","stats"].includes(h)){tab=h; shelf=false; history.replaceState(null,"",location.pathname);}}
 if(tim) { shelf=false; tab="tim"; }
