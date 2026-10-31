@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#12101C"><meta name="robots" content="noindex,nofollow"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Iolite β">
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#12101C"><meta name="robots" content="noindex,nofollow"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Iolite">
 <title>Iolite</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@900&amp;text=Iolite&amp;display=swap">
@@ -388,7 +388,6 @@ button.nlink.ax-go{background:none;border:0;padding:0;font:inherit;cursor:pointe
  --card-hero:#FFFFFF;--card-day:#FFFFFF;--card-tile:#FFFFFF;--card-week:#FFFFFF;--chip:#FFFFFF;--chip-line:#D9D0ED;
  --tabbg:#FFFFFF;--tabline:#E3DAF5;--dia-off:#C9BDD9;--dia-on:#9A81FF;--tab-off:#514467;--tab-on:#1A1033;
  --tray:#FFFFFF;--sheet:#FFFFFF;--scrim:rgba(26,16,51,.38);--seam:#F6F3FD;--slate:#D9D2E8;--table:#FBFAFE;--tally:#7354E8}}
-html,body{overflow-x:clip}
 body{margin:0;background:var(--bg);font-family:var(--f-body);font-size:14px;line-height:22px}
 :root{--col:430px;--sh:calc(min(100vw,var(--col))*300/393)}
 .wrap{max-width:var(--col);margin-inline:auto;padding-inline:20px;padding-block:0 calc(92px + env(safe-area-inset-bottom,0px))}
@@ -654,6 +653,39 @@ button.primary{background:var(--primary);color:var(--on-primary);border-radius:1
 @keyframes v8now{50%{fill-opacity:.32}}
 @media (prefers-reduced-motion:reduce){.v7hero .fnow{animation:none}}
 
+/* ===== 통독 카트리지 (reading.js) ===== */
+:root{--tr-ko:#B9A4FF;--tr-sae:#7FD1C3;--tr-esv:#E3BE73}
+:root[data-theme="light"]{--tr-ko:#6A4FD8;--tr-sae:#1F8A78;--tr-esv:#8A6420}
+@media (prefers-color-scheme:light){:root[data-theme="system"]{--tr-ko:#6A4FD8;--tr-sae:#1F8A78;--tr-esv:#8A6420}}
+.v7tools.rd3{grid-template-columns:1fr 1fr}.v7tools.rd3>:last-child{grid-column:1/-1}
+.rd-c-ko{--trc:var(--tr-ko)}.rd-c-sae{--trc:var(--tr-sae)}.rd-c-esv{--trc:var(--tr-esv)}
+.rd-trs{display:flex;gap:8px;flex-wrap:wrap}
+.rd-tr{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--chip-line);background:none;color:var(--text-2);font-size:14px}
+.rd-tr i{width:10px;height:10px;border-radius:3px;transform:rotate(45deg);border:1.5px solid var(--trc)}
+.rd-tr.on{color:var(--text);border-color:var(--trc);background:color-mix(in srgb,var(--trc) 14%,transparent)}.rd-tr.on i{background:var(--trc)}
+.ax-trbar{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--glass)}
+.ax-doc .ax-v{margin:0;padding:5px 0 5px 12px;border-left:2px solid color-mix(in srgb,var(--trc,var(--tr-ko)) 55%,transparent);line-height:1.75}
+.ax-doc .ax-v .vn{display:inline-block;min-width:1.6em;margin-right:4px;font-size:.78em;color:var(--trc,var(--tr-ko));font-variant-numeric:tabular-nums}
+.ax-doc .ax-v.multi{display:flex;gap:4px;border-left:0;padding-left:0;margin:6px 0}
+.ax-doc .ax-v.multi .vn{color:var(--text-2);padding-top:5px}
+.ax-doc .ax-v.multi p{margin:0 0 4px;padding:3px 0 3px 10px;border-left:2px solid var(--trc)}
+.ax-doc .ax-v .tg{display:inline-block;margin-right:6px;font-size:10.5px;font-weight:700;letter-spacing:.3px;color:var(--trc)}
+.rd-nav{display:flex;align-items:center;gap:10px;margin:4px 0 14px}.rd-nav>div{flex:1;text-align:center}.rd-nav b{display:block;font-size:16px}.rd-nav small{color:var(--text-2);font-size:12px}
+.rd-nav button{min-width:44px;min-height:44px;border-radius:999px;font-size:20px}
+.rd-w{padding:16px 18px;margin:0 0 10px;border-radius:var(--r-m);background:var(--card);border:1px solid var(--border)}
+.rd-w .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.rd-w .g{font-size:26px;font-family:"Gentium Plus","Noto Serif","Times New Roman",serif;color:var(--text)}
+.rd-w.he .g{font-family:"SBL Hebrew","Ezra SIL","Noto Serif Hebrew","Times New Roman",serif}
+.rd-w .rd{color:var(--lav);font-size:14px}.rd-w .mean{margin:6px 0 4px;font-weight:700}.rd-w .note{margin:0}.rd-w .meta{margin:8px 0 0;font-size:12.5px;color:var(--text-2)}
+.rd-w .linkbtn{color:var(--lav);padding:0;min-height:0;background:none;font-size:12.5px;text-decoration:underline;text-underline-offset:3px}
+.rd-bg{font-size:16px;line-height:1.75;margin:4px 0 0}
+.rd-soon{text-align:center;padding:36px 22px}.rd-soon .eb{color:var(--gold);letter-spacing:1.4px;font-size:12px;margin:0}.rd-soon h2{margin:6px 0 12px}
+.rd-qt .rd-ref{font-weight:700;margin:0 0 8px}.rd-vs p{margin:4px 0;line-height:1.75}.rd-vs .vn{color:var(--lav);font-size:.78em;margin-right:6px}
+.rd-sum{margin:6px 0;padding-left:18px}.rd-point,.rd-hymn{line-height:1.7}
+.rd-form label{display:block;margin:0 0 12px}.rd-form label span{display:block;font-size:13px;color:var(--text-2);margin-bottom:4px}.rd-form textarea{width:100%;box-sizing:border-box}
+.rd-tree .tgem{cursor:pointer}
+.rd-w .meta{display:block}
+html,body{overflow-x:clip}
+
 </style>
 </head><body><div class="wrap" id="app"></div>
 <script id="iolite-main" type="text/plain">
@@ -847,7 +879,7 @@ function shelfHtml(){
   return `<p class="note" style="margin:0">서재 · 공부할 노트를 골라요</p>
   ${NOTEBOOKS.map(nb=>`<button class="nbcard" data-nb="${nb.id}"><span class="eyebrow">노트</span><span class="t">${esc(nb.title)}</span><span class="s">${esc(nb.sub)}</span>
     <span class="gems">${Array.from({length:Math.max(wkOf(ws).goal,wSess)},(_,i)=>gem(i<wSess?"done":"empty",22)).join("")}</span>
-    <span class="meta"><span>${esc(scopeLabel())} · ${sD}/${sT}회차</span><span>통과한 장 ${passed}</span></span></button>`).join("")}
+    <span class="meta"><span>${typeof RD!=="undefined"&&RD?`${DATA.length}일`:esc(scopeLabel())} · ${sD}/${sT}회차</span><span>${typeof RD!=="undefined"&&RD?`다 읽은 날 ${DATA.filter(chapterDone).length}`:`통과한 장 ${passed}`}</span></span></button>`).join("")}
   ${IoliteCart.list.filter(c=>c.id!==NB.id).map(c=>`<button class="nbcard" data-cart="${esc(c.id)}"><span class="eyebrow">노트</span><span class="t">${esc(c.title)}</span><span class="s">${esc(c.sub)}</span></button>`).join("")}
   <div class="card"><p class="q">카트리지</p><p class="note">노트 하나 = 카트리지 파일 하나. 꽂은 카트리지는 이 기기에만 저장되고, 기록은 노트마다 따로예요. GitHub에 연결돼 있으면 비공개 저장소의 cartridges/ 폴더에서 새 버전을 받아요.</p>
     <div class="bar"><button id="cart-add">파일에서 꽂기</button>${gh&&gh.token?`<button id="cart-refresh">GitHub에서 새로 받기</button>`:""}<button id="cart-remove">'${esc(NB.title)}' 빼기</button></div><p class="note" id="cart-msg" role="status"></p></div>`;
@@ -1040,7 +1072,7 @@ function stone(states,size=40,label){ const n=Math.max(3,states.length), R=size/
   const all=states.length&&states.every(x=>x==="honey"), ring=Array.from({length:n},(_,i)=>P(r,-Math.PI/2-Math.PI/n+2*Math.PI*i/n)).join(" ");
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">${g}<polygon points="${ring}" fill="${all?"var(--honey)":"var(--facet-table)"}" stroke="var(--goldA)" stroke-width="1"/>${label?`<text x="${cx}" y="${cx+size*.085}" text-anchor="middle" font-family="SUIT Variable,sans-serif" font-size="${size*.22}" font-weight="800" fill="${all?"#3A2D12":"var(--text-2)"}">${label}</text>`:""}</svg>`; }
 /* 아틀리에 보석: 변 = 회차, 한 변의 칸 = 그 회차에 쓴 블록. 칸 색 = 그 회차 문항의 복습 상자(하늘 읽음 · 보라 상자 2~3 · 꿀 상자 4+). 1회차는 오른쪽 위 변부터 시계 방향 */
-function chapterDone(c){ const qs=(c.quick||[]); return (store.attempts[c.num]||[]).some(x=>x.pass)&&qs.length>0&&qs.every(q=>((store.srs[qid(c.num,q.q)]||{}).box||0)>=4); }
+function chapterDone(c){ if(typeof RD!=="undefined"&&RD) return (c.sessions||[]).length>0&&c.sessions.every(s=>(store.sess[c.num]||[]).includes(s.n)); /* 통독: 그날을 다 읽으면 완성 */ const qs=(c.quick||[]); return (store.attempts[c.num]||[]).some(x=>x.pass)&&qs.length>0&&qs.every(q=>((store.srs[qid(c.num,q.q)]||{}).box||0)>=4); }
 function polyCells(num){ const c=chapterOf(num); if(!c||!(c.sessions||[]).length) return [];
   const done=new Set(store.sess[num]||[]), passed=(store.attempts[num]||[]).some(x=>x.pass);
   return c.sessions.map(se=>{ if(!done.has(se.n)) return null;
@@ -1808,6 +1840,7 @@ function axBlocks(bs,heads){ let h="", i=0;
   return h; }
 function axBlock(b,heads){ const kids=b.c&&b.c.length?axBlocks(b.c,heads):"", id=`id="ax-${b.id}"`, col=axCol(b.color);
   switch(b.t){
+    case "verse": return rdVerse(b,id); // 성경 절(통독 카트리지): 켠 번역마다 한 줄
     case "paragraph": return b.r&&b.r.length?`<p ${id} class="${col.trim()}">${axRich(b.r)}</p>${kids?`<div class="ax-ind">${kids}</div>`:""}`:`<div class="ax-gap"></div>`;
     case "heading_1": case "heading_2": case "heading_3": { const n={heading_1:2,heading_2:3,heading_3:4}[b.t], hh=`<h${n} ${b.toggle?"":id} class="ax-h${col}">${axRich(b.r)}</h${n}>`;
       return b.toggle?`<details ${id} class="ax-tg ax-tgh"><summary>${hh}</summary>${kids}</details>`:hh; }
@@ -1840,7 +1873,7 @@ async function axOpen(pid,bid){
   const sib=info.parent?axKids(info.parent):[], si=sib.findIndex(x=>x.id===pid), prev=sib[si-1], next=sib[si+1];
   let el=document.getElementById("ax-reader"); if(!el){ el=document.createElement("div"); el.id="ax-reader"; el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true"); document.body.appendChild(el); document.body.classList.add("ax-lock"); }
   AX.open=pid;
-  el.innerHTML=`<div class="ax-top"><button class="crumb" id="ax-close">‹ 닫기</button><span class="ax-tt">${esc(p.title)}</span>${heads.length>2?`<button class="crumb" id="ax-tocb" aria-label="목차">목차</button>`:""}</div>
+  el.innerHTML=`<div class="ax-top"><button class="crumb" id="ax-close">‹ 닫기</button><span class="ax-tt">${esc(p.title)}</span>${p.blocks.some(x=>x.t==="verse")?`<button class="crumb" id="ax-trb" aria-expanded="false">번역</button>`:""}${heads.length>2?`<button class="crumb" id="ax-tocb" aria-label="목차">목차</button>`:""}</div>${p.blocks.some(x=>x.t==="verse")?`<div class="ax-trbar" id="ax-trbar" hidden>${rdTrChips()}</div>`:""}
   <article class="ax-doc">${trail.length?`<p class="ax-trail">${trail.map(t=>`<a href="#" data-axp="${t.id}">${esc(t.title)}</a>`).join(" › ")}</p>`:""}
   <h1>${p.icon?`<span aria-hidden="true">${esc(p.icon)}</span> `:""}${esc(p.title)}</h1>
   ${heads.length>2?`<nav class="ax-toc" id="ax-toc" hidden>${heads.map(x=>`<a href="#" data-axb="${x.id}" class="l${x.l}">${esc(x.t)}</a>`).join("")}</nav>`:""}
@@ -1849,6 +1882,8 @@ async function axOpen(pid,bid){
   <p class="note ax-foot">${p.edited?`${esc(p.edited.slice(0,10))} 판`:""}</p></article>`;
   const jump=b=>{ const t=document.getElementById("ax-"+b); if(!t) return; for(let d=t.closest("details");d;d=d.parentElement&&d.parentElement.closest("details")) d.open=true; if(t.tagName==="DETAILS") t.open=true; t.scrollIntoView({block:"start"}); t.classList.add("ax-hit"); setTimeout(()=>t.classList.remove("ax-hit"),1600); };
   el.querySelector("#ax-close").onclick=axClose;
+  const trb=el.querySelector("#ax-trb"); if(trb){ trb.onclick=()=>{const t=el.querySelector("#ax-trbar"); t.hidden=!t.hidden; trb.setAttribute("aria-expanded",String(!t.hidden));};
+    el.querySelectorAll("[data-rdtr]").forEach(b=>b.onclick=async()=>{ if(!rdSetTr(b.dataset.rdtr)) return; const y=el.scrollTop; await axOpen(pid,null); const n=document.getElementById("ax-reader"); n.scrollTop=y; n.querySelector("#ax-trbar").hidden=false; }); }
   const tb=el.querySelector("#ax-tocb"); if(tb) tb.onclick=()=>{const t=el.querySelector("#ax-toc"); t.hidden=!t.hidden; if(!t.hidden) el.scrollTo({top:0});};
   el.querySelectorAll("[data-axp]").forEach(a=>a.onclick=e=>{e.preventDefault(); axOpen(a.dataset.axp,a.dataset.axb||null);});
   el.querySelectorAll("a[data-axb]:not([data-axp])").forEach(a=>a.onclick=e=>{e.preventDefault(); jump(a.dataset.axb);});
@@ -1880,7 +1915,7 @@ async function axOpenNum(num,step){ const p=axOfNum(num); if(!p) return; let bid
 const alink=(num,step,label)=>axOfNum(num)?`<button class="nlink ax-go" data-axnum="${esc(num)}" data-axstep="${esc(step||"")}">${label} ›</button>`:"";
 document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-axnum]"); if(b){ e.preventDefault(); axOpenNum(b.dataset.axnum,b.dataset.axstep||null); } });
 /* 아카이브 탭: 목차 + 찾기 */
-async function axSearchText(){ if(AX.text) return AX.text; const m={}; for(const r of await axAll()){ const t=[]; (function w(a){for(const b of a){ if(b.r) t.push(axPlain(b.r)); if(b.cells) b.cells.forEach(c=>t.push(axPlain(c))); if(b.c) w(b.c);} })(r.page.blocks); m[r.page.id]=t.join("\n"); } return AX.text=m; }
+async function axSearchText(){ if(AX.text) return AX.text; const m={}; for(const r of await axAll()){ const t=[]; (function w(a){for(const b of a){ if(b.r) t.push(axPlain(b.r)); if(b.t==="verse") t.push([b.ko,b.sae,b.esv].filter(Boolean).join(" ")); if(b.cells) b.cells.forEach(c=>t.push(axPlain(c))); if(b.c) w(b.c);} })(r.page.blocks); m[r.page.id]=t.join("\n"); } return AX.text=m; }
 function axHtml(){
   const ps=axPages(), root=ps.find(p=>!p.parent), linked=gh&&gh.token;
   const head=`<div class="card ax-head"><div><p class="q">${root?esc(axTitle(root)):"아카이브"}</p><p class="note" id="ax-msg" role="status">${AX.idx?`페이지 ${ps.length}개 · 이 기기에 저장됨${AX.idx.got?` · ${esc(AX.idx.got.slice(5,10).replace("-","/"))} 받음`:""}`:linked?"풀 노트를 이 기기에 받아 두면 인터넷 없이 읽을 수 있어요.":"아카이브는 GitHub 동기화를 연결한 기기에서 받아요(메뉴 › 기록과 설정)."}${AX.msg?` · ${esc(AX.msg)}`:""}</p></div>
@@ -1917,7 +1952,7 @@ if(gh&&gh.token&&AX.idx) setTimeout(()=>axSync().then(n=>{ if(n&&tab==="ax"&&!ru
    아래 함수들은 template.html의 같은 이름 함수를 대신해요(같은 스크립트 안에서 나중에 선언한 함수가 이겨요). */
 const V7ART={"afternoon": {"ground": "<svg width=\"393\" height=\"483\" viewBox=\"0 0 393 483\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_3684)\">\n<path d=\"M393 0H0V483H393V0Z\" fill=\"url(#paint0_linear_285_3684)\"/>\n<\/g>\n<defs>\n<linearGradient id=\"paint0_linear_285_3684\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"483\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#2A1B31\"/>\n<stop offset=\"0.32\" stop-color=\"#14111D\"/>\n<stop offset=\"1\" stop-color=\"#14111D\"/>\n<\/linearGradient>\n<clipPath id=\"clip0_285_3684\">\n<rect width=\"393\" height=\"483\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>", "light": "<svg width=\"393\" height=\"300\" viewBox=\"0 0 393 300\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_3671)\">\n<path opacity=\"0.5\" d=\"M236 169L356 160L393 196L156 260L79 229L236 169Z\" fill=\"url(#paint0_linear_285_3671)\"/>\n<path opacity=\"0.2\" d=\"M174 205L235 217L97 251L0 232L174 205Z\" fill=\"#3D2446\"/>\n<path opacity=\"0.25\" d=\"M14 211L77 196L120 212L51 229L14 211Z\" fill=\"#3D2446\"/>\n<path opacity=\"0.4\" d=\"M22 208L75 195L92 202L39 217L22 208Z\" fill=\"#FFBC73\"/>\n<path opacity=\"0.65\" d=\"M47 201L66 196L77 205L57 211L47 201Z\" fill=\"#CA685F\"/>\n<path opacity=\"0.55\" d=\"M57 211L77 205V214L58 220L57 211Z\" fill=\"#3D2446\"/>\n<path opacity=\"0.72\" d=\"M47 201L57 211L58 220L47 210V201Z\" fill=\"#3D2446\"/>\n<path opacity=\"0.86\" d=\"M84 216L117 207L129 213L95 223L84 216Z\" fill=\"#FFBC73\"/>\n<path opacity=\"0.5\" d=\"M95 223L129 213V217L96 227L95 223Z\" fill=\"#3D2446\"/>\n<path opacity=\"0.42\" d=\"M177 230L236 245L393 199\" stroke=\"#FFBC73\" stroke-width=\"2\"/>\n<g opacity=\"0.18\">\n<path d=\"M286 177L393 230L286 177Z\" fill=\"black\"/>\n<path d=\"M286 177L393 230\" stroke=\"#3D2446\" stroke-width=\"15\"/>\n<\/g>\n<g opacity=\"0.23\">\n<path d=\"M299 177L393 214L299 177Z\" fill=\"black\"/>\n<path d=\"M299 177L393 214\" stroke=\"#FFBC73\" stroke-width=\"11\"/>\n<\/g>\n<\/g>\n<defs>\n<linearGradient id=\"paint0_linear_285_3671\" x1=\"79\" y1=\"160\" x2=\"136.829\" y2=\"341.583\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#FFBC73\" stop-opacity=\"0.52\"/>\n<stop offset=\"1\" stop-color=\"#FFBC73\" stop-opacity=\"0\"/>\n<\/linearGradient>\n<clipPath id=\"clip0_285_3671\">\n<rect width=\"393\" height=\"300\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>", "facets": "<svg width=\"353\" height=\"223\" viewBox=\"0 0 353 223\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_1040)\">\n<path opacity=\"0.17\" d=\"M353 0V143L256 98L219 0H353Z\" fill=\"#F2A071\"/>\n<path opacity=\"0.19\" d=\"M353 0V71L274 0H353Z\" fill=\"#FFB08D\"/>\n<g opacity=\"0.42\">\n<path d=\"M215 0L353 77L215 0ZM262 0L353 50L262 0Z\" fill=\"black\"/>\n<path d=\"M215 0L353 77M262 0L353 50\" stroke=\"#F2A071\" stroke-width=\"2\"/>\n<\/g>\n<path opacity=\"0.28\" d=\"M242 74L320 35L353 61\" stroke=\"#FFB08D\"/>\n<\/g>\n<defs>\n<clipPath id=\"clip0_285_1040\">\n<rect width=\"353\" height=\"223\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>", "scene": "<svg width=\"393\" height=\"300\" viewBox=\"0 0 393 300\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_982)\">\n<path d=\"M393 0H0V300H393V0Z\" fill=\"#66354F\"/>\n<path d=\"M0 0H212L179 193L0 232V0Z\" fill=\"#713750\"/>\n<path opacity=\"0.12\" d=\"M0 0H72L57 221L0 233V0Z\" fill=\"#F2A071\"/>\n<path opacity=\"0.1\" d=\"M74 0H105L78 208L57 219L74 0Z\" fill=\"#301D38\"/>\n<path opacity=\"0.12\" d=\"M159 0H212L179 193L130 205L159 0Z\" fill=\"#F2A071\"/>\n<g opacity=\"0.18\">\n<path d=\"M0 156L177 189L0 156ZM0 179L172 203L0 179Z\" fill=\"black\"/>\n<path d=\"M0 156L177 189M0 179L172 203\" stroke=\"#301D38\" stroke-width=\"2\"/>\n<\/g>\n<path opacity=\"0.58\" d=\"M0 220L179 193L226 205L0 275V220Z\" fill=\"#985E78\"/>\n<path d=\"M223 32L368 22V182L223 195V32Z\" fill=\"#301D38\"/>\n<path d=\"M229 37L363 27V174L229 187V37Z\" fill=\"#34233F\"/>\n<path d=\"M236 45L356 36V166L236 179V45Z\" fill=\"url(#paint0_linear_285_982)\"/>\n<path opacity=\"0.54\" d=\"M236 133L278 108L318 130L356 113V166L236 179V133Z\" fill=\"#BCA9B2\"/>\n<path opacity=\"0.7\" d=\"M236 151L267 130L307 149L356 136V166L236 179V151Z\" fill=\"#D4BEA8\"/>\n<path d=\"M318 97C330.15 97 340 87.1503 340 75C340 62.8497 330.15 53 318 53C305.85 53 296 62.8497 296 75C296 87.1503 305.85 97 318 97Z\" fill=\"#FFE2A5\"/>\n<path d=\"M294 40L299 175L294 40ZM234 107L358 99L234 107Z\" fill=\"black\"/>\n<path d=\"M294 40L299 175M234 107L358 99\" stroke=\"#34233F\" stroke-width=\"7\"/>\n<path d=\"M219 190L370 177L385 188L218 206L219 190Z\" fill=\"#301D38\"/>\n<path opacity=\"0.45\" d=\"M222 189L369 177L373 181L224 194L222 189Z\" fill=\"#F2A071\"/>\n<path opacity=\"0.23\" d=\"M234 185L360 175L393 248L262 241L234 185Z\" fill=\"#F2A071\"/>\n<path d=\"M159 208L325 171L393 197L229 246L159 208Z\" fill=\"#985E78\"/>\n<path d=\"M159 208L229 246V282L159 244V208Z\" fill=\"#462A4B\"/>\n<path d=\"M229 246L393 197V241L229 282V246Z\" fill=\"#623751\"/>\n<path opacity=\"0.52\" d=\"M163 208L229 242L391 195\" stroke=\"#F2A071\" stroke-width=\"2\"/>\n<path opacity=\"0.24\" d=\"M188 214L325 177L369 197L231 237L188 214Z\" fill=\"#F2A071\"/>\n<path opacity=\"0.5\" d=\"M176 203L221 191L255 204L205 217L176 203Z\" fill=\"#301D38\"/>\n<path d=\"M174 198L215 188L235 195L193 207L174 198Z\" fill=\"#6E4DAA\"/>\n<path d=\"M174 198L193 207V213L174 204V198Z\" fill=\"#462A4B\"/>\n<path d=\"M193 207L235 195V201L193 213V207Z\" fill=\"#FFF0D8\"/>\n<path d=\"M181 190L216 180L237 188L201 199L181 190Z\" fill=\"#F2A36A\"/>\n<path d=\"M181 190L201 199V204L181 195V190Z\" fill=\"#462A4B\"/>\n<path d=\"M201 199L237 188V193L201 204V199Z\" fill=\"#FFF0D8\"/>\n<path d=\"M205 217L262 199L281 205L224 224L205 217Z\" fill=\"#FFF0D8\"/>\n<path d=\"M224 224L281 205L300 212L240 233L224 224Z\" fill=\"#FFF0D8\"/>\n<path opacity=\"0.48\" d=\"M224 224L240 233L300 212M245 208L269 212M247 214L264 218M256 222L278 215\" stroke=\"#1A1033\" stroke-width=\"1.1\"/>\n<path d=\"M300 191L328 183L336 187L305 196L300 191Z\" fill=\"#F2A36A\"/>\n<path d=\"M304 192L329 185L326 188L307 195L304 192Z\" fill=\"#FFF0D8\"/>\n<path d=\"M341 203L373 194L382 198L347 207L341 203Z\" fill=\"#301D38\"/>\n<path d=\"M350 196L349 157L354 143\" stroke=\"#34233F\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n<path d=\"M352 143L370 137L383 155L361 164L352 143Z\" fill=\"#503056\"/>\n<path d=\"M352 143L370 137L374 144L357 150L352 143Z\" fill=\"#F2A36A\"/>\n<path d=\"M361 164L383 155L378 166L364 171L361 164Z\" fill=\"#34233F\"/>\n<path opacity=\"0.27\" d=\"M367 171L278 220L393 253L381 168L367 171Z\" fill=\"#F2A071\"/>\n<path opacity=\"0.18\" d=\"M0 243L159 245L229 282L393 241V300H0V243Z\" fill=\"#14111D\"/>\n<path d=\"M393 248H0V300H393V248Z\" fill=\"url(#paint1_linear_285_982)\"/>\n<\/g>\n<defs>\n<linearGradient id=\"paint0_linear_285_982\" x1=\"236\" y1=\"36\" x2=\"353.126\" y2=\"158.86\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#D7656C\"/>\n<stop offset=\"1\" stop-color=\"#FFC274\"/>\n<\/linearGradient>\n<linearGradient id=\"paint1_linear_285_982\" x1=\"0\" y1=\"248\" x2=\"0\" y2=\"300\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#14111D\" stop-opacity=\"0\"/>\n<stop offset=\"1\" stop-color=\"#14111D\"/>\n<\/linearGradient>\n<clipPath id=\"clip0_285_982\">\n<rect width=\"393\" height=\"300\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>"}, "evening": {"ground": "<svg width=\"393\" height=\"483\" viewBox=\"0 0 393 483\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_3706)\">\n<path d=\"M393 0H0V483H393V0Z\" fill=\"url(#paint0_linear_285_3706)\"/>\n<\/g>\n<defs>\n<linearGradient id=\"paint0_linear_285_3706\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"483\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#1E1930\"/>\n<stop offset=\"0.32\" stop-color=\"#14111D\"/>\n<stop offset=\"1\" stop-color=\"#14111D\"/>\n<\/linearGradient>\n<clipPath id=\"clip0_285_3706\">\n<rect width=\"393\" height=\"483\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>", "light": "<svg width=\"393\" height=\"300\" viewBox=\"0 0 393 300\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_3693)\">\n<path opacity=\"0.5\" d=\"M236 169L356 160L393 196L156 260L79 229L236 169Z\" fill=\"url(#paint0_linear_285_3693)\"/>\n<path opacity=\"0.2\" d=\"M174 205L235 217L97 251L0 232L174 205Z\" fill=\"#281F3A\"/>\n<path opacity=\"0.25\" d=\"M14 211L77 196L120 212L51 229L14 211Z\" fill=\"#281F3A\"/>\n<path opacity=\"0.4\" d=\"M22 208L75 195L92 202L39 217L22 208Z\" fill=\"#DAB1F2\"/>\n<path opacity=\"0.65\" d=\"M47 201L66 196L77 205L57 211L47 201Z\" fill=\"#8558B9\"/>\n<path opacity=\"0.55\" d=\"M57 211L77 205V214L58 220L57 211Z\" fill=\"#281F3A\"/>\n<path opacity=\"0.72\" d=\"M47 201L57 211L58 220L47 210V201Z\" fill=\"#281F3A\"/>\n<path opacity=\"0.86\" d=\"M84 216L117 207L129 213L95 223L84 216Z\" fill=\"#DAB1F2\"/>\n<path opacity=\"0.5\" d=\"M95 223L129 213V217L96 227L95 223Z\" fill=\"#281F3A\"/>\n<path opacity=\"0.42\" d=\"M177 230L236 245L393 199\" stroke=\"#DAB1F2\" stroke-width=\"2\"/>\n<g opacity=\"0.18\">\n<path d=\"M286 177L393 230L286 177Z\" fill=\"black\"/>\n<path d=\"M286 177L393 230\" stroke=\"#281F3A\" stroke-width=\"15\"/>\n<\/g>\n<g opacity=\"0.23\">\n<path d=\"M299 177L393 214L299 177Z\" fill=\"black\"/>\n<path d=\"M299 177L393 214\" stroke=\"#DAB1F2\" stroke-width=\"11\"/>\n<\/g>\n<\/g>\n<defs>\n<linearGradient id=\"paint0_linear_285_3693\" x1=\"79\" y1=\"160\" x2=\"136.829\" y2=\"341.583\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#DAB1F2\" stop-opacity=\"0.52\"/>\n<stop offset=\"1\" stop-color=\"#DAB1F2\" stop-opacity=\"0\"/>\n<\/linearGradient>\n<clipPath id=\"clip0_285_3693\">\n<rect width=\"393\" height=\"300\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>", "facets": "<svg width=\"353\" height=\"223\" viewBox=\"0 0 353 223\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_1190)\">\n<path opacity=\"0.17\" d=\"M353 0V143L256 98L219 0H353Z\" fill=\"#C494DD\"/>\n<path opacity=\"0.19\" d=\"M353 0V71L274 0H353Z\" fill=\"#C2A1EF\"/>\n<g opacity=\"0.42\">\n<path d=\"M215 0L353 77L215 0ZM262 0L353 50L262 0Z\" fill=\"black\"/>\n<path d=\"M215 0L353 77M262 0L353 50\" stroke=\"#C494DD\" stroke-width=\"2\"/>\n<\/g>\n<path opacity=\"0.28\" d=\"M242 74L320 35L353 61\" stroke=\"#C2A1EF\"/>\n<\/g>\n<defs>\n<clipPath id=\"clip0_285_1190\">\n<rect width=\"353\" height=\"223\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>", "scene": "<svg width=\"393\" height=\"300\" viewBox=\"0 0 393 300\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_1131)\">\n<path d=\"M393 0H0V300H393V0Z\" fill=\"#49365F\"/>\n<path d=\"M0 0H212L179 193L0 232V0Z\" fill=\"#594473\"/>\n<path opacity=\"0.12\" d=\"M0 0H72L57 221L0 233V0Z\" fill=\"#C494DD\"/>\n<path opacity=\"0.1\" d=\"M74 0H105L78 208L57 219L74 0Z\" fill=\"#1B162B\"/>\n<path opacity=\"0.12\" d=\"M159 0H212L179 193L130 205L159 0Z\" fill=\"#C494DD\"/>\n<g opacity=\"0.18\">\n<path d=\"M0 156L177 189L0 156ZM0 179L172 203L0 179Z\" fill=\"black\"/>\n<path d=\"M0 156L177 189M0 179L172 203\" stroke=\"#1B162B\" stroke-width=\"2\"/>\n<\/g>\n<path opacity=\"0.58\" d=\"M0 220L179 193L226 205L0 275V220Z\" fill=\"#635073\"/>\n<path d=\"M223 32L368 22V182L223 195V32Z\" fill=\"#1B162B\"/>\n<path d=\"M229 37L363 27V174L229 187V37Z\" fill=\"#21182F\"/>\n<path d=\"M236 45L356 36V166L236 179V45Z\" fill=\"url(#paint0_linear_285_1131)\"/>\n<path opacity=\"0.54\" d=\"M236 133L278 108L318 130L356 113V166L236 179V133Z\" fill=\"#5D4D7C\"/>\n<path opacity=\"0.7\" d=\"M236 151L267 130L307 149L356 136V166L236 179V151Z\" fill=\"#493B65\"/>\n<path d=\"M318 92C327.389 92 335 84.3888 335 75C335 65.6112 327.389 58 318 58C308.611 58 301 65.6112 301 75C301 84.3888 308.611 92 318 92Z\" fill=\"#EADCF4\"/>\n<path d=\"M258 70L260 75L265 77L260 78L258 83L256 78L251 77L256 75L258 70ZM342 103L344 107L348 108L344 110L342 114L341 110L337 108L341 107L342 103Z\" fill=\"#F4F0FF\"/>\n<path d=\"M294 40L299 175L294 40ZM234 107L358 99L234 107Z\" fill=\"black\"/>\n<path d=\"M294 40L299 175M234 107L358 99\" stroke=\"#21182F\" stroke-width=\"7\"/>\n<path d=\"M219 190L370 177L385 188L218 206L219 190Z\" fill=\"#1B162B\"/>\n<path opacity=\"0.45\" d=\"M222 189L369 177L373 181L224 194L222 189Z\" fill=\"#C494DD\"/>\n<path opacity=\"0.17\" d=\"M234 185L360 175L393 248L262 241L234 185Z\" fill=\"#C494DD\"/>\n<path d=\"M159 208L325 171L393 197L229 246L159 208Z\" fill=\"#635073\"/>\n<path d=\"M159 208L229 246V282L159 244V208Z\" fill=\"#292139\"/>\n<path d=\"M229 246L393 197V241L229 282V246Z\" fill=\"#44334F\"/>\n<path opacity=\"0.52\" d=\"M163 208L229 242L391 195\" stroke=\"#C494DD\" stroke-width=\"2\"/>\n<path opacity=\"0.24\" d=\"M188 214L325 177L369 197L231 237L188 214Z\" fill=\"#C494DD\"/>\n<path opacity=\"0.5\" d=\"M176 203L221 191L255 204L205 217L176 203Z\" fill=\"#1B162B\"/>\n<path d=\"M174 198L215 188L235 195L193 207L174 198Z\" fill=\"#785AB1\"/>\n<path d=\"M174 198L193 207V213L174 204V198Z\" fill=\"#292139\"/>\n<path d=\"M193 207L235 195V201L193 213V207Z\" fill=\"#EFE1E8\"/>\n<path d=\"M181 190L216 180L237 188L201 199L181 190Z\" fill=\"#C18EA2\"/>\n<path d=\"M181 190L201 199V204L181 195V190Z\" fill=\"#292139\"/>\n<path d=\"M201 199L237 188V193L201 204V199Z\" fill=\"#EFE1E8\"/>\n<path d=\"M205 217L262 199L281 205L224 224L205 217Z\" fill=\"#EFE1E8\"/>\n<path d=\"M224 224L281 205L300 212L240 233L224 224Z\" fill=\"#EFE1E8\"/>\n<path opacity=\"0.48\" d=\"M224 224L240 233L300 212M245 208L269 212M247 214L264 218M256 222L278 215\" stroke=\"#1A1033\" stroke-width=\"1.1\"/>\n<path d=\"M300 191L328 183L336 187L305 196L300 191Z\" fill=\"#C18EA2\"/>\n<path d=\"M304 192L329 185L326 188L307 195L304 192Z\" fill=\"#EFE1E8\"/>\n<path d=\"M341 203L373 194L382 198L347 207L341 203Z\" fill=\"#1B162B\"/>\n<path d=\"M350 196L349 157L354 143\" stroke=\"#21182F\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n<path d=\"M352 143L370 137L383 155L361 164L352 143Z\" fill=\"#A07986\"/>\n<path d=\"M352 143L370 137L374 144L357 150L352 143Z\" fill=\"#C18EA2\"/>\n<path d=\"M361 164L383 155L378 166L364 171L361 164Z\" fill=\"#21182F\"/>\n<path opacity=\"0.4\" d=\"M367 171L278 220L393 253L381 168L367 171Z\" fill=\"#C494DD\"/>\n<path opacity=\"0.18\" d=\"M0 243L159 245L229 282L393 241V300H0V243Z\" fill=\"#14111D\"/>\n<path d=\"M393 248H0V300H393V248Z\" fill=\"url(#paint1_linear_285_1131)\"/>\n<\/g>\n<defs>\n<linearGradient id=\"paint0_linear_285_1131\" x1=\"236\" y1=\"36\" x2=\"353.126\" y2=\"158.86\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#4B3B68\"/>\n<stop offset=\"1\" stop-color=\"#8D6EAA\"/>\n<\/linearGradient>\n<linearGradient id=\"paint1_linear_285_1131\" x1=\"0\" y1=\"248\" x2=\"0\" y2=\"300\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#14111D\" stop-opacity=\"0\"/>\n<stop offset=\"1\" stop-color=\"#14111D\"/>\n<\/linearGradient>\n<clipPath id=\"clip0_285_1131\">\n<rect width=\"393\" height=\"300\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>"}, "icons": {"cards": "<svg width=\"44\" height=\"35\" viewBox=\"0 0 44 35\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path d=\"M7 22L26 17L35 22L16 27L7 22Z\" fill=\"#5B3BD6\"/>\n<path d=\"M7 17L26 12L35 17L16 22L7 17Z\" fill=\"#A995F3\"/>\n<path d=\"M7 12L26 7L35 12L16 17L7 12Z\" fill=\"#CBBEFF\"/>\n<path d=\"M16 17L35 12V18L16 23V17Z\" fill=\"#6656C3\"/>\n<\/svg>", "loupe": "<svg width=\"44\" height=\"35\" viewBox=\"0 0 44 35\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path d=\"M20 21C26.0751 21 31 17.4183 31 13C31 8.58172 26.0751 5 20 5C13.9249 5 9 8.58172 9 13C9 17.4183 13.9249 21 20 21Z\" fill=\"#CDC1FA\"/>\n<path d=\"M9 13V18C16.3333 24 23.6667 24 31 18V13\" fill=\"#7E68C6\"/>\n<path d=\"M20 18C23.866 18 27 15.7614 27 13C27 10.2386 23.866 8 20 8C16.134 8 13 10.2386 13 13C13 15.7614 16.134 18 20 18Z\" fill=\"#40364F\"/>\n<path d=\"M29 21L38 29L29 21Z\" fill=\"black\"/>\n<path d=\"M29 21L38 29\" stroke=\"#D9B979\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n<\/svg>", "scroll": "<svg width=\"44\" height=\"35\" viewBox=\"0 0 44 35\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path d=\"M8 8L29 4L35 10L14 14L8 8Z\" fill=\"#D7C9FF\"/>\n<path d=\"M14 14L35 10V27L14 31V14Z\" fill=\"#9E89E2\"/>\n<path d=\"M8 8L14 14V31L8 25V8Z\" fill=\"#7161A8\"/>\n<path d=\"M18 17L30 15L18 17ZM18 22L29 20L18 22Z\" fill=\"black\"/>\n<path d=\"M18 17L30 15M18 22L29 20\" stroke=\"#E9E1FF\" stroke-width=\"2\"/>\n<\/svg>", "timer": "<svg width=\"36\" height=\"36\" viewBox=\"0 0 36 36\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path d=\"M16 2H24V6H16V2Z\" fill=\"#B8A4FF\"/>\n<path d=\"M20 6L32 13V27L20 34L8 27V13L20 6Z\" fill=\"#514267\"/>\n<path d=\"M20 6L32 13L20 20L8 13L20 6Z\" fill=\"#8E76BB\"/>\n<path d=\"M8 13L20 20V34L8 27V13Z\" fill=\"#7155A9\"/>\n<path d=\"M20 20L32 13V27L20 34V20Z\" fill=\"#9F80D2\"/>\n<path d=\"M20 13V21L25 24\" stroke=\"#F4F0FF\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n<\/svg>", "button": "<svg width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<rect width=\"28\" height=\"28\" rx=\"14\" fill=\"#262035\"/>\n<circle cx=\"9.5\" cy=\"14.5\" r=\"1.5\" fill=\"#C8B9E8\"/>\n<circle cx=\"14.5\" cy=\"14.5\" r=\"1.5\" fill=\"#C8B9E8\"/>\n<circle cx=\"19.5\" cy=\"14.5\" r=\"1.5\" fill=\"#C8B9E8\"/>\n<\/svg>"}, "light": {"ground": "<svg width=\"393\" height=\"483\" viewBox=\"0 0 393 483\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_3728)\">\n<path d=\"M393 0H0V483H393V0Z\" fill=\"url(#paint0_linear_285_3728)\"/>\n<\/g>\n<defs>\n<linearGradient id=\"paint0_linear_285_3728\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"483\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#EAE3F7\"/>\n<stop offset=\"0.32\" stop-color=\"#F6F3FD\"/>\n<stop offset=\"1\" stop-color=\"#F6F3FD\"/>\n<\/linearGradient>\n<clipPath id=\"clip0_285_3728\">\n<rect width=\"393\" height=\"483\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>", "light": "<svg width=\"393\" height=\"300\" viewBox=\"0 0 393 300\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_3715)\">\n<path opacity=\"0.5\" d=\"M236 169L356 160L393 196L156 260L79 229L236 169Z\" fill=\"url(#paint0_linear_285_3715)\"/>\n<path opacity=\"0.2\" d=\"M174 205L235 217L97 251L0 232L174 205Z\" fill=\"#463258\"/>\n<path opacity=\"0.25\" d=\"M14 211L77 196L120 212L51 229L14 211Z\" fill=\"#463258\"/>\n<path opacity=\"0.4\" d=\"M22 208L75 195L92 202L39 217L22 208Z\" fill=\"#FBE0A5\"/>\n<path opacity=\"0.65\" d=\"M47 201L66 196L77 205L57 211L47 201Z\" fill=\"#7953C9\"/>\n<path opacity=\"0.55\" d=\"M57 211L77 205V214L58 220L57 211Z\" fill=\"#463258\"/>\n<path opacity=\"0.72\" d=\"M47 201L57 211L58 220L47 210V201Z\" fill=\"#463258\"/>\n<path opacity=\"0.86\" d=\"M84 216L117 207L129 213L95 223L84 216Z\" fill=\"#FBE0A5\"/>\n<path opacity=\"0.5\" d=\"M95 223L129 213V217L96 227L95 223Z\" fill=\"#463258\"/>\n<path opacity=\"0.42\" d=\"M177 230L236 245L393 199\" stroke=\"#FBE0A5\" stroke-width=\"2\"/>\n<g opacity=\"0.18\">\n<path d=\"M286 177L393 230L286 177Z\" fill=\"black\"/>\n<path d=\"M286 177L393 230\" stroke=\"#463258\" stroke-width=\"15\"/>\n<\/g>\n<g opacity=\"0.23\">\n<path d=\"M299 177L393 214L299 177Z\" fill=\"black\"/>\n<path d=\"M299 177L393 214\" stroke=\"#FBE0A5\" stroke-width=\"11\"/>\n<\/g>\n<\/g>\n<defs>\n<linearGradient id=\"paint0_linear_285_3715\" x1=\"79\" y1=\"160\" x2=\"136.829\" y2=\"341.583\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#FBE0A5\" stop-opacity=\"0.52\"/>\n<stop offset=\"1\" stop-color=\"#FBE0A5\" stop-opacity=\"0\"/>\n<\/linearGradient>\n<clipPath id=\"clip0_285_3715\">\n<rect width=\"393\" height=\"300\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>", "facets": "<svg width=\"353\" height=\"223\" viewBox=\"0 0 353 223\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_1441)\">\n<path opacity=\"0.14\" d=\"M353 0V143L256 98L219 0H353Z\" fill=\"#F1CC8F\"/>\n<path opacity=\"0.19\" d=\"M353 0V71L274 0H353Z\" fill=\"#B99AFF\"/>\n<g opacity=\"0.42\">\n<path d=\"M215 0L353 77L215 0ZM262 0L353 50L262 0Z\" fill=\"black\"/>\n<path d=\"M215 0L353 77M262 0L353 50\" stroke=\"#F1CC8F\" stroke-width=\"2\"/>\n<\/g>\n<path opacity=\"0.28\" d=\"M242 74L320 35L353 61\" stroke=\"#B99AFF\"/>\n<\/g>\n<defs>\n<clipPath id=\"clip0_285_1441\">\n<rect width=\"353\" height=\"223\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>", "scene": "<svg width=\"393\" height=\"300\" viewBox=\"0 0 393 300\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_1383)\">\n<path d=\"M393 0H0V300H393V0Z\" fill=\"#C9B7E9\"/>\n<path d=\"M0 0H212L179 193L0 232V0Z\" fill=\"#DFD3F5\"/>\n<path opacity=\"0.12\" d=\"M0 0H72L57 221L0 233V0Z\" fill=\"#F1CC8F\"/>\n<path opacity=\"0.1\" d=\"M74 0H105L78 208L57 219L74 0Z\" fill=\"#352743\"/>\n<path opacity=\"0.12\" d=\"M159 0H212L179 193L130 205L159 0Z\" fill=\"#F1CC8F\"/>\n<g opacity=\"0.18\">\n<path d=\"M0 156L177 189L0 156ZM0 179L172 203L0 179Z\" fill=\"black\"/>\n<path d=\"M0 156L177 189M0 179L172 203\" stroke=\"#352743\" stroke-width=\"2\"/>\n<\/g>\n<path opacity=\"0.58\" d=\"M0 220L179 193L226 205L0 275V220Z\" fill=\"#8F75A9\"/>\n<path d=\"M223 32L368 22V182L223 195V32Z\" fill=\"#352743\"/>\n<path d=\"M229 37L363 27V174L229 187V37Z\" fill=\"#443453\"/>\n<path d=\"M236 45L356 36V166L236 179V45Z\" fill=\"url(#paint0_linear_285_1383)\"/>\n<path opacity=\"0.54\" d=\"M236 133L278 108L318 130L356 113V166L236 179V133Z\" fill=\"#BCA9B2\"/>\n<path opacity=\"0.7\" d=\"M236 151L267 130L307 149L356 136V166L236 179V151Z\" fill=\"#D4BEA8\"/>\n<path d=\"M318 97C330.15 97 340 87.1503 340 75C340 62.8497 330.15 53 318 53C305.85 53 296 62.8497 296 75C296 87.1503 305.85 97 318 97Z\" fill=\"#FFF0B5\"/>\n<path d=\"M294 40L299 175L294 40ZM234 107L358 99L234 107Z\" fill=\"black\"/>\n<path d=\"M294 40L299 175M234 107L358 99\" stroke=\"#443453\" stroke-width=\"7\"/>\n<path d=\"M219 190L370 177L385 188L218 206L219 190Z\" fill=\"#352743\"/>\n<path opacity=\"0.45\" d=\"M222 189L369 177L373 181L224 194L222 189Z\" fill=\"#F1CC8F\"/>\n<path opacity=\"0.23\" d=\"M234 185L360 175L393 248L262 241L234 185Z\" fill=\"#F1CC8F\"/>\n<path d=\"M159 208L325 171L393 197L229 246L159 208Z\" fill=\"#8F75A9\"/>\n<path d=\"M159 208L229 246V282L159 244V208Z\" fill=\"#483453\"/>\n<path d=\"M229 246L393 197V241L229 282V246Z\" fill=\"#6E527D\"/>\n<path opacity=\"0.52\" d=\"M163 208L229 242L391 195\" stroke=\"#F1CC8F\" stroke-width=\"2\"/>\n<path opacity=\"0.24\" d=\"M188 214L325 177L369 197L231 237L188 214Z\" fill=\"#F1CC8F\"/>\n<path opacity=\"0.5\" d=\"M176 203L221 191L255 204L205 217L176 203Z\" fill=\"#352743\"/>\n<path d=\"M174 198L215 188L235 195L193 207L174 198Z\" fill=\"#6646B5\"/>\n<path d=\"M174 198L193 207V213L174 204V198Z\" fill=\"#483453\"/>\n<path d=\"M193 207L235 195V201L193 213V207Z\" fill=\"#FFF4DC\"/>\n<path d=\"M181 190L216 180L237 188L201 199L181 190Z\" fill=\"#EBA96E\"/>\n<path d=\"M181 190L201 199V204L181 195V190Z\" fill=\"#483453\"/>\n<path d=\"M201 199L237 188V193L201 204V199Z\" fill=\"#FFF4DC\"/>\n<path d=\"M205 217L262 199L281 205L224 224L205 217Z\" fill=\"#FFF4DC\"/>\n<path d=\"M224 224L281 205L300 212L240 233L224 224Z\" fill=\"#FFF4DC\"/>\n<path opacity=\"0.48\" d=\"M224 224L240 233L300 212M245 208L269 212M247 214L264 218M256 222L278 215\" stroke=\"#1A1033\" stroke-width=\"1.1\"/>\n<path d=\"M300 191L328 183L336 187L305 196L300 191Z\" fill=\"#EBA96E\"/>\n<path d=\"M304 192L329 185L326 188L307 195L304 192Z\" fill=\"#FFF4DC\"/>\n<path d=\"M341 203L373 194L382 198L347 207L341 203Z\" fill=\"#352743\"/>\n<path d=\"M350 196L349 157L354 143\" stroke=\"#443453\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n<path d=\"M352 143L370 137L383 155L361 164L352 143Z\" fill=\"#584068\"/>\n<path d=\"M352 143L370 137L374 144L357 150L352 143Z\" fill=\"#EBA96E\"/>\n<path d=\"M361 164L383 155L378 166L364 171L361 164Z\" fill=\"#443453\"/>\n<path opacity=\"0.27\" d=\"M367 171L278 220L393 253L381 168L367 171Z\" fill=\"#F1CC8F\"/>\n<path opacity=\"0.18\" d=\"M0 243L159 245L229 282L393 241V300H0V243Z\" fill=\"#F6F3FD\"/>\n<path d=\"M393 248H0V300H393V248Z\" fill=\"url(#paint1_linear_285_1383)\"/>\n<\/g>\n<defs>\n<linearGradient id=\"paint0_linear_285_1383\" x1=\"236\" y1=\"36\" x2=\"353.126\" y2=\"158.86\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#CDBBE9\"/>\n<stop offset=\"1\" stop-color=\"#F9DFAB\"/>\n<\/linearGradient>\n<linearGradient id=\"paint1_linear_285_1383\" x1=\"0\" y1=\"248\" x2=\"0\" y2=\"300\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#F6F3FD\" stop-opacity=\"0\"/>\n<stop offset=\"1\" stop-color=\"#F6F3FD\"/>\n<\/linearGradient>\n<clipPath id=\"clip0_285_1383\">\n<rect width=\"393\" height=\"300\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>"}, "morning": {"ground": "<svg width=\"393\" height=\"483\" viewBox=\"0 0 393 483\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_3662)\">\n<path d=\"M393 0H0V483H393V0Z\" fill=\"url(#paint0_linear_285_3662)\"/>\n<\/g>\n<defs>\n<linearGradient id=\"paint0_linear_285_3662\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"483\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#221A35\"/>\n<stop offset=\"0.32\" stop-color=\"#14111D\"/>\n<stop offset=\"1\" stop-color=\"#14111D\"/>\n<\/linearGradient>\n<clipPath id=\"clip0_285_3662\">\n<rect width=\"393\" height=\"483\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>", "light": "<svg width=\"393\" height=\"300\" viewBox=\"0 0 393 300\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_3649)\">\n<path opacity=\"0.5\" d=\"M236 169L356 160L393 196L156 260L79 229L236 169Z\" fill=\"url(#paint0_linear_285_3649)\"/>\n<path opacity=\"0.2\" d=\"M174 205L235 217L97 251L0 232L174 205Z\" fill=\"#463258\"/>\n<path opacity=\"0.25\" d=\"M14 211L77 196L120 212L51 229L14 211Z\" fill=\"#463258\"/>\n<path opacity=\"0.4\" d=\"M22 208L75 195L92 202L39 217L22 208Z\" fill=\"#FBE0A5\"/>\n<path opacity=\"0.65\" d=\"M47 201L66 196L77 205L57 211L47 201Z\" fill=\"#7953C9\"/>\n<path opacity=\"0.55\" d=\"M57 211L77 205V214L58 220L57 211Z\" fill=\"#463258\"/>\n<path opacity=\"0.72\" d=\"M47 201L57 211L58 220L47 210V201Z\" fill=\"#463258\"/>\n<path opacity=\"0.86\" d=\"M84 216L117 207L129 213L95 223L84 216Z\" fill=\"#FBE0A5\"/>\n<path opacity=\"0.5\" d=\"M95 223L129 213V217L96 227L95 223Z\" fill=\"#463258\"/>\n<path opacity=\"0.42\" d=\"M177 230L236 245L393 199\" stroke=\"#FBE0A5\" stroke-width=\"2\"/>\n<g opacity=\"0.18\">\n<path d=\"M286 177L393 230L286 177Z\" fill=\"black\"/>\n<path d=\"M286 177L393 230\" stroke=\"#463258\" stroke-width=\"15\"/>\n<\/g>\n<g opacity=\"0.23\">\n<path d=\"M299 177L393 214L299 177Z\" fill=\"black\"/>\n<path d=\"M299 177L393 214\" stroke=\"#FBE0A5\" stroke-width=\"11\"/>\n<\/g>\n<\/g>\n<defs>\n<linearGradient id=\"paint0_linear_285_3649\" x1=\"79\" y1=\"160\" x2=\"136.829\" y2=\"341.583\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#FBE0A5\" stop-opacity=\"0.52\"/>\n<stop offset=\"1\" stop-color=\"#FBE0A5\" stop-opacity=\"0\"/>\n<\/linearGradient>\n<clipPath id=\"clip0_285_3649\">\n<rect width=\"393\" height=\"300\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>", "facets": "<svg width=\"353\" height=\"223\" viewBox=\"0 0 353 223\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_891)\">\n<path opacity=\"0.17\" d=\"M353 0V143L256 98L219 0H353Z\" fill=\"#F1CC8F\"/>\n<path opacity=\"0.19\" d=\"M353 0V71L274 0H353Z\" fill=\"#B99AFF\"/>\n<g opacity=\"0.42\">\n<path d=\"M215 0L353 77L215 0ZM262 0L353 50L262 0Z\" fill=\"black\"/>\n<path d=\"M215 0L353 77M262 0L353 50\" stroke=\"#F1CC8F\" stroke-width=\"2\"/>\n<\/g>\n<path opacity=\"0.28\" d=\"M242 74L320 35L353 61\" stroke=\"#B99AFF\"/>\n<\/g>\n<defs>\n<clipPath id=\"clip0_285_891\">\n<rect width=\"353\" height=\"223\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>", "scene": "<svg width=\"393\" height=\"300\" viewBox=\"0 0 393 300\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_285_833)\">\n<path d=\"M393 0H0V300H393V0Z\" fill=\"#C9B7E9\"/>\n<path d=\"M0 0H212L179 193L0 232V0Z\" fill=\"#DFD3F5\"/>\n<path opacity=\"0.12\" d=\"M0 0H72L57 221L0 233V0Z\" fill=\"#F1CC8F\"/>\n<path opacity=\"0.1\" d=\"M74 0H105L78 208L57 219L74 0Z\" fill=\"#352743\"/>\n<path opacity=\"0.12\" d=\"M159 0H212L179 193L130 205L159 0Z\" fill=\"#F1CC8F\"/>\n<g opacity=\"0.18\">\n<path d=\"M0 156L177 189L0 156ZM0 179L172 203L0 179Z\" fill=\"black\"/>\n<path d=\"M0 156L177 189M0 179L172 203\" stroke=\"#352743\" stroke-width=\"2\"/>\n<\/g>\n<path opacity=\"0.58\" d=\"M0 220L179 193L226 205L0 275V220Z\" fill=\"#8F75A9\"/>\n<path d=\"M223 32L368 22V182L223 195V32Z\" fill=\"#352743\"/>\n<path d=\"M229 37L363 27V174L229 187V37Z\" fill=\"#443453\"/>\n<path d=\"M236 45L356 36V166L236 179V45Z\" fill=\"url(#paint0_linear_285_833)\"/>\n<path opacity=\"0.54\" d=\"M236 133L278 108L318 130L356 113V166L236 179V133Z\" fill=\"#BCA9B2\"/>\n<path opacity=\"0.7\" d=\"M236 151L267 130L307 149L356 136V166L236 179V151Z\" fill=\"#D4BEA8\"/>\n<path d=\"M318 97C330.15 97 340 87.1503 340 75C340 62.8497 330.15 53 318 53C305.85 53 296 62.8497 296 75C296 87.1503 305.85 97 318 97Z\" fill=\"#FFF0B5\"/>\n<path d=\"M294 40L299 175L294 40ZM234 107L358 99L234 107Z\" fill=\"black\"/>\n<path d=\"M294 40L299 175M234 107L358 99\" stroke=\"#443453\" stroke-width=\"7\"/>\n<path d=\"M219 190L370 177L385 188L218 206L219 190Z\" fill=\"#352743\"/>\n<path opacity=\"0.45\" d=\"M222 189L369 177L373 181L224 194L222 189Z\" fill=\"#F1CC8F\"/>\n<path opacity=\"0.23\" d=\"M234 185L360 175L393 248L262 241L234 185Z\" fill=\"#F1CC8F\"/>\n<path d=\"M159 208L325 171L393 197L229 246L159 208Z\" fill=\"#8F75A9\"/>\n<path d=\"M159 208L229 246V282L159 244V208Z\" fill=\"#483453\"/>\n<path d=\"M229 246L393 197V241L229 282V246Z\" fill=\"#6E527D\"/>\n<path opacity=\"0.52\" d=\"M163 208L229 242L391 195\" stroke=\"#F1CC8F\" stroke-width=\"2\"/>\n<path opacity=\"0.24\" d=\"M188 214L325 177L369 197L231 237L188 214Z\" fill=\"#F1CC8F\"/>\n<path opacity=\"0.5\" d=\"M176 203L221 191L255 204L205 217L176 203Z\" fill=\"#352743\"/>\n<path d=\"M174 198L215 188L235 195L193 207L174 198Z\" fill=\"#6646B5\"/>\n<path d=\"M174 198L193 207V213L174 204V198Z\" fill=\"#483453\"/>\n<path d=\"M193 207L235 195V201L193 213V207Z\" fill=\"#FFF4DC\"/>\n<path d=\"M181 190L216 180L237 188L201 199L181 190Z\" fill=\"#EBA96E\"/>\n<path d=\"M181 190L201 199V204L181 195V190Z\" fill=\"#483453\"/>\n<path d=\"M201 199L237 188V193L201 204V199Z\" fill=\"#FFF4DC\"/>\n<path d=\"M205 217L262 199L281 205L224 224L205 217Z\" fill=\"#FFF4DC\"/>\n<path d=\"M224 224L281 205L300 212L240 233L224 224Z\" fill=\"#FFF4DC\"/>\n<path opacity=\"0.48\" d=\"M224 224L240 233L300 212M245 208L269 212M247 214L264 218M256 222L278 215\" stroke=\"#1A1033\" stroke-width=\"1.1\"/>\n<path d=\"M300 191L328 183L336 187L305 196L300 191Z\" fill=\"#EBA96E\"/>\n<path d=\"M304 192L329 185L326 188L307 195L304 192Z\" fill=\"#FFF4DC\"/>\n<path d=\"M341 203L373 194L382 198L347 207L341 203Z\" fill=\"#352743\"/>\n<path d=\"M350 196L349 157L354 143\" stroke=\"#443453\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n<path d=\"M352 143L370 137L383 155L361 164L352 143Z\" fill=\"#584068\"/>\n<path d=\"M352 143L370 137L374 144L357 150L352 143Z\" fill=\"#EBA96E\"/>\n<path d=\"M361 164L383 155L378 166L364 171L361 164Z\" fill=\"#443453\"/>\n<path opacity=\"0.27\" d=\"M367 171L278 220L393 253L381 168L367 171Z\" fill=\"#F1CC8F\"/>\n<path opacity=\"0.18\" d=\"M0 243L159 245L229 282L393 241V300H0V243Z\" fill=\"#14111D\"/>\n<path d=\"M393 248H0V300H393V248Z\" fill=\"url(#paint1_linear_285_833)\"/>\n<\/g>\n<defs>\n<linearGradient id=\"paint0_linear_285_833\" x1=\"236\" y1=\"36\" x2=\"353.126\" y2=\"158.86\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#CDBBE9\"/>\n<stop offset=\"1\" stop-color=\"#F9DFAB\"/>\n<\/linearGradient>\n<linearGradient id=\"paint1_linear_285_833\" x1=\"0\" y1=\"248\" x2=\"0\" y2=\"300\" gradientUnits=\"userSpaceOnUse\">\n<stop stop-color=\"#14111D\" stop-opacity=\"0\"/>\n<stop offset=\"1\" stop-color=\"#14111D\"/>\n<\/linearGradient>\n<clipPath id=\"clip0_285_833\">\n<rect width=\"393\" height=\"300\" fill=\"white\"/>\n<\/clipPath>\n<\/defs>\n<\/svg>"}};
 const NAV3=[["today","오늘"],["ax","아카이브"],["stats","아틀리에"]];
-const FOCUS={tim:"타이머",rev:"복습",self:"체크",prac:"실전"};
+const FOCUS={tim:"타이머",rev:"복습",self:"체크",prac:"실전",qt:"QT",dict:"원어 사전"};
 let v7sheet=null, v7cal=null;
 const v7light=()=>{const t=document.documentElement.dataset.theme; return t==="light"||(t==="system"&&matchMedia("(prefers-color-scheme: light)").matches);};
 const v7part=()=>{const h=new Date().getHours(); return h>=5&&h<12?"morning":h>=12&&h<18?"afternoon":"evening";};
@@ -1959,7 +1994,7 @@ function home(){
   if(guideView){ app.innerHTML=`<div class="v7focus"><button id="guide-close">‹ 돌아가기</button><span>사용 설명서</span></div>`+guideHtml().replace(/<div class="bar"><button id="guide-close">← 돌아가기<\/button><\/div>/,"");
     document.getElementById("guide-close").onclick=()=>{guideView=false; home(); window.scrollTo(0,0);}; return; }
   const focus=FOCUS[tab];
-  const view={today:todayHtml,tim:timerHtml,rev:revHtml,prac:pracHtml,stats:statsHtml,self:selfHtml,ax:axHtml}[tab]||todayHtml;
+  const view={today:todayHtml,tim:timerHtml,rev:revHtml,prac:pracHtml,stats:statsHtml,self:selfHtml,ax:axHtml,qt:rdQtHtml,dict:rdDictHtml}[tab]||todayHtml;
   let h;
   if(focus){ const d=new Date(); h=`<div class="v7focus"><button id="v7-back" aria-label="오늘로">‹ 오늘</button><span class="cr">${esc(NB.title)}</span></div><div class="v8ft" aria-hidden="false"><small>${d.getMonth()+1}월 ${d.getDate()}일 ${"일월화수목금토"[d.getDay()]} · 작업대</small><h1>${focus}</h1></div>`+whenBox(tab)+view(); }
   else if(tab==="ax") h=view()+navHtml();
@@ -1970,14 +2005,16 @@ function home(){
   const b=document.getElementById("v7-back"); if(b) b.onclick=()=>{tab="today"; home(); window.scrollTo(0,0);};
   const ts=document.getElementById("to-shelf"); if(ts) ts.onclick=()=>{shelf=true; v7sheet=null; home(); window.scrollTo(0,0);};
   app.querySelectorAll("[data-sheet]").forEach(x=>x.onclick=()=>{v7sheet=x.dataset.sheet; home();});
-  ({today:bindToday,tim:bindTimer,rev:bindRev,prac:bindPrac,stats:bindStats,self:bindSelf,ax:bindAx}[tab]||bindToday)();
+  ({today:bindToday,tim:bindTimer,rev:bindRev,prac:bindPrac,stats:bindStats,self:bindSelf,ax:bindAx,qt:rdBindQt,dict:rdBindDict}[tab]||bindToday)();
   v7bindSheet();
+  rdFixLabels(app);
 }
 function bindTabs(){ app.querySelectorAll(".nav [data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;archView=false;archCh=null;guideView=false;v7sheet=null;try{history.replaceState(null,"","#"+tab)}catch(e){}home();window.scrollTo(0,0)}); }
 
 /* ---------- 오늘 ---------- */
 function v7weekDays(ws){ const td=today(); return [...Array(7)].map((_,i)=>{const d=addDays(ws,i); return {d,n:store.steps.filter(x=>x.date===d).length,fut:d>td,now:d===td};}); }
 function todayHtml(){
+  if(RD) return rdTodayHtml(); // 통독 카트리지(reading.js)
   const due=dueIds().length, nx=nextSession(), pd=pracDue(), ws=weekStart(), wSess=store.steps.filter(x=>x.date>=ws).length, goal=wkOf(ws).goal;
   const d=new Date(), hr=d.getHours(), dp=v7part(), lt=v7light(), wk=weekNo();
   const greet=hr<5?"새벽에도 한 면":hr<12?"좋은 아침이에요":hr<18?"오후의 한 블록":"오늘 저녁도 한 면";
@@ -2016,6 +2053,7 @@ function todayHtml(){
   </div>`;
 }
 function bindToday(){
+  if(RD) return rdBindToday();
   const $=id=>document.getElementById(id);
   if($("go-rev")) $("go-rev").onclick=()=>startReview();
   if($("go-prac")) $("go-prac").onclick=()=>{tab="prac";home();window.scrollTo(0,0)};
@@ -2066,9 +2104,11 @@ function v7sheetHtml(){ if(!v7sheet) return "";
     <h4>아카이브</h4><p>노트 전문을 앱 안에서 읽어요.</p>
     <h4>아틀리에</h4><p>완성한 장과 최근 기록을 봐요. 보석 아래 줄 하나가 블록 하나예요.</p></div>
     <div class="hr" style="margin-top:18px"></div><button class="nlink" id="v7-guide-full" style="background:none;padding:10px 0;color:var(--lav);font-size:14px">자세한 사용 설명서 ›</button>`; }
+  else if(v7sheet==="bg") inner=rdBgSheet();
+  else if(v7sheet==="tr"){ cls="card-s"; inner=`${head("성경 번역")}<p class="note" style="margin:0 0 12px">아카이브에서 보일 번역을 켜고 꺼요. 둘 이상 켜면 절마다 번역이 색으로 나뉘어 함께 보여요.</p>${rdTrChips()}`; }
   else if(v7sheet==="menu"){ inner=`<i class="grab"></i>${head("메뉴")}<div class="menu">
     <button data-sheet="guide">사용법 <small>›</small></button>
-    <button id="v7-to-self">장 체크 <small>장마다 5문항 ›</small></button>
+    ${RD?`<button data-sheet="tr">성경 번역 <small>${rdTr().map(t=>RD_TR.find(([k])=>k===t)[1]).join(" · ")} ›</small></button>`:`<button id="v7-to-self">장 체크 <small>장마다 5문항 ›</small></button>`}
     <button data-sheet="settings">기록과 설정 <small>화면 모드 · 동기화 · 백업 ›</small></button>
     <button id="v7-to-shelf">노트 바꾸기 <small>${esc(NB.title)} ›</small></button></div>`; }
   else if(v7sheet==="settings"){ const wasArch=archView; archView=false; inner=`<i class="grab"></i>${head("기록과 설정")}<div style="display:flex;flex-direction:column;gap:12px">${statsHtmlOld()}</div>`; archView=wasArch; }
@@ -2093,11 +2133,13 @@ function v7bindSheet(){ if(!v7sheet) return; const $=id=>document.getElementById
   if($("v7-to-self")) $("v7-to-self").onclick=()=>{v7sheet=null; tab="self"; home(); window.scrollTo(0,0);};
   if($("v7-to-shelf")) $("v7-to-shelf").onclick=()=>{v7sheet=null; shelf=true; home(); window.scrollTo(0,0);};
   if(v7sheet==="settings") bindStatsOld();
+  app.querySelectorAll("[data-rdtr]").forEach(b=>b.onclick=()=>{ if(rdSetTr(b.dataset.rdtr)) home(); });
 }
 
 /* ---------- 아틀리에 (2-8): 부마다 줄로 나누고, 뒤에 은은한 조명, 보석마다 블록 줄 ---------- */
 function statsHtml(){
   if(archView) return archHtml();
+  if(RD) return rdStatsHtml();
   const m=archChapters(), scp=scopeParts(), path=pathChapters(), due=archDue().length, nx=nextSession();
   const parts=PARTS.map(([nm,test],pi)=>({nm,pi,chs:DATA.filter(c=>test(numOfS(c.num))&&(c.sessions||[]).length)})).filter(p=>(!scp||scp.includes(p.pi))&&p.chs.length);
   const all=parts.flatMap(p=>p.chs), done=all.filter(c=>chapterDone(c)).length;
@@ -2170,7 +2212,201 @@ const V8IC=(()=>{const w=(d)=>`<svg width="32" height="32" viewBox="0 0 32 32" f
     scroll:w(`<path d="M8 5h12l5 5v17H8z"/><path d="M20 5v5h5" /><path d="M12 15l3 3 6-6" stroke="var(--gold)"/>`),
     timer:w(`<circle cx="16" cy="18" r="9"/><path d="M13 5h6M16 5v4" stroke="var(--gold)"/><path d="M16 13v5l3 2"/>`)};})();
 
-{const h=location.hash.slice(1); if(["today","self","rev","tim","prac","ax","stats"].includes(h)){tab=h; shelf=false; history.replaceState(null,"",location.pathname);}}
+/* ===== 통독 카트리지 (CART.mode==="reading", 예: 윤서순 통독 리스트) =====
+   하루 = 보석 하나(2회차). 오늘 화면의 도구는 QT · 원어 사전 · 30초 배경. 아틀리에는 기존 금실 나무, 꼭대기에 요한계시록 별.
+   성경 본문은 카트리지에 없고 아카이브(비공개 기록 저장소 archive/<id>/)에 있어요. 공개 앱에는 본문이 없어요. */
+const RD=CART.mode==="reading";
+const RDB=Object.fromEntries((CART.books||[]).map(([k,n,a,c],i)=>[k,{i,k,n,a,c}]));
+const RD_TR=[["ko","개역개정"],["sae","새번역"],["esv","ESV"]];
+const rdTr=()=>{ const t=(store.settings&&store.settings.tr)||["ko"]; const ok=t.filter(x=>RD_TR.some(([k])=>k===x)); return ok.length?ok:["ko"]; };
+function rdSetTr(k){ const t=rdTr(), on=t.includes(k), nx=on?t.filter(x=>x!==k):RD_TR.map(([x])=>x).filter(x=>x===k||t.includes(x)); if(!nx.length) return false;
+  store.settings=Object.assign({},store.settings,{tr:nx,t:now()}); save(); return true; }
+const rdTrChips=()=>`<div class="rd-trs" role="group" aria-label="보이는 번역">${RD_TR.map(([k,l])=>`<button class="rd-tr rd-c-${k} ${rdTr().includes(k)?"on":""}" data-rdtr="${k}" aria-pressed="${rdTr().includes(k)}"><i aria-hidden="true"></i>${l}</button>`).join("")}</div>`;
+/* 다 읽은 장: 끝낸 회차의 read 목록을 모아요 */
+function rdReadSet(){ const s=new Set(); for(const c of DATA) for(const se of c.sessions||[]) if((store.sess[c.num]||[]).includes(se.n)) (se.read||[]).forEach(([k,ch])=>RDB[k]&&s.add(RDB[k].i+":"+ch)); return s; }
+const rdOfDate=d=>DATA.find(c=>c.date===d);
+const rdKd=s=>{const x=new Date(s+"T00:00:00"); return `${x.getMonth()+1}월 ${x.getDate()}일 ${"일월화수목금토"[x.getDay()]}`;};
+function rdCur(){ const nx=nextSession(); return nx?nx.c:null; }
+function rdPace(c){ // 계획 날짜와 지금 읽는 날을 비교해요
+  if(!c) return "54일 통독을 마쳤어요";
+  const td=today(), first=DATA[0].date, last=DATA[DATA.length-1].date;
+  if(td<first){ const x=new Date(first+"T00:00:00"); return `${x.getMonth()+1}월 ${x.getDate()}일 시작`; }
+  const plan=rdOfDate(td)||(td>last?DATA[DATA.length-1]:null), d=plan?(+plan.num)-(+c.num):0;
+  return d>0?`계획보다 ${d}일 늦어요`:d<0?`계획보다 ${-d}일 앞서요`:"오늘 계획대로예요";
+}
+function rdOpen(k,ch,v){ const id="nt-"+k; if(!axInfo(id)){ alert(AX.idx?"성경 본문이 아직 이 기기에 없어요. 아카이브 탭에서 '새로 받기'를 눌러요.":"아카이브를 아직 받지 않았어요. 아카이브 탭에서 받아요."); return; } axOpen(id,v?`${k}-${ch}-${v}`:`${k}-${ch}`); }
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-rdk]"); if(b){ e.preventDefault(); rdOpen(b.dataset.rdk,+b.dataset.rdc,b.dataset.rdv?+b.dataset.rdv:0); } });
+
+/* ---------- 오늘 ---------- */
+function rdTodayHtml(){
+  const nx=nextSession(), c=nx?nx.c:null, ws=weekStart(), wSess=store.steps.filter(x=>x.date>=ws).length, goal=wkOf(ws).goal;
+  const d=new Date(), hr=d.getHours(), dp=v7part(), lt=v7light(), st=sessToday(), I=V8IC;
+  const greet=hr<5?"새벽에도 한 장":hr<12?"좋은 아침이에요":hr<18?"오후의 말씀 한 줄":"오늘 저녁도 한 장";
+  let hero;
+  if(tim) hero=`<section class="v7hero"><div class="fx">${V8TEX}</div><p class="eb">지금 읽는 중</p><p class="ch">${esc(tim.step||"")}</p><p class="st">${tim.phase==="read"?"읽는 중":tim.phase==="rest"?"쉬는 중":"블록 정리"}</p><button class="go" id="go-tim">블록으로 돌아가기 &nbsp;→</button></section>`;
+  else if(c){ const se=nx.nx, [k0,c0]=(se.read||[])[0]||[];
+    hero=`<section class="v7hero"><div class="fx">${V8TEX}</div><span class="gemw">${(polyGem.plain=true,(g=>(polyGem.plain=false,g))(polyGem(c.num,116)))}</span>
+    <p class="eb">${rdKd(c.date)} · ${c.num}일째 / ${DATA.length}</p><p class="ch">${esc(c.long)}</p><p class="st">${nx.done}/${nx.total}회차</p>
+    <p class="left">약 ${c.min}분 · ${esc(rdPace(c))}</p>
+    <button class="go" id="go-sess">${se.n}회차 읽기 · ${esc(se.read.map(([k,x])=>RDB[k].a+" "+x).join(", "))} &nbsp;→</button>
+    <div class="more">${k0?`<button class="nlink" data-rdk="${k0}" data-rdc="${c0}">아카이브에서 ${esc(RDB[k0].n)} ${c0}장 펴기 ›</button>`:""}</div></section>`; }
+  else hero=`<section class="v7hero empty"><div class="fx">${V8TEX}</div><p class="eb">통독 완주</p><p class="ch">신약 260장을 다 읽었어요</p><p class="left">아틀리에에서 별이 달린 나무를 봐요.</p></section>`;
+  const ring=(()=>{const p=Math.min(1,st/Math.max(1,DAY_MIN)), C=2*Math.PI*24; return `<span class="ring"><svg viewBox="0 0 62 62" aria-hidden="true"><circle cx="31" cy="31" r="24" fill="none" stroke="${lt?"#E3DAF5":"#3B3350"}" stroke-width="8"/><circle cx="31" cy="31" r="24" fill="none" stroke="${lt?"#7354E8":"#9A81FF"}" stroke-width="8" stroke-linecap="${p>0&&p<1?"round":"butt"}" stroke-dasharray="${(C*p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 31 31)"/></svg></span>`;})();
+  const days=v7weekDays(ws), bar=x=>x.fut?`<i class="fut" style="height:5px"></i>`:`<i style="height:${x.n?Math.min(38,10+x.n*8):5}px"></i>`;
+  const tool=(id,ic,b,s,extra="")=>`<button class="v7tool" id="${id}" ${extra}><span class="ic">${ic}</span><span><b>${b}</b><small>${s}</small></span></button>`;
+  const qd=rdQtLast(today()), wc=c||DATA[DATA.length-1];
+  return `<div class="v7ground" aria-hidden="true"></div>
+  <div class="v7scene ${dp}${lt&&dp==="morning"?" lt":""}"><div class="art" aria-hidden="true">${v8scene(dp,lt)}</div>${v7top()}
+    <div class="greet"><small>${rdKd(today())} · 통독</small><h1>${greet}</h1></div>${v7chip()}</div>
+  <div class="v7today">${hero}
+  <div class="v7day"><div><p class="t">오늘 ${st}/${DAY_MIN}회차</p><p class="s">${st>=DAY_MIN?"오늘 몫 끝 · 더 읽어도 좋아요":`하루 ${DAY_MIN}회차 = 보석 하나`}</p></div>${ring}</div>
+  <div class="v7tools rd3">
+    ${tool("go-qt",I.cards,"QT",!QT_READY?"아직 공사 중":qd?"오늘 묵상 적음 ✓":"오늘 본문 · 묵상 적기")}
+    ${tool("go-dict",I.loupe,"원어 사전",`${wc.num}일째 단어 ${(wc.words||[]).length}개`)}
+    ${tool("go-bg",I.scroll,"30초 배경",esc(wc.range),'data-sheet="bg"')}
+  </div>
+  <button class="v7week" data-sheet="week" aria-label="이번 주 계획 열기"><span class="hd"><b>이번 주 · ${wSess}/${goal}회차</b><span>${wSess>=goal?"이번 주 몫 끝":`${goal-wSess}회차 남음`}</span><i aria-hidden="true">›</i></span>
+    <span class="bars" aria-hidden="true">${days.map(bar).join("")}</span><span class="days">${days.map((x,i)=>`<span class="${x.now?"now":""}">${"월화수목금토일"[i]}</span>`).join("")}</span></button>
+  </div>`;
+}
+function rdBindToday(){ const $=id=>document.getElementById(id);
+  if($("go-tim")) $("go-tim").onclick=()=>{tab="tim";home();window.scrollTo(0,0)};
+  if($("go-sess")) $("go-sess").onclick=()=>{const nx=nextSession(); store.lastCh=nx.c.num; save(); tab="tim"; home(); window.scrollTo(0,0); const s=$("tim-sess"); if(s){s.value=nx.nx.n; s.dispatchEvent(new Event("change"));}};
+  if($("go-qt")) $("go-qt").onclick=()=>{rdQ.date=today(); tab="qt"; home(); window.scrollTo(0,0);};
+  if($("go-dict")) $("go-dict").onclick=()=>{rdDictDay=null; tab="dict"; home(); window.scrollTo(0,0);};
+}
+/* 30초 배경 시트 */
+function rdBgSheet(){ const c=rdCur()||DATA[DATA.length-1], [k0,c0]=c.sessions[0].read[0];
+  return `<i class="grab"></i><div class="sh"><h3>30초 배경</h3><button class="x" data-close aria-label="닫기">×</button></div>
+  <p class="note" style="margin:0 0 6px">${c.num}일째 · ${esc(c.long)}</p><p class="rd-bg">${esc(c.bg||"")}</p>
+  <div class="hr"></div><button class="nlink" data-rdk="${k0}" data-rdc="${c0}" style="background:none;padding:10px 0;color:var(--lav);font-size:14px">${esc(RDB[k0].n)} ${c0}장부터 읽기 ›</button>`; }
+
+/* ---------- 원어 사전: 그날 읽는 본문의 헬라어(와 신약이 옮긴 히브리어·아람어) ---------- */
+let rdDictDay=null;
+function rdDictHtml(){ const c=chapterOf(rdDictDay||(rdCur()||DATA[DATA.length-1]).num), i=DATA.indexOf(c), prev=DATA[i-1], next=DATA[i+1];
+  const card=w=>{ const he=w.lang==="he";
+    return `<article class="rd-w ${he?"he":""}"><div class="top"><span class="g" lang="${he?"he":"grc"}" dir="${he?"rtl":"ltr"}">${esc(w.w)}</span><span class="rd">${esc(w.rd)}</span></div>
+    <p class="mean">${esc(w.mean)}</p><p class="note">${esc(w.note)}</p>
+    <p class="meta">${w.at?`<button class="linkbtn" data-rdk="${w.at[0]}" data-rdc="${w.at[1]}" data-rdv="${w.at[2]}">${esc(w.ref)}</button>`:`<span>${esc(w.ref||"")}</span>`}${w.form?` · <span lang="grc">${esc(w.form.replace(/[·,.;]$/,""))}</span>`:""}${w.nt?` · 신약 ${w.nt}번`:""}${he?` · ${w.w.match(/[֐-׿]/)&&/아람어/.test(w.note)?"아람어":"히브리어"}`:""}</p></article>`; };
+  const gk=(c.words||[]).filter(w=>w.lang!=="he"), he=(c.words||[]).filter(w=>w.lang==="he");
+  return `<div class="rd-nav"><button id="rd-prev" ${prev?"":"disabled"} aria-label="전날">‹</button><div><b>${c.num}일째 · ${esc(c.range)}</b><small>${rdKd(c.date)}</small></div><button id="rd-next" ${next?"":"disabled"} aria-label="다음날">›</button></div>
+  <p class="pl">헬라어</p>${gk.map(card).join("")}
+  ${he.length?`<p class="pl">히브리어 · 아람어</p>${he.map(card).join("")}`:""}
+  <p class="note" style="font-size:12px">나오는 절과 횟수는 Nestle 1904 본문으로 셌어요. 절을 누르면 아카이브에서 그 절이 열려요.</p>`; }
+function rdBindDict(){ const $=id=>document.getElementById(id), c=chapterOf(rdDictDay||(rdCur()||DATA[DATA.length-1]).num), i=DATA.indexOf(c);
+  if($("rd-prev")) $("rd-prev").onclick=()=>{rdDictDay=DATA[i-1].num; home(); window.scrollTo(0,0);};
+  if($("rd-next")) $("rd-next").onclick=()=>{rdDictDay=DATA[i+1].num; home(); window.scrollTo(0,0);}; }
+
+/* ---------- QT: 교회 QT(알림 서버가 대신 받아 와요) + 묵상 적기 + 공유 ---------- */
+const rdQ={date:null,src:{},busy:false};
+const QT_READY=false; // 교회 QT는 아직 공사 중(2026-10-31). 알림 서버의 /qt를 배포하면 true로
+const QT_F=[["hold","붙잡은 말씀"],["feel","느낌과 묵상"],["a1","적용과 결단 · 성품"],["a2","적용과 결단 · 행동"],["pray","올려드리는 기도"]];
+const rdQtLast=d=>{ for(let i=store.log.length-1;i>=0;i--){ const x=store.log[i]; if(x.qt&&x.qd===d) return x; } return null; };
+function rdQtParse(o){ // 교회 QT 줄 → 본문 절, 찬양, 본문요약 질문, 성경읽기, 묵상 포인트
+  const r={verses:[],hymn:"",sum:[],reading:"",point:""}; let sec="pre";
+  for(const raw of o.lines||[]){ const t=raw.trim(); if(!t) continue;
+    if(/기도\s*\/\s*찬양/.test(t)){sec="hymn";continue;} if(/본문\s*요약/.test(t)){sec="sum";continue;}
+    if(/붙잡은\s*말씀|느낌과\s*묵상|적용과\s*결단|올려드리는\s*기도|^\d\)\s*(성품|행동)/.test(t)){sec="form";continue;}
+    if(/오늘의\s*성경\s*읽기/.test(t)){ r.reading=t.replace(/^\[\s*|\s*\]$/g,"").replace(/^오늘의\s*성경\s*읽기\s*:\s*/,""); sec="post"; continue; }
+    if(/묵상\s*포인트/.test(t)){ r.point=t.replace(/^.*?묵상\s*포인트\s*[|｜]?\s*/,""); sec="point"; continue; }
+    if(sec==="pre"){ const m=t.match(/^(\d+)\s+(.*)$/); if(m) r.verses.push([+m[1],m[2]]); }
+    else if(sec==="hymn") r.hymn+=(r.hymn?" ":"")+t;
+    else if(sec==="sum") r.sum.push(t.replace(/^-\s*/,""));
+    else if(sec==="point") r.point+=(r.point&&!/\s$/.test(r.point)?" ":"")+t; }
+  r.hymn=r.hymn.replace(/\s+/g," "); r.point=r.point.replace(/\s+/g," ").trim(); return r; }
+async function rdQtLoad(d){ if(rdQ.src[d]||rdQ.busy) return; if(!PUSH_URL.startsWith("https")){ rdQ.src[d]={err:"QT 서버 주소가 없어요"}; return; }
+  rdQ.busy=true; try{ const r=await fetch(`${PUSH_URL}/qt?date=${d}`); if(!r.ok) throw new Error(r.status===404?"QT 서버가 아직 준비되지 않았어요":"QT를 못 받았어요 ("+r.status+")"); rdQ.src[d]=await r.json(); }
+  catch(e){ rdQ.src[d]={err:e.message||"QT를 못 받았어요"}; } finally{ rdQ.busy=false; } }
+function rdQtHtml(){ if(!QT_READY) return `<section class="card rd-soon"><p class="eb">아직 공사 중</p><h2>QT</h2><p class="note">교회 QT 본문을 불러와 그 아래에 묵상을 적고, 카카오톡으로 보내거나 파일로 저장하는 화면을 만들고 있어요.</p><p class="note">그동안은 원어 사전과 30초 배경으로 그날 본문을 준비해요.</p></section>`;
+  const d=rdQ.date||today(), o=rdQ.src[d], last=rdQtLast(d), plan=rdOfDate(d)||rdCur()||DATA[DATA.length-1];
+  const church=o&&!o.err&&!o.none, p=church?rdQtParse(o):null;
+  const head=`<div class="rd-nav"><button id="qt-prev" aria-label="전날">‹</button><div><b>${church?esc(o.title):"QT"}</b><small>${rdKd(d)}${church?" · 교회 QT":""}</small></div><button id="qt-next" aria-label="다음날" ${d>=today()?"disabled":""}>›</button></div>`;
+  let body;
+  if(!o) body=`<p class="note">교회 QT를 받는 중…</p>`;
+  else if(church) body=`<section class="card rd-qt"><p class="rd-ref">${esc(o.ref)}</p><div class="rd-vs">${p.verses.map(([n,t])=>`<p><b class="vn">${n}</b>${esc(t)}</p>`).join("")}</div>
+    ${p.hymn?`<details><summary class="note">기도 · 찬양</summary><p class="rd-hymn">${esc(p.hymn)}</p></details>`:""}
+    ${p.sum.length?`<p class="pl">본문 요약</p><ul class="rd-sum">${p.sum.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
+    ${p.point?`<p class="pl">묵상 포인트</p><p class="rd-point">${esc(p.point)}</p>`:""}
+    ${p.reading?`<p class="note" style="font-size:12px">교회 성경읽기: ${esc(p.reading)}</p>`:""}</section>`;
+  else { const [k,ch,a,b]=plan.qt.ref; body=`<p class="note">${o.none?"이날은 교회 QT가 없어요(주일 등).":esc(o.err)} 대신 통독 본문으로 묵상해요.</p>
+    <section class="card rd-qt"><p class="rd-ref">${esc(RDB[k].n)} ${ch}:${a}–${b} <span class="note">· ${plan.num}일째 통독</span></p><div class="rd-vs" id="qt-vs" data-k="${k}" data-c="${ch}" data-a="${a}" data-b="${b}"><p class="note">본문을 여는 중…</p></div>
+    <p class="pl">묵상 질문</p><ul class="rd-sum">${plan.qt.q.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section>`; }
+  const f=(last&&last.f)||{};
+  const form=`<section class="card rd-form"><p class="pl" style="margin-top:0">나의 묵상</p>${QT_F.map(([k,l])=>`<label><span>${l}</span><textarea id="qf-${k}" rows="${k==="feel"?4:2}" placeholder="${l}">${esc(f[k]||"")}</textarea></label>`).join("")}
+    <div class="bar"><button class="primary" id="qt-save">저장</button><button id="qt-share">공유하기</button><button id="qt-file" aria-label="텍스트 파일로 저장">파일로</button></div>
+    <p class="note" id="qt-msg" role="status">${last?`${new Date(last.ts).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"numeric",minute:"2-digit"})}에 저장함`:"저장하면 기기 사이에 동기화돼요."}</p></section>`;
+  return head+body+form; }
+function rdQtText(){ const d=rdQ.date||today(), o=rdQ.src[d], church=o&&!o.err&&!o.none, plan=rdOfDate(d)||rdCur()||DATA[DATA.length-1];
+  const ref=church?o.ref:`${RDB[plan.qt.ref[0]].n} ${plan.qt.ref[1]}:${plan.qt.ref[2]}-${plan.qt.ref[3]}`, v=k=>(document.getElementById("qf-"+k)||{}).value||"";
+  return [`[QT] ${church?o.day:rdKd(d)} ${church?o.title:""}`.trim(), `본문: ${ref}`, "", ...QT_F.flatMap(([k,l])=>v(k).trim()?[`■ ${l}`, v(k).trim(), ""]:[])].join("\n").trim(); }
+function rdBindQt(){ if(!QT_READY) return; const $=id=>document.getElementById(id), d=rdQ.date||today();
+  if(!rdQ.src[d]) rdQtLoad(d).then(()=>{ if(tab==="qt") home(); });
+  $("qt-prev").onclick=()=>{ rdQ.date=addDays(d,-1); home(); }; if($("qt-next")) $("qt-next").onclick=()=>{ rdQ.date=addDays(d,1); home(); };
+  const vs=$("qt-vs"); if(vs) (async()=>{ const rec=await axGet("pages",CART.id+"/nt-"+vs.dataset.k).catch(()=>null); if(!rec){ vs.innerHTML=`<p class="note">아카이브를 받으면 여기에 본문이 떠요.</p>`; return; }
+    const pre=`${vs.dataset.k}-${vs.dataset.c}-`, a=+vs.dataset.a, b=+vs.dataset.b, T=rdTr()[0];
+    vs.innerHTML=rec.page.blocks.filter(x=>x.t==="verse"&&x.id.startsWith(pre)&&x.n>=a&&x.n<=b).map(x=>`<p><b class="vn">${x.n}</b>${esc(x[T]==="↑"?"":x[T]||x.ko||"")}</p>`).join(""); })();
+  const fields=()=>Object.fromEntries(QT_F.map(([k])=>[k,$("qf-"+k).value]));
+  const keep=()=>{ const o=rdQ.src[d], church=o&&!o.err&&!o.none; store.log.push({ts:now(),date:today(),qt:1,qd:d,ref:church?o.ref:"",title:church?o.title:"",f:fields()}); save(); };
+  const msg=t=>{$("qt-msg").textContent=t;};
+  $("qt-save").onclick=()=>{ keep(); msg("저장했어요"); };
+  $("qt-share").onclick=async()=>{ keep(); const text=rdQtText();
+    try{ if(navigator.share){ await navigator.share({text}); msg("공유했어요"); return; } }catch(e){ if(e&&e.name==="AbortError") return; }
+    try{ await navigator.clipboard.writeText(text); msg("복사했어요. 카카오톡에 붙여 넣어요."); }catch(e){ msg("공유를 못 했어요. '파일로'를 써요."); } };
+  $("qt-file").onclick=()=>{ keep(); const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([rdQtText()],{type:"text/plain;charset=utf-8"})); a.download=`QT-${d}.txt`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); msg("파일로 저장했어요"); };
+}
+
+/* ---------- 아틀리에: 기존 Iolite 금실 나무 + 요한계시록 별 ----------
+   하루 = 앱의 보석(polyGem) 하나. 그날 읽기를 시작해야 아래 가지부터 달려요(빈 자리는 그리지 않아요).
+   면은 회차(읽으면 물빛), 그날을 다 읽으면 통째로 시트린 유리. 요한계시록 22장은 꼭대기 별의 22면(같은 시트린). */
+function rdTree(read){
+  // 기존 아틀리에 나무(gemTree)와 같은 모양: 금실 세 가닥 줄기, 가지마다 보석 4개, 아래 가지부터. 꼭대기에만 요한계시록 별
+  const W=360, cx=W/2, G=34, per=4, f=v=>v.toFixed(1), books=CART.books||[], last=books.length-1, rk=books[last]&&books[last][0], wire="var(--goldA)";
+  const hang=DATA.filter(c=>c.sessions.some(s=>s.read.some(([k])=>k!==rk))); // 요한계시록만 읽는 날은 별이 돼요
+  const sides=[Math.ceil(hang.length/2),Math.floor(hang.length/2)], tiers=Math.max(1,Math.ceil(sides[0]/per)), gap=78, top=96, base=top+tiers*gap+64, H=base+20;
+  let br="", gems="", slots=[];
+  for(const d of [-5,0,5]) br+=`<path d="M${cx+d*1.6} ${base} C${cx+d*1.6} ${base-60}, ${cx-d} ${base-120}, ${cx+d*.4} ${top+tiers*gap*.5} S${cx-d*.3} ${top+12}, ${cx} ${top-6}" fill="none" stroke="${wire}" stroke-width="${d?1.1:1.6}"/>`;
+  br+=`<ellipse cx="${cx}" cy="${base+4}" rx="62" ry="7" fill="none" stroke="${wire}" stroke-width="1.2"/><ellipse cx="${cx}" cy="${base+4}" rx="34" ry="3.5" fill="var(--goldA)" fill-opacity=".25"/>`;
+  [-1,1].forEach((s,si)=>{ for(let t=0;t<Math.ceil(sides[si]/per);t++){ const y=base-84-t*gap, L=150-t*(60/Math.max(1,tiers-1||1)), x0=cx+s*4, x1=cx+s*L, ty=y-16-t*2;
+      br+=`<path d="M${f(x0)} ${f(y+10)} C${f(cx+s*L*.35)} ${f(y-2)}, ${f(cx+s*L*.7)} ${f(y-4)}, ${f(x1)} ${f(ty)}" fill="none" stroke="${wire}" stroke-width="1.3" stroke-linecap="round"/><path d="M${f(x1)} ${f(ty)} q${f(s*7)} -3 ${f(s*5)} -9 q${f(-s*2)} -4 ${f(-s*5)} -1" fill="none" stroke="${wire}" stroke-width="1"/>`;
+      for(let j=0;j<per;j++){ if(t*per+j>=sides[si]) break; const u=.3+j*.21, B=(a,b,c,d)=>(1-u)**3*a+3*(1-u)**2*u*b+3*(1-u)*u*u*c+u**3*d;
+        slots.push({t,j,si,bx:B(x0,cx+s*L*.35,cx+s*L*.7,x1),by:B(y+10,y-2,y-4,ty),len:j%2?34:10}); } } });
+  slots.sort((a,b)=>a.t-b.t||a.j-b.j||a.si-b.si); // 아래 가지부터, 안쪽부터, 왼쪽·오른쪽 번갈아 (빈 자리는 그리지 않아요)
+  hang.forEach((c,i)=>{ const sl=slots[i]; if(!sl||!(store.sess[c.num]||[]).length) return; const gy=sl.by+sl.len;
+    const g=polyGem(c.num,G,"",true).replace("<svg ",`<svg x="${f(sl.bx-G/2)}" y="${f(gy)}" `);
+    gems+=`<g class="tgem" style="transform-origin:${f(sl.bx)}px ${f(sl.by)}px;animation-delay:-${(i*1.7)%6}s" data-rdk="${c.sessions[0].read[0][0]}" data-rdc="${c.sessions[0].read[0][1]}" role="button" tabindex="0" aria-label="${c.num}일째 ${esc(c.range)}"><line x1="${f(sl.bx)}" y1="${f(sl.by)}" x2="${f(sl.bx)}" y2="${f(gy+2)}" stroke="var(--gold)" stroke-width=".7" stroke-opacity=".7"/>${g}</g>`; });
+  // 별 보석: 11꼭지 × 2면 = 22면 = 요한계시록 22장. 읽은 장의 면만 빛나요
+  const nRevAll=books[last]?books[last][3]:0, sY=top-44, R1=32, R0=12; let star="", nRev=0;
+  for(let k=0;k<11;k++){ const a=-Math.PI/2+k*2*Math.PI/11, aL=a-Math.PI/11, aR=a+Math.PI/11, rr=k%2?.8:1, tip=[cx+R1*rr*Math.cos(a),sY+R1*rr*Math.sin(a)], l=[cx+R0*Math.cos(aL),sY+R0*Math.sin(aL)], r=[cx+R0*Math.cos(aR),sY+R0*Math.sin(aR)], c=[cx,sY];
+    [[l,tip,c],[tip,r,c]].forEach((tri,h)=>{ const ch=k*2+h+1; if(ch>nRevAll||!read.has(last+":"+ch)) return; nRev++; const pts=tri.map(p=>p.map(f).join(",")).join(" ");
+      star+=`<g data-rdk="${rk}" data-rdc="${ch}" role="button" aria-label="${esc(books[last][1])} ${ch}장"><polygon points="${pts}" fill="url(#rdsa)"/><polygon points="${pts}" fill="${["#FFFFFF","#C9700F","#FFF6D6"][(k+h)%3]}" fill-opacity="${[.34,.2,.12][(k+h)%3]}" stroke="rgba(255,252,240,.85)" stroke-width=".5" stroke-linejoin="round"/></g>`; }); }
+  const done=nRevAll&&nRev===nRevAll;
+  return `<div class="tree rd-tree"><svg viewBox="0 0 ${W} ${H}" width="100%" role="group" aria-label="아틀리에 나무 · 보석 ${hang.filter(c=>(store.sess[c.num]||[]).length).length}개 · 별 ${nRev}/${nRevAll}면"><defs>
+    <linearGradient id="rdsa" gradientUnits="userSpaceOnUse" x1="${cx-R1}" y1="${sY-R1}" x2="${cx+R1}" y2="${sY+R1}"><stop offset="0" stop-color="#FFF7D6"/><stop offset=".35" stop-color="#FFD45E"/><stop offset=".7" stop-color="#F5AE2F"/><stop offset="1" stop-color="#E58A1F"/></linearGradient>
+    <radialGradient id="rdsg"><stop offset="0" stop-color="#FFD45E" stop-opacity=".45"/><stop offset=".5" stop-color="#FFD45E" stop-opacity=".1"/><stop offset="1" stop-color="#FFD45E" stop-opacity="0"/></radialGradient></defs>
+    ${done?`<circle cx="${cx}" cy="${sY}" r="96" fill="url(#rdsg)" class="rd-glow"/>`:""}${br}${gems}${star}</svg></div>`;
+}
+function rdStatsHtml(){ polyGem.plain=true; const out=rdStatsInner(); polyGem.plain=false; return out; }
+function rdStatsInner(){ const read=rdReadSet(), all=(CART.books||[]).reduce((a,b)=>a+b[3],0), daysDone=DATA.filter(c=>c.sessions.every(s=>(store.sess[c.num]||[]).includes(s.n))).length;
+  const recent=DATA.filter(c=>(store.sess[c.num]||[]).length).slice(-4).reverse().map(c=>`<button class="v7rc" data-rdk="${c.sessions[0].read[0][0]}" data-rdc="${c.sessions[0].read[0][1]}"><span><span class="d">${c.date.slice(5).replace("-",".")}</span><b>${c.num}일째 · ${esc(c.range)}${(store.sess[c.num]||[]).length<c.sessions.length?` · ${(store.sess[c.num]||[]).length}/${c.sessions.length}회차`:""}</b></span>${polyGem(c.num,30)}</button>`).join("");
+  return `<div class="v7at"><span class="spot" aria-hidden="true"></span>${v7top()}${v7chip()}
+  <div class="ttl"><small>다 읽은 날</small><h2>아틀리에 ${daysDone}일</h2></div>
+  <p class="note" style="text-align:center;margin:-4px 0 0">${DATA.length}일 중 ${daysDone}일 · 읽은 장 ${read.size}/${all}장</p>
+  ${rdTree(read)}
+  ${recent?`<div class="div"></div><p class="pl" style="letter-spacing:1.2px">최근</p><div class="recent">${recent}</div>`:""}</div>`; }
+
+/* ---------- 아카이브: 절 블록과 번역 켜고 끄기 ---------- */
+function rdVerse(b,id){ const T=rdTr(), cell=t=>{ const x=b[t]; return x==="↑"?`<i class="note">앞 절과 함께</i>`:x?esc(x):`<i class="note">이 번역에는 없는 절</i>`; };
+  return T.length===1?`<p ${id} class="ax-v rd-c-${T[0]}"><b class="vn">${b.n}</b>${cell(T[0])}</p>`
+    :`<div ${id} class="ax-v multi"><b class="vn">${b.n}</b><div>${T.map(t=>`<p class="rd-c-${t}"><span class="tg">${RD_TR.find(([k])=>k===t)[1]}</span>${cell(t)}</p>`).join("")}</div></div>`; }
+
+/* 타이머 등 예전 화면의 장 말을 날 말로: "2장 마태복음 9장" → "2일째 · 마태복음 9장", "2장 · 1/2회차" → "2일째 · 1/2회차", "이 장" → "이날" */
+function rdFixLabels(root){ if(!RD||!root) return; const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT), R=[[/(^|[^\d])(\d+)장 (?=[가-힣]+ \d+장)/g,"$1$2일째 · "],[/(^|[^\d])(\d+)장 · (?=\d+\/\d+회차)/g,"$1$2일째 · "],[/이 장 (?=\d+\/\d+회차)/g,"이날 "]]; let n;
+  while((n=w.nextNode())){ let v=n.nodeValue; for(const [re,to] of R) v=v.replace(re,to); if(v!==n.nodeValue) n.nodeValue=v; }
+  const k=root.querySelector("#tim-known"); if(k) k.hidden=true; } // 통독에는 '이미 알아요' 문항이 없어요
+// 타이머는 home() 뒤에 select/note를 다시 채워요. 통독 문구는 화면이 바뀔 때마다 고쳐요.
+if(RD && typeof MutationObserver!=="undefined"){ const _ob=new MutationObserver(()=>rdFixLabels(document.getElementById("app"))); const _a=document.getElementById("app"); if(_a) _ob.observe(_a,{childList:true,subtree:true}); }
+
+{const h=location.hash.slice(1); if(["today","self","rev","tim","prac","ax","stats","qt","dict"].includes(h)){tab=h; shelf=false; history.replaceState(null,"",location.pathname);}}
 if(tim) { shelf=false; tab="tim"; }
 home();
 if(tim) runTick();
@@ -2253,5 +2489,5 @@ if(tim) runTick();
 })();
 </script>
 
-
+<script>if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js");</script>
 </body></html>
