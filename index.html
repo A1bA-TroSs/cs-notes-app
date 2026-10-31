@@ -2422,7 +2422,7 @@ function rdTree(read){
         slots.push({t,j,si,bx:B(x0,cx+s*L*.35,cx+s*L*.7,x1),by:B(y+10,y-2,y-4,ty),len:j%2?34:10}); } } });
   slots.sort((a,b)=>a.t-b.t||a.j-b.j||a.si-b.si); // 아래 가지부터, 안쪽부터, 왼쪽·오른쪽 번갈아 (빈 자리는 그리지 않아요)
   hang.forEach((c,i)=>{ const sl=slots[i]; if(!sl||!(store.sess[c.num]||[]).length) return; const gy=sl.by+sl.len;
-    const g=polyGem(c.num,G,"",true).replace("<svg ",`<svg x="${f(sl.bx-G/2)}" y="${f(gy)}" `);
+    const g0=polyGem(c.num,G,"",true).replace("<svg ",`<svg x="${f(sl.bx-G/2)}" y="${f(gy)}" `); const g=`<g filter="url(#rdh${rdHueIx(c)})">${g0}</g>`;
     gems+=`<g class="tgem" style="transform-origin:${f(sl.bx)}px ${f(sl.by)}px;animation-delay:-${(i*1.7)%6}s" data-rdk="${c.sessions[0].read[0][0]}" data-rdc="${c.sessions[0].read[0][1]}" role="button" tabindex="0" aria-label="${c.num}일째 ${esc(c.range)}"><line x1="${f(sl.bx)}" y1="${f(sl.by)}" x2="${f(sl.bx)}" y2="${f(gy+2)}" stroke="var(--gold)" stroke-width=".7" stroke-opacity=".7"/>${g}</g>`; });
   // 별 보석: 11꼭지 × 2면 = 22면 = 요한계시록 22장. 읽은 장의 면만 빛나요
   const nRevAll=books[last]?books[last][3]:0, sY=top-44, R1=32, R0=12; let star="", nRev=0;
@@ -2432,12 +2432,12 @@ function rdTree(read){
   const done=nRevAll&&nRev===nRevAll;
   return `<div class="tree rd-tree"><svg viewBox="0 0 ${W} ${H}" width="100%" role="group" aria-label="아틀리에 나무 · 보석 ${hang.filter(c=>(store.sess[c.num]||[]).length).length}개 · 별 ${nRev}/${nRevAll}면"><defs>
     <linearGradient id="rdsa" gradientUnits="userSpaceOnUse" x1="${cx-R1}" y1="${sY-R1}" x2="${cx+R1}" y2="${sY+R1}"><stop offset="0" stop-color="#FFF7D6"/><stop offset=".35" stop-color="#FFD45E"/><stop offset=".7" stop-color="#F5AE2F"/><stop offset="1" stop-color="#E58A1F"/></linearGradient>
-    <radialGradient id="rdsg"><stop offset="0" stop-color="#FFD45E" stop-opacity=".45"/><stop offset=".5" stop-color="#FFD45E" stop-opacity=".1"/><stop offset="1" stop-color="#FFD45E" stop-opacity="0"/></radialGradient></defs>
+    ${rdHueDefs()}<radialGradient id="rdsg"><stop offset="0" stop-color="#FFD45E" stop-opacity=".45"/><stop offset=".5" stop-color="#FFD45E" stop-opacity=".1"/><stop offset="1" stop-color="#FFD45E" stop-opacity="0"/></radialGradient></defs>
     ${done?`<circle cx="${cx}" cy="${sY}" r="96" fill="url(#rdsg)" class="rd-glow"/>`:""}${br}${gems}${star}</svg></div>`;
 }
 function rdStatsHtml(){ polyGem.plain=true; const out=rdStatsInner(); polyGem.plain=false; return out; }
 function rdStatsInner(){ const read=rdReadSet(), all=(CART.books||[]).reduce((a,b)=>a+b[3],0), daysDone=DATA.filter(c=>c.sessions.every(s=>(store.sess[c.num]||[]).includes(s.n))).length;
-  const recent=DATA.filter(c=>(store.sess[c.num]||[]).length).slice(-4).reverse().map(c=>`<button class="v7rc" data-rdk="${c.sessions[0].read[0][0]}" data-rdc="${c.sessions[0].read[0][1]}"><span><span class="d">${c.date.slice(5).replace("-",".")}</span><b>${c.num}일째 · ${esc(c.range)}${(store.sess[c.num]||[]).length<c.sessions.length?` · ${(store.sess[c.num]||[]).length}/${c.sessions.length}회차`:""}</b></span>${polyGem(c.num,30)}</button>`).join("");
+  const recent=DATA.filter(c=>(store.sess[c.num]||[]).length).slice(-4).reverse().map(c=>`<button class="v7rc" data-rdk="${c.sessions[0].read[0][0]}" data-rdc="${c.sessions[0].read[0][1]}"><span><span class="d">${c.date.slice(5).replace("-",".")}</span><b>${c.num}일째 · ${esc(c.range)}${(store.sess[c.num]||[]).length<c.sessions.length?` · ${(store.sess[c.num]||[]).length}/${c.sessions.length}회차`:""}</b></span><span style="filter:url(#rdh${rdHueIx(c)});display:inline-flex;margin-left:auto;flex:none">${polyGem(c.num,30)}</span></button>`).join("");
   return `<div class="v7at"><span class="spot" aria-hidden="true"></span>${v7top()}${v7chip()}
   <div class="ttl"><small>다 읽은 날</small><h2>아틀리에 ${daysDone}일</h2></div>
   <p class="note" style="text-align:center;margin:-4px 0 0">${DATA.length}일 중 ${daysDone}일 · 읽은 장 ${read.size}/${all}장</p>
@@ -2497,6 +2497,11 @@ if(RD){ const _ah=axHtml; axHtml=function(){ let h=_ah(); if(!AX.idx||AX.q) retu
     h+=`<section class="part"><h2>${esc(sec.title)}</h2><div class="rows">${bs.map(({p,b})=>{ let n=0; for(let c=1;c<=b.c;c++) if(read.has(b.i+":"+c)) n++;
       return `<button class="row" data-axp="${p.id}"><span class="num">${esc(b.a)}</span><span class="ttl">${esc(b.n)}</span><span class="chip ${n===b.c?"rd-done":""}">${n?`${n}/${b.c}장`:`${b.c}장`}</span></button>`; }).join("")}</div></section>`; }
   return h; }; }
+
+/* 아틀리에 보석 색: 날마다 다른 빛(황금각으로 색상환을 돌아요). 모양과 면은 그대로 polyGem, 색만 돌려요 */
+const rdHueIx=c=>(+c.num-1)%DATA.length;
+const rdHueDeg=i=>Math.round((i*137.508)%360);
+const rdHueDefs=()=>DATA.map((c,i)=>`<filter id="rdh${i}" color-interpolation-filters="sRGB"><feColorMatrix type="hueRotate" values="${rdHueDeg(i)}"/><feColorMatrix type="saturate" values="1.15"/></filter>`).join("");
 
 {const h=location.hash.slice(1); if(["today","self","rev","tim","prac","ax","stats","qt","dict"].includes(h)){tab=h; shelf=false; history.replaceState(null,"",location.pathname);}}
 if(tim) { shelf=false; tab="tim"; }
