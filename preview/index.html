@@ -613,6 +613,34 @@ button.primary{background:var(--primary);color:var(--on-primary);border-radius:1
 .v7stone::before{top:40px}
 
 .v7rc{background:transparent;border:1px solid var(--border)}
+/* ===== v8 집중 화면(타이머·복습·체크·실전)과 아카이브: 오늘과 같은 결 ===== */
+#app.v8f,#app.v8ax{position:relative;isolation:isolate}
+#app.v8f::before,#app.v8ax::before{content:"";position:absolute;left:-20px;right:-20px;top:0;height:260px;z-index:-1;pointer-events:none;background:radial-gradient(260px 170px at 78% 20%,rgba(156,134,232,.22),rgba(156,134,232,0) 100%)}
+.v7focus{background:transparent;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.v7focus button{background:transparent;border:1px solid var(--chip-line);border-radius:999px;padding:6px 14px 6px 10px}
+.v7focus .cr{font-size:12px;color:var(--text-2);border:1px solid var(--chip-line);border-radius:11px;padding:4px 10px}
+.v8ft{margin:6px 0 14px 4px}
+.v8ft small{display:block;font-size:12px;line-height:17px;font-weight:700;color:var(--gold);letter-spacing:.06em;margin:0 0 6px}
+.v8ft h1{margin:0;font-size:27px;line-height:35px;font-weight:700;letter-spacing:-.3px;color:var(--text)}
+/* 카드는 면 대신 테두리 */
+#app.v8f .card,#app.v8f details.box,#app.v8f .rows,#app.v8f .whenbox,#app.v8f .qcard,#app.v8ax .card,#app.v8f .stats{background:var(--cardsheen),transparent;border:1px solid var(--border);border-radius:20px;box-shadow:none}
+#app.v8f .whenbox{border-radius:14px}
+#app.v8f h2,#app.v8f .part h2,#app.v8f h2.part{color:var(--gold);letter-spacing:.14em;font-size:12.5px}
+#app.v8f input[type=search],#app.v8f .bar input,#app.v8f select{background:transparent;border:1px solid var(--chip-line);border-radius:14px}
+/* 가장 먼저 할 일(타이머·복습·실전의 첫 카드): 예전 그라데이션 */
+#app.v8f .whenbox+.card{position:relative;overflow:hidden;background:var(--v8hero);border:0;border-radius:26px;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 0 0 1px rgba(255,255,255,.07)}
+#app.v8f .whenbox+.card::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.12) 42%,rgba(255,255,255,0) 56%)}
+#app.v8f .whenbox+.card>*{position:relative}
+#app.v8f .whenbox+.card,#app.v8f .whenbox+.card .q,#app.v8f .whenbox+.card b,#app.v8f .whenbox+.card .meta,#app.v8f .whenbox+.card .ts-cap{color:#fff}
+#app.v8f .whenbox+.card .note,#app.v8f .whenbox+.card small,#app.v8f .whenbox+.card summary{color:rgba(255,255,255,.8)}
+#app.v8f .whenbox+.card select{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);color:#fff}
+#app.v8f .whenbox+.card select option{color:#1B1730}
+#app.v8f .whenbox+.card button.primary{background:#fff;color:#2B2674;border-radius:24px;font-weight:800}
+#app.v8f .whenbox+.card button:not(.primary){background:transparent;border:1.5px solid rgba(255,255,255,.55);color:#fff;border-radius:24px}
+#app.v8f .whenbox+.card button:disabled{opacity:.55}
+#app.v8f .whenbox+.card .boxes *{color:#fff}
+#app.v8f .whenbox+.card .tstone .ts-cap{border-top-color:rgba(244,210,138,.6)}
+#app.v8f .whenbox+.card a,#app.v8f .whenbox+.card .nlink{color:#fff}
 
 </style>
 </head><body><div class="wrap" id="app"></div>
@@ -741,7 +769,7 @@ const NKEY="iolite-notion-map"; let NMAP=null; try{NMAP=JSON.parse(localStorage.
 async function loadNotionMap(){ if(!gh||!gh.token) return; try{ const r=await fetch(`https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/notion-map.json?t=${Date.now()}`,{headers:{"Authorization":"Bearer "+gh.token,"Accept":"application/vnd.github+json"}}); if(!r.ok) return; const j=await r.json(); const m=JSON.parse(b64d(j.content)); const ch=JSON.stringify(m)!==JSON.stringify(NMAP); NMAP=m; try{localStorage.setItem(NKEY,JSON.stringify(m))}catch(e){} if(ch&&!run) home(); }catch(e){} }
 function notionUrl(num,step){ const M=CART.notion||NMAP; /* 카트리지가 노션 위치표를 직접 가지면 그걸 써요(docs/CARTRIDGE.md) */ if(!M||!M.pages||!M.pages[num]) return null; let u="https://www.notion.so/"+M.pages[num]; const hs=M.heads&&M.heads[num];
   if(step&&hs){ const bare=h=>h.replace(/^[^\p{L}\p{N}]+/u,""); const k=Object.keys(hs).find(h0=>{const h=bare(h0); return h.startsWith(step)&&(h.length===step.length||!/\d/.test(h[step.length]));}); if(k) u+="#"+hs[k]; } return u; }
-const nlink=(num,step,label)=>{const u=notionUrl(num,step), a=alink(num,step,"아카이브에서 읽기"); return (u?`<a class="nlink" href="${u}" target="_blank" rel="noopener">${label} ›</a>`:"")+a;};
+const nlink=(num,step,label)=>alink(num,step,"아카이브에서 읽기"); /* 노션 이동 없이 앱 안 아카이브로만 (2026-10-31) */
 async function ghSync(){
   if(!gh||!gh.token||ghBusy) return; ghBusy=true; setGh("동기화 중…");
   try{
@@ -862,7 +890,7 @@ const whenBox=t=>WHEN[t]?`<details class="whenbox"><summary class="note">${t==="
 function guideHtml(){
   const row=(a,b)=>`<div class="kv" style="grid-template-columns:7.5em 1fr"><span>${a}</span><span style="text-align:left">${b}</span></div>`;
   return `<div class="bar"><button id="guide-close">← 돌아가기</button></div>
-  <div class="card"><p class="q">Iolite 사용 설명서</p><p class="note">읽기는 노션, 나머지(타이머·체크·복습·실전·기록)는 전부 여기서 해요. 아래 순서대로 하면 돼요.</p></div>
+  <div class="card"><p class="q">Iolite 사용 설명서</p><p class="note">읽기는 아카이브, 나머지(타이머·체크·복습·실전·기록)는 전부 여기서 해요. 아래 순서대로 하면 돼요.</p></div>
   <div class="card"><p class="q">하루</p>
     ${row("출퇴근 · 5분","<b>복습</b> 10문항. 답과 이유를 먼저 쓰고 확인. 그 이상은 쉬어요.")}
     ${row("점심 · 1~2블록","다음 회차의 <b>30초 체크</b> 미리 풀기 → 다 맞히면 \"이미 알아요\" 테스트로 건너뛰기. 또는 면접형 체크를 소리 내어.")}
@@ -1051,7 +1079,7 @@ function pushBox(){ // 알림 켜기·테스트
   if(!pushSupported()) return `<p class="note">이 브라우저는 백그라운드 알림을 못 받아요. 아이폰은 Safari에서 공유 → 홈 화면에 추가한 Iolite로 열어요. 이 화면을 켜 두면 앱 안 타이머는 그대로 돌아요.</p>`;
   if(!isStandalone()&&/iPhone|iPad/.test(navigator.userAgent)) return `<p class="note">알림은 홈 화면의 Iolite 아이콘으로 열었을 때만 켤 수 있어요.</p>`;
   const on=push&&Notification.permission==="granted";
-  return `<details class="box" ${on?"":"open"}><summary>${on?"알림 켜짐 · 노션을 보고 있어도 12분에 배너가 와요":"알림 켜기 (한 번)"}</summary>
+  return `<details class="box" ${on?"":"open"}><summary>${on?"알림 켜짐 · 다른 앱을 보고 있어도 12분에 배너가 와요":"알림 켜기 (한 번)"}</summary>
     <p class="note">블록을 시작하면 12분 읽기 끝, 요약 시간, 쉬는 시간 끝에 알림이 와요. 일찍 끝내거나 그만하면 남은 알림도 같이 취소돼요.</p>
     <p class="note"><b>소리 없이 진동만:</b> 폰 옆 무음 스위치(또는 제어 센터의 무음 모드)를 켜면 진동만 와요. 설정 → 사운드 및 햅틱 → <b>무음 모드에서 햅틱 재생</b>이 켜져 있어야 해요. 소리를 켜 둔 채 Iolite만 조용히 하려면 설정 → 알림 → Iolite → 사운드를 꺼 보세요(이때 진동이 오는지는 테스트로 확인해요).</p>
     <div class="bar">${on?`<button id="push-test">테스트 (10초 뒤 알림)</button>`:`<button class="primary" id="push-on">알림 켜기</button>`}</div>${msg}</details>`;
@@ -1063,7 +1091,7 @@ function timStage(num){ return `<div class="tst"><svg viewBox="0 0 300 250" aria
   <path d="M36 232v-6h40v6" fill="none" stroke="var(--text-2)" stroke-width="1.8"/><path d="M56 226L36 120L100 44" fill="none" stroke="var(--text-2)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="36" cy="120" r="3" fill="var(--surface-2)" stroke="var(--text-2)" stroke-width="1.5"/>
   <g transform="translate(100 44) rotate(-35)"><path d="M-18 26L18 26L66 196L-66 196Z" fill="url(#tcone)"/><path d="M-8 -4h16l12 30h-40z" fill="var(--surface-2)" stroke="var(--text-2)" stroke-width="1.6" stroke-linejoin="round"/><path d="M-17 26h34" stroke="#FFE3A8" stroke-width="2" stroke-linecap="round"/></g>
   <circle cx="100" cy="44" r="2.6" fill="var(--gold)"/></g></svg>
-  <div class="ts-gem">${polyGem(num,132)}</div>
+  <div class="ts-gem">${v7gem(num,132,true)}</div>
   <svg class="tst-hi" viewBox="0 0 300 250" aria-hidden="true"><defs><radialGradient id="thi" cx="120" cy="120" r="80" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFE7B0" stop-opacity=".38"/><stop offset="1" stop-color="#FFE7B0" stop-opacity="0"/></radialGradient></defs><rect width="300" height="250" fill="url(#thi)"/></svg></div>`; }
 const resetBar=()=>`<div class="bar"><button id="tim-reset">타이머 초기화</button><span class="note">30분 동안 손대지 않으면 자동으로 정리돼요</span></div>`;
 function timerHtml(){
@@ -1084,7 +1112,7 @@ function timerHtml(){
     <div class="bar"><button class="primary" id="tim-go">블록 시작</button><button id="tim-known" title="이 회차의 ✅ 30초 체크를 시험으로 풀어요">이미 알아요? 테스트</button></div><div id="tim-quick"></div>
     ${pushBox()}
     <details class="qcard"><summary class="note"><b>블록 규칙과 "이미 알아요" 테스트</b></summary><p class="note"><b>한 블록 = 12분 읽기 + 한 줄 요약(약 1분) + 2분 쉬기</b></p><p class="note">4블록(1시간)마다 10분 쉬어요. 12분이 지나면 다음 소제목까지만 읽어요(최대 20분).</p>
-    <p class="note">시작이 제일 어려워요. 첫 2분은 "이 회차 첫 단계의 ✅ 30초 체크 질문을 먼저 읽고 답을 예측하기"만 해요. 노션의 🏁 표시까지가 한 회차예요. 12분 뒤에는 방금 읽은 걸 한 문장으로 적고 쉬어요. 하루 최소 2회차예요. 짝수·마지막 회차의 🏁에서 그날 분량이 끝나요.</p>
+    <p class="note">시작이 제일 어려워요. 첫 2분은 "이 회차 첫 단계의 ✅ 30초 체크 질문을 먼저 읽고 답을 예측하기"만 해요. 노트의 🏁 표시까지가 한 회차예요. 12분 뒤에는 방금 읽은 걸 한 문장으로 적고 쉬어요. 하루 최소 2회차예요. 짝수·마지막 회차의 🏁에서 그날 분량이 끝나요.</p>
     <p class="note">"이미 알아요" 테스트: 이 회차의 ✅ 30초 체크를 답을 보지 않고 소리 내어 답하고, 핵심어로 채점하고, "왜"를 한 줄 말해요. 전부 맞히면 회차를 건너뛰어요(그래도 소제목·굵은 글씨·코드를 2분 훑어요). ✅ 체크가 없는 회차는 읽어요.</p></details>`;
   }else{
     const left=Math.max(0,Math.round((tim.end-Date.now())/1000));
@@ -1806,7 +1834,7 @@ async function axOpen(pid,bid){
   ${heads.length>2?`<nav class="ax-toc" id="ax-toc" hidden>${heads.map(x=>`<a href="#" data-axb="${x.id}" class="l${x.l}">${esc(x.t)}</a>`).join("")}</nav>`:""}
   ${axBlocks(p.blocks,heads)}
   <div class="ax-pn">${prev?`<button data-axp="${prev.id}"><span class="note">이전</span><span>${esc(prev.title)}</span></button>`:"<span></span>"}${next?`<button data-axp="${next.id}"><span class="note">다음</span><span>${esc(next.title)}</span></button>`:""}</div>
-  <p class="note ax-foot">${p.edited?`노션에서 ${esc(p.edited.slice(0,10))}에 고친 판`:""}${p.url?` · <a href="${esc(p.url)}" target="_blank" rel="noopener">노션에서 열기 ›</a>`:""}</p></article>`;
+  <p class="note ax-foot">${p.edited?`${esc(p.edited.slice(0,10))} 판`:""}</p></article>`;
   const jump=b=>{ const t=document.getElementById("ax-"+b); if(!t) return; for(let d=t.closest("details");d;d=d.parentElement&&d.parentElement.closest("details")) d.open=true; if(t.tagName==="DETAILS") t.open=true; t.scrollIntoView({block:"start"}); t.classList.add("ax-hit"); setTimeout(()=>t.classList.remove("ax-hit"),1600); };
   el.querySelector("#ax-close").onclick=axClose;
   const tb=el.querySelector("#ax-tocb"); if(tb) tb.onclick=()=>{const t=el.querySelector("#ax-toc"); t.hidden=!t.hidden; if(!t.hidden) el.scrollTo({top:0});};
@@ -1843,7 +1871,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closes
 async function axSearchText(){ if(AX.text) return AX.text; const m={}; for(const r of await axAll()){ const t=[]; (function w(a){for(const b of a){ if(b.r) t.push(axPlain(b.r)); if(b.cells) b.cells.forEach(c=>t.push(axPlain(c))); if(b.c) w(b.c);} })(r.page.blocks); m[r.page.id]=t.join("\n"); } return AX.text=m; }
 function axHtml(){
   const ps=axPages(), root=ps.find(p=>!p.parent), linked=gh&&gh.token;
-  const head=`<div class="card ax-head"><div><p class="q">${root?esc(axTitle(root)):"아카이브"}</p><p class="note" id="ax-msg" role="status">${AX.idx?`페이지 ${ps.length}개 · 이 기기에 저장됨${AX.idx.got?` · ${esc(AX.idx.got.slice(5,10).replace("-","/"))} 받음`:""}`:linked?"노션 풀 노트를 이 기기에 받아 두면 인터넷 없이 읽을 수 있어요.":"아카이브는 GitHub 동기화를 연결한 기기에서 받아요(메뉴 › 기록과 설정)."}${AX.msg?` · ${esc(AX.msg)}`:""}</p></div>
+  const head=`<div class="card ax-head"><div><p class="q">${root?esc(axTitle(root)):"아카이브"}</p><p class="note" id="ax-msg" role="status">${AX.idx?`페이지 ${ps.length}개 · 이 기기에 저장됨${AX.idx.got?` · ${esc(AX.idx.got.slice(5,10).replace("-","/"))} 받음`:""}`:linked?"풀 노트를 이 기기에 받아 두면 인터넷 없이 읽을 수 있어요.":"아카이브는 GitHub 동기화를 연결한 기기에서 받아요(메뉴 › 기록과 설정)."}${AX.msg?` · ${esc(AX.msg)}`:""}</p></div>
     ${linked?`<button id="ax-sync" ${AX.busy?"disabled":""}>${AX.idx?"새로 받기":"받기"}</button>`:""}</div>`;
   if(!AX.idx) return head;
   let h=head+`<div class="bar"><input type="search" id="ax-q" placeholder="제목이나 본문에서 찾기 (예: 3-way, 인덱스)" value="${esc(AX.q)}"></div><div id="ax-res"></div>`;
@@ -1906,6 +1934,7 @@ function v7tally(k,w=56,col="var(--tally)"){ if(!k) return ""; const gw=19, per=
   return `<svg class="tal" width="${w}" height="${H}" viewBox="0 0 ${w} ${H}" aria-hidden="true"><path d="${p}" stroke="${col}" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>`; }
 
 function home(){
+  app.classList.remove("v8f","v8ax");
   if(shelf){ app.innerHTML=`<header><img class="logo" src="data:image/png;base64,${LOGO}" alt=""><h1 class="word">Iolite</h1><span id="sync" class="sync ${gh&&gh.token?"ok":""}">${headSync()}</span></header>`+shelfHtml();
     app.querySelectorAll("[data-nb]").forEach(b=>b.onclick=()=>{shelf=false; tab="today"; home(); window.scrollTo(0,0);});
     app.querySelectorAll("[data-cart]").forEach(b=>b.onclick=()=>IoliteCart.use(b.dataset.cart));
@@ -1919,9 +1948,10 @@ function home(){
   const focus=FOCUS[tab];
   const view={today:todayHtml,tim:timerHtml,rev:revHtml,prac:pracHtml,stats:statsHtml,self:selfHtml,ax:axHtml}[tab]||todayHtml;
   let h;
-  if(focus) h=`<div class="v7focus"><button id="v7-back" aria-label="오늘로">‹ 오늘</button><span>${focus}</span><span class="cr">${esc(NB.title)}</span></div>`+whenBox(tab)+view();
+  if(focus){ const d=new Date(); h=`<div class="v7focus"><button id="v7-back" aria-label="오늘로">‹ 오늘</button><span class="cr">${esc(NB.title)}</span></div><div class="v8ft" aria-hidden="false"><small>${d.getMonth()+1}월 ${d.getDate()}일 ${"일월화수목금토"[d.getDay()]} · 작업대</small><h1>${focus}</h1></div>`+whenBox(tab)+view(); }
   else if(tab==="ax") h=view()+navHtml();
   else h=view()+navHtml();
+  app.classList.toggle("v8f",!!focus); app.classList.toggle("v8ax",tab==="ax");
   app.innerHTML=h+v7sheetHtml();
   bindTabs();
   const b=document.getElementById("v7-back"); if(b) b.onclick=()=>{tab="today"; home(); window.scrollTo(0,0);};
@@ -1948,7 +1978,7 @@ function todayHtml(){
     <p class="eb">${nx.day?`오늘의 레슨 · ${nx.day}일째 / ${nx.days}`:"지금 할 것"}</p><p class="ch">${esc(nx.c.num)}장 ${v7title(nx.c)}</p><p class="st">이 장 ${nx.done}/${nx.total}회차</p>
     <p class="left">${left?`남은 ${left}회차 · ${PACE.min}분씩, 약 ${left*PACE.min}분`:"마지막 회차"}</p>
     <button class="go" id="go-sess">블록 준비 &nbsp;→</button>
-    <div class="more">${axOfNum(nx.c.num)?`<button class="nlink" data-axnum="${esc(nx.c.num)}" data-axstep="${esc(nx.nx.steps[0])}">아카이브에서 ${esc(nx.nx.steps[0])} 읽기 ›</button>`:""}${notionUrl(nx.c.num,nx.nx.steps[0])?`<a href="${notionUrl(nx.c.num,nx.nx.steps[0])}" target="_blank" rel="noopener">노션에서 열기 ›</a>`:""}</div></section>`; }
+    <div class="more">${axOfNum(nx.c.num)?`<button class="nlink" data-axnum="${esc(nx.c.num)}" data-axstep="${esc(nx.nx.steps[0])}">아카이브에서 ${esc(nx.nx.steps[0])} 읽기 ›</button>`:""}</div></section>`; }
   else hero=`<section class="v7hero empty"><div class="fx">${fx}</div><p class="eb">지금 할 것</p><p class="ch">이어서 할 회차가 없어요</p><p class="left">아카이브에서 장을 골라 읽거나, 아틀리에에서 지난 장을 다시 봐요.</p></section>`;
   const ring=(()=>{const p=Math.min(1,st/Math.max(1,DAY_MIN)), C=2*Math.PI*24; return `<span class="ring"><svg viewBox="0 0 62 62" aria-hidden="true"><circle cx="31" cy="31" r="24" fill="none" stroke="${lt?"#E3DAF5":"#3B3350"}" stroke-width="8"/><circle cx="31" cy="31" r="24" fill="none" stroke="${lt?"#7354E8":"#9A81FF"}" stroke-width="8" stroke-linecap="${p>0&&p<1?"round":"butt"}" stroke-dasharray="${(C*p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 31 31)"/></svg><b>${st}/${DAY_MIN}</b></span>`;})();
   const days=v7weekDays(ws), bar=x=>x.fut?`<i class="fut" style="height:5px"></i>`:`<i style="height:${x.n?Math.min(38,10+x.n*8):5}px"></i>`;
