@@ -611,7 +611,7 @@ button.primary{background:var(--primary);color:var(--on-primary);border-radius:1
 .v7at .pl{letter-spacing:.14em;margin-top:16px;font-size:12.5px}
 .v7at .gems{gap:14px 4px;padding-top:16px}
 .v7stone::before{top:40px}
-.v7stone svg.gem.all{filter:drop-shadow(0 0 8px rgba(233,188,92,.55))}
+.v7stone svg.gem-done{filter:drop-shadow(0 0 8px rgba(233,188,92,.45))}
 .v7rc{background:transparent;border:1px solid var(--border)}
 
 </style>
@@ -2061,10 +2061,10 @@ function statsHtml(){
   const arc=(()=>{const p=all.length?done/all.length:0, a0=Math.PI, a=a0+Math.PI*p, R=22, cx=32, cy=30, P=t=>`${(cx+R*Math.cos(t)).toFixed(1)} ${(cy+R*Math.sin(t)).toFixed(1)}`;
     return `<svg class="arc" viewBox="0 0 64 43" aria-hidden="true"><path d="M${P(a0)} A${R} ${R} 0 0 1 ${P(2*Math.PI)}" fill="none" stroke="var(--chip-line)" stroke-width="7" stroke-linecap="round"/>${p>0?`<path d="M${P(a0)} A${R} ${R} 0 0 1 ${P(a)}" fill="none" stroke="#9A81FF" stroke-width="7" stroke-linecap="round"/>`:""}<text x="32" y="36" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text)">${done}/${all.length}</text></svg>`;})();
   const stone=c=>{ const k=v7blocks(c.num), cells=polyCells(c.num), lit=chapterDone(c), on=!lit&&cells.some(Boolean), now=nx&&nx.c.num===c.num;
-    return `<button class="v7stone ${lit?"lit":on?"on":""} ${now?"now":""}" data-arch-ch="${c.num}" aria-label="${c.num}장 ${v7title(c)} · 블록 ${k}개">${v7gem(c.num,58)}${v7tally(k,56,lit?"var(--gold)":"var(--tally)")}<span class="n">${esc(c.num)}</span></button>`; };
+    return `<button class="v7stone ${lit?"lit":on?"on":""} ${now?"now":""}" data-arch-ch="${c.num}" aria-label="${c.num}장 ${v7title(c)} · 블록 ${k}개">${polyGem(c.num,58)}${v7tally(k,56,lit?"var(--gold)":"var(--tally)")}<span class="n">${esc(c.num)}</span></button>`; };
   const seen=[]; for(let i=store.log.length-1;i>=0&&seen.length<3;i--){ const x=store.log[i]; if(x.ch&&!seen.some(s=>s.ch===x.ch)) seen.push(x); }
   const recent=seen.map(x=>{const c=chapterOf(x.ch); if(!c) return ""; const d=(store.sess[c.num]||[]).length, t=(c.sessions||[]).length;
-    return `<button class="v7rc" data-arch-ch="${c.num}"><span><span class="d">${x.date.slice(5).replace("-",".")}</span><b>${esc(c.num)}장 ${v7title(c)}${chapterDone(c)?"":` · ${d}/${t}회차`}</b></span>${v7gem(c.num,30)}</button>`;}).join("");
+    return `<button class="v7rc" data-arch-ch="${c.num}"><span><span class="d">${x.date.slice(5).replace("-",".")}</span><b>${esc(c.num)}장 ${v7title(c)}${chapterDone(c)?"":` · ${d}/${t}회차`}</b></span>${polyGem(c.num,30)}</button>`;}).join("");
   return `<div class="v7at"><span class="spot" aria-hidden="true"></span>${v7top()}${v7chip()}
   <div class="ttl"><small>완성한 장</small><h2>아틀리에 ${done}장</h2></div>${arc}
   <label class="find"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><input type="search" id="nq" placeholder="요약에서 찾기" value="${esc(noteQ)}" aria-label="요약에서 찾기"></label>
