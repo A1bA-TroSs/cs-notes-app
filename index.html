@@ -685,6 +685,31 @@ button.primary{background:var(--primary);color:var(--on-primary);border-radius:1
 .rd-tree .tgem{cursor:pointer}
 .rd-w .meta{display:block}
 html,body{overflow-x:clip}
+/* 통독 아카이브: 위 막대에 번역 칩과 장 고르기를 늘 두어요 */
+.ax-top.rd{flex-wrap:wrap;row-gap:6px}
+.ax-top.rd .rd-trs{flex-basis:100%;display:flex;gap:6px;justify-content:center}
+.ax-top.rd .rd-tr{min-height:34px;padding:0 12px;font-size:13px}
+.rd-tpill{font-variant-numeric:tabular-nums;color:var(--text);border-color:var(--gold) !important;display:inline-flex;align-items:center;gap:6px}
+.rd-tpill .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:rdpulse 2s ease-in-out infinite}
+@keyframes rdpulse{50%{opacity:.35}}
+.rd-grid{flex-basis:100%;max-height:52vh;overflow-y:auto;padding:4px 0 6px}
+.rd-grid .note{margin:2px 0 8px;text-align:center}
+.rd-grid .cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px}
+.rd-grid .cells a{display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);text-decoration:none;font-weight:600;font-variant-numeric:tabular-nums}
+.rd-grid .cells a.rd-read{border-color:color-mix(in srgb,var(--gold) 55%,transparent);color:var(--gold)}
+.rd-grid .cells a.rd-today{box-shadow:inset 0 0 0 2px #9A81FF}
+.rd-key{display:flex;gap:14px;justify-content:center;align-items:center;margin-top:10px !important}
+.rd-key i{display:inline-block;width:12px;height:12px;border-radius:4px;border:1px solid var(--border);margin-right:4px;vertical-align:-1px}
+.rd-key i.rd-read{border-color:var(--gold)}.rd-key i.rd-today{box-shadow:inset 0 0 0 2px #9A81FF}
+#ax-reader .ax-v[id],#ax-reader .ax-doc h2[id]{scroll-margin-top:112px}
+.rd-chips{display:flex;flex-wrap:wrap;gap:8px}
+.rd-chip{min-height:44px;padding:0 16px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:600}
+.rd-chip.rd-read{color:var(--gold);border-color:color-mix(in srgb,var(--gold) 55%,transparent)}
+.part .row .chip.rd-done{color:var(--gold)}
+.ax-btns{display:flex;flex-direction:column;gap:8px;flex:none}
+.ax-btns>button{white-space:nowrap}
+.ax-filebtn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 14px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer}
+.ax-filebtn[aria-disabled="true"]{opacity:.5;pointer-events:none}
 
 </style>
 </head><body><div class="wrap" id="app"></div>
@@ -1003,7 +1028,8 @@ function pushPost(alerts){
 function timerAlerts(){ // 지금 상태에서 앞으로 보낼 알림들
   if(!tim||tim.hold) return []; // 잠시 멈춤 중에는 알림 없음, 다시 시작하면 남은 시간으로 다시 예약
   const a=[], W=8*60*1000;
-  if(tim.phase==="read") a.push({at:tim.end,title:"12분 됐어요",body:"다음 소제목까지만 읽고 한 줄 요약을 써요"},{at:tim.end+W,title:"한 줄 요약 시간",body:"방금 읽은 내용을 한 문장으로 적어요"});
+  if(tim.phase==="read"&&RD) a.push({at:tim.end,title:"12분 됐어요",body:"읽던 절까지 마치고 블록을 끝내요"});
+  else if(tim.phase==="read") a.push({at:tim.end,title:"12분 됐어요",body:"다음 소제목까지만 읽고 한 줄 요약을 써요"},{at:tim.end+W,title:"한 줄 요약 시간",body:"방금 읽은 내용을 한 문장으로 적어요"});
   else if(tim.phase==="wrap") a.push({at:tim.end,title:"한 줄 요약 시간",body:"방금 읽은 내용을 한 문장으로 적어요"});
   else if(tim.phase==="rest") a.push({at:tim.end,title:"쉬는 시간 끝",body:"다음 블록을 시작해요"});
   return a.filter(x=>x.at>Date.now()+2000);
@@ -1229,7 +1255,7 @@ function runTick(){
     if(tim.hold){ const hm=document.getElementById("hold-min"); if(hm){ const m=Math.floor((Date.now()-tim.hold)/60000); if(hm.textContent!==String(m)){ if(tab==="tim"&&document.activeElement&&document.activeElement.id!=="hold-note") home(); else hm.textContent=m; } } return; }
     const left=Math.round((tim.end-Date.now())/1000);
     if(tim.phase!=="pause"&&tim.phase!=="ready"&&left<=0){
-      if(tim.phase==="read"){tim.phase="wrap"; tim.end+=8*60*1000; alertUser("12분 됐어요","다음 소제목까지만 읽고 한 줄 요약을 써요");} else if(tim.phase==="wrap"){tim.phase="pause"; alertUser("한 줄 요약 시간","방금 읽은 내용을 한 문장으로 적어요");} else {tim.phase="ready"; alertUser("쉬는 시간 끝","다음 블록을 시작해요");}
+      if(tim.phase==="read"&&RD){tim.phase="pause"; alertUser("12분 됐어요","읽던 절까지 마치고 블록을 끝내요");} else if(tim.phase==="read"){tim.phase="wrap"; tim.end+=8*60*1000; alertUser("12분 됐어요","다음 소제목까지만 읽고 한 줄 요약을 써요");} else if(tim.phase==="wrap"){tim.phase="pause"; alertUser("한 줄 요약 시간","방금 읽은 내용을 한 문장으로 적어요");} else {tim.phase="ready"; alertUser("쉬는 시간 끝","다음 블록을 시작해요");}
       saveTim(false);
       if(tab==="tim") home();
     } else { const c=document.getElementById("tim-clock"); if(c&&tim.phase!=="pause"&&tim.phase!=="ready"){ c.textContent=mmss(Math.max(0,left)); const r=document.getElementById("tim-ring"); if(r){const f=ringFacets().join(); if(r.dataset.f!==f){r.dataset.f=f; r.querySelector("svg").outerHTML=facetSvg(...ringFacets());}} } }
@@ -1814,6 +1840,17 @@ async function axSync(say){ // 바뀐 페이지(sha)만 받아요
   }catch(e){ AX.msg="못 받았어요: "+e.message; return 0; }
   finally{ AX.busy=false; }
 }
+async function axImport(file){ // GitHub 없이: 묶음 파일(tools/archive_bundle.py) 하나로 이 기기에 넣어요
+  AX.busy=true;
+  try{ const d=JSON.parse(await file.text());
+    if(d.format!=="iolite-archive-bundle"||!d.index||!Array.isArray(d.pages)) throw new Error("아카이브 묶음 파일이 아니에요");
+    if(d.cart!==CART.id) throw new Error(`다른 노트의 아카이브예요 (${d.cart})`);
+    for(const x of await axAll()) await axDel("pages",x.k);
+    for(const pg of d.pages) await axPut("pages",{k:CART.id+"/"+pg.id,sha:"file",page:pg});
+    const idx=d.index; idx.got=new Date().toISOString(); AX.idx=idx; AX.text=null; try{localStorage.setItem(AXKEY,JSON.stringify(idx))}catch(e){}
+    AX.msg=`파일에서 페이지 ${d.pages.length}개를 넣었어요`; }
+  catch(e){ AX.msg="못 넣었어요: "+e.message; }
+  finally{ AX.busy=false; } }
 const axPages=()=>(AX.idx&&AX.idx.pages)||[];
 const axInfo=id=>axPages().find(p=>p.id===id);
 const axKids=id=>axPages().filter(p=>p.parent===id);
@@ -1873,7 +1910,13 @@ async function axOpen(pid,bid){
   const sib=info.parent?axKids(info.parent):[], si=sib.findIndex(x=>x.id===pid), prev=sib[si-1], next=sib[si+1];
   let el=document.getElementById("ax-reader"); if(!el){ el=document.createElement("div"); el.id="ax-reader"; el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true"); document.body.appendChild(el); document.body.classList.add("ax-lock"); }
   AX.open=pid;
-  el.innerHTML=`<div class="ax-top"><button class="crumb" id="ax-close">‹ 닫기</button><span class="ax-tt">${esc(p.title)}</span>${p.blocks.some(x=>x.t==="verse")?`<button class="crumb" id="ax-trb" aria-expanded="false">번역</button>`:""}${heads.length>2?`<button class="crumb" id="ax-tocb" aria-label="목차">목차</button>`:""}</div>${p.blocks.some(x=>x.t==="verse")?`<div class="ax-trbar" id="ax-trbar" hidden>${rdTrChips()}</div>`:""}
+  const VS=p.blocks.some(x=>x.t==="verse"), RDV=VS&&typeof RD!=="undefined"&&RD;
+  el.innerHTML=RDV?`<div class="ax-top rd"><button class="crumb" id="ax-close">‹ 닫기</button><span class="ax-tt">${esc(p.title)}</span>${tim?`<button class="crumb rd-tpill" id="ax-tim" aria-label="타이머로">${rdTimPill()}</button>`:""}<button class="crumb" id="ax-tocb" aria-label="장 고르기">장</button>${rdTrChips()}<nav class="rd-grid" id="ax-toc" hidden>${rdChGrid(pid,heads)}</nav></div>
+  <article class="ax-doc">${trail.length?`<p class="ax-trail">${trail.map(t=>`<a href="#" data-axp="${t.id}">${esc(t.title)}</a>`).join(" › ")}</p>`:""}
+  <h1>${esc(p.title)}</h1>
+  ${axBlocks(p.blocks,heads)}
+  <div class="ax-pn">${prev?`<button data-axp="${prev.id}"><span class="note">이전</span><span>${esc(prev.title)}</span></button>`:"<span></span>"}${next?`<button data-axp="${next.id}"><span class="note">다음</span><span>${esc(next.title)}</span></button>`:""}</div></article>`
+  :`<div class="ax-top"><button class="crumb" id="ax-close">‹ 닫기</button><span class="ax-tt">${esc(p.title)}</span>${p.blocks.some(x=>x.t==="verse")?`<button class="crumb" id="ax-trb" aria-expanded="false">번역</button>`:""}${heads.length>2?`<button class="crumb" id="ax-tocb" aria-label="목차">목차</button>`:""}</div>${p.blocks.some(x=>x.t==="verse")?`<div class="ax-trbar" id="ax-trbar" hidden>${rdTrChips()}</div>`:""}
   <article class="ax-doc">${trail.length?`<p class="ax-trail">${trail.map(t=>`<a href="#" data-axp="${t.id}">${esc(t.title)}</a>`).join(" › ")}</p>`:""}
   <h1>${p.icon?`<span aria-hidden="true">${esc(p.icon)}</span> `:""}${esc(p.title)}</h1>
   ${heads.length>2?`<nav class="ax-toc" id="ax-toc" hidden>${heads.map(x=>`<a href="#" data-axb="${x.id}" class="l${x.l}">${esc(x.t)}</a>`).join("")}</nav>`:""}
@@ -1883,15 +1926,21 @@ async function axOpen(pid,bid){
   const jump=b=>{ const t=document.getElementById("ax-"+b); if(!t) return; for(let d=t.closest("details");d;d=d.parentElement&&d.parentElement.closest("details")) d.open=true; if(t.tagName==="DETAILS") t.open=true; t.scrollIntoView({block:"start"}); t.classList.add("ax-hit"); setTimeout(()=>t.classList.remove("ax-hit"),1600); };
   el.querySelector("#ax-close").onclick=axClose;
   const trb=el.querySelector("#ax-trb"); if(trb){ trb.onclick=()=>{const t=el.querySelector("#ax-trbar"); t.hidden=!t.hidden; trb.setAttribute("aria-expanded",String(!t.hidden));};
-    el.querySelectorAll("[data-rdtr]").forEach(b=>b.onclick=async()=>{ if(!rdSetTr(b.dataset.rdtr)) return; const y=el.scrollTop; await axOpen(pid,null); const n=document.getElementById("ax-reader"); n.scrollTop=y; n.querySelector("#ax-trbar").hidden=false; }); }
-  const tb=el.querySelector("#ax-tocb"); if(tb) tb.onclick=()=>{const t=el.querySelector("#ax-toc"); t.hidden=!t.hidden; if(!t.hidden) el.scrollTo({top:0});};
+    } 
+  // 번역 켜고 끄기: 지금 보던 절을 그대로 화면 위에 둔 채 다시 그려요
+  el.querySelectorAll("[data-rdtr]").forEach(b=>b.onclick=async()=>{ if(!rdSetTr(b.dataset.rdtr)) return; const top=el.querySelector(".ax-top"), y0=top?top.getBoundingClientRect().bottom:0;
+    const vs=[...el.querySelectorAll(".ax-v[id],.ax-doc h2[id]")], at=vs.find(v=>v.getBoundingClientRect().bottom>y0+4), off=at?at.getBoundingClientRect().top-y0:0, aid=at&&at.id, bar=el.querySelector("#ax-trbar"), open=bar&&!bar.hidden;
+    await axOpen(pid,null); const n=document.getElementById("ax-reader"); const t=aid&&document.getElementById(aid); if(t){ const ny=n.querySelector(".ax-top").getBoundingClientRect().bottom; n.scrollTop+=t.getBoundingClientRect().top-ny-off; } if(open&&n.querySelector("#ax-trbar")) n.querySelector("#ax-trbar").hidden=false; });
+  const tp=el.querySelector("#ax-tim"); if(tp) tp.onclick=()=>{ axClose(); tab="tim"; home(); window.scrollTo(0,0); };
+  clearInterval(AX.timInt); if(tp) AX.timInt=setInterval(()=>{ const b=document.getElementById("ax-tim"); if(!b){ clearInterval(AX.timInt); return; } const v=rdTimPill(); if(b.innerHTML!==v) b.innerHTML=v; },1000);
+  const tb=el.querySelector("#ax-tocb"); if(tb) tb.onclick=()=>{const t=el.querySelector("#ax-toc"); t.hidden=!t.hidden; tb.setAttribute("aria-expanded",String(!t.hidden)); if(!t.hidden&&!RDV) el.scrollTo({top:0});};
   el.querySelectorAll("[data-axp]").forEach(a=>a.onclick=e=>{e.preventDefault(); axOpen(a.dataset.axp,a.dataset.axb||null);});
-  el.querySelectorAll("a[data-axb]:not([data-axp])").forEach(a=>a.onclick=e=>{e.preventDefault(); jump(a.dataset.axb);});
+  el.querySelectorAll("a[data-axb]:not([data-axp])").forEach(a=>a.onclick=e=>{e.preventDefault(); if(RDV){ el.querySelector("#ax-toc").hidden=true; } jump(a.dataset.axb);});
   el.querySelectorAll("[data-axfile]").forEach(b=>b.onclick=async()=>{const u=await axFile(b.dataset.axfile); if(u) window.open(u,"_blank");});
   el.scrollTop=0; if(bid) requestAnimationFrame(()=>jump(bid));
   axImages(el); axMermaid(el); axTex(el);
 }
-function axClose(){ const el=document.getElementById("ax-reader"); if(el) el.remove(); document.body.classList.remove("ax-lock"); AX.open=null; }
+function axClose(){ clearInterval(AX.timInt); const el=document.getElementById("ax-reader"); if(el) el.remove(); document.body.classList.remove("ax-lock"); AX.open=null; }
 async function axFile(name){ // 노션에 올렸던 그림·파일: 처음 볼 때 받아 이 기기에 저장
   const k=CART.id+"/"+name; let r=await axGet("files",k).catch(()=>null);
   if(!r&&gh&&gh.token){ try{ const b=await axGh("f/"+name,"blob"); if(b){ r={k,blob:b}; await axPut("files",r); } }catch(e){} }
@@ -1918,8 +1967,8 @@ document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closes
 async function axSearchText(){ if(AX.text) return AX.text; const m={}; for(const r of await axAll()){ const t=[]; (function w(a){for(const b of a){ if(b.r) t.push(axPlain(b.r)); if(b.t==="verse") t.push([b.ko,b.sae,b.esv].filter(Boolean).join(" ")); if(b.cells) b.cells.forEach(c=>t.push(axPlain(c))); if(b.c) w(b.c);} })(r.page.blocks); m[r.page.id]=t.join("\n"); } return AX.text=m; }
 function axHtml(){
   const ps=axPages(), root=ps.find(p=>!p.parent), linked=gh&&gh.token;
-  const head=`<div class="card ax-head"><div><p class="q">${root?esc(axTitle(root)):"아카이브"}</p><p class="note" id="ax-msg" role="status">${AX.idx?`페이지 ${ps.length}개 · 이 기기에 저장됨${AX.idx.got?` · ${esc(AX.idx.got.slice(5,10).replace("-","/"))} 받음`:""}`:linked?"풀 노트를 이 기기에 받아 두면 인터넷 없이 읽을 수 있어요.":"아카이브는 GitHub 동기화를 연결한 기기에서 받아요(메뉴 › 기록과 설정)."}${AX.msg?` · ${esc(AX.msg)}`:""}</p></div>
-    ${linked?`<button id="ax-sync" ${AX.busy?"disabled":""}>${AX.idx?"새로 받기":"받기"}</button>`:""}</div>`;
+  const head=`<div class="card ax-head"><div><p class="q">${root?esc(axTitle(root)):"아카이브"}</p><p class="note" id="ax-msg" role="status">${AX.idx?`페이지 ${ps.length}개 · 이 기기에 저장됨${AX.idx.got?` · ${esc(AX.idx.got.slice(5,10).replace("-","/"))} 받음`:""}`:linked?"풀 노트를 이 기기에 받아 두면 인터넷 없이 읽을 수 있어요.":"아카이브 파일이 있으면 '파일에서 꽂기'로 넣어요. GitHub 동기화를 연결했다면 '받기'로 받아요."}${AX.msg?` · ${esc(AX.msg)}`:""}</p></div>
+    <div class="ax-btns">${linked?`<button id="ax-sync" ${AX.busy?"disabled":""}>${AX.idx?"새로 받기":"받기"}</button>`:""}<label class="ax-filebtn" ${AX.busy?'aria-disabled="true"':""}>파일에서 꽂기<input type="file" id="ax-file" accept=".json,application/json" hidden></label></div></div>`;
   if(!AX.idx) return head;
   let h=head+`<div class="bar"><input type="search" id="ax-q" placeholder="제목이나 본문에서 찾기 (예: 3-way, 인덱스)" value="${esc(AX.q)}"></div><div id="ax-res"></div>`;
   if(AX.q) return h;
@@ -1941,6 +1990,7 @@ async function axOpenFind(pid,q){ await axOpen(pid); const el=document.getElemen
   for(let d=hit.closest("details");d;d=d.parentElement&&d.parentElement.closest("details")) d.open=true; hit.scrollIntoView({block:"center"}); hit.classList.add("ax-hit"); }
 function bindAx(){ const $=id=>document.getElementById(id);
   if($("ax-sync")) $("ax-sync").onclick=async()=>{ $("ax-sync").disabled=true; AX.msg=""; await axSync(t=>{const m=$("ax-msg"); if(m) m.textContent=t;}); if(tab==="ax"&&!run) home(); };
+  if($("ax-file")) $("ax-file").onchange=async e=>{ const f=e.target.files[0]; if(!f) return; const m=$("ax-msg"); if(m) m.textContent="넣는 중…"; await axImport(f); if(tab==="ax"&&!run) home(); };
   const q=$("ax-q"); if(q){ q.oninput=()=>{AX.q=q.value; if(!AX.q.trim()){ home(); const n=$("ax-q"); n.focus(); return; } if(!$("ax-res")) return; app.querySelectorAll(".part").forEach(s=>s.remove()); axSearch();}; if(AX.q) axSearch(); }
   app.querySelectorAll(".part [data-axp]").forEach(b=>b.onclick=()=>axOpen(b.dataset.axp));
   if(!AX.idx&&gh&&gh.token&&!AX.busy&&!AX.tried){ AX.tried=true; $("ax-sync")&&$("ax-sync").click(); }
@@ -2405,6 +2455,48 @@ function rdFixLabels(root){ if(!RD||!root) return; const w=document.createTreeWa
   const k=root.querySelector("#tim-known"); if(k) k.hidden=true; } // 통독에는 '이미 알아요' 문항이 없어요
 // 타이머는 home() 뒤에 select/note를 다시 채워요. 통독 문구는 화면이 바뀔 때마다 고쳐요.
 if(RD && typeof MutationObserver!=="undefined"){ const _ob=new MutationObserver(()=>rdFixLabels(document.getElementById("app"))); const _a=document.getElementById("app"); if(_a) _ob.observe(_a,{childList:true,subtree:true}); }
+
+/* ---------- 통독 보석 = 그날 읽는 장 수만큼의 면 (4장이면 사각형). 오늘·타이머·아틀리에 모두 같은 면 ---------- */
+if(RD){ polyCells=function(num){ const c=chapterOf(num); if(!c) return []; const done=new Set(store.sess[num]||[]), all=c.sessions.every(s=>done.has(s.n));
+  return c.sessions.flatMap(se=>(se.read||[]).map(()=>done.has(se.n)?[all?"honey":"water"]:null)); }; }
+
+/* ---------- 통독 타이머: 한 줄 요약 없이 12분 읽기 → 블록 끝 → 쉬기. 블록을 시작하면 아카이브 본문이 바로 열려요 ---------- */
+const rdSessOf=(num,n)=>{ const c=chapterOf(num); return c&&(c.sessions||[]).find(x=>x.n===n); };
+const rdSessLabel=se=>se?(se.read||[]).map(([k,ch])=>`${RDB[k]?RDB[k].a:k} ${ch}`).join(", "):"";
+function rdReadTim(){ if(!tim) return; const se=rdSessOf(tim.ch,tim.sess)||((chapterOf(tim.ch)||{}).sessions||[])[0]; if(!se||!(se.read||[]).length) return; const [k,ch]=se.read[0]; rdOpen(k,ch); }
+if(RD){
+  WHEN.tim="<b>언제?</b> 그날 읽을 때. 회차 하나 = 그날 분량의 절반. 블록을 시작하면 아카이브에 본문이 열리고, 12분이 지나면 읽던 절까지 마치고 블록을 끝내요. 요약은 쓰지 않아요.";
+  const _th=timerHtml; timerHtml=function(){ let h=_th();
+    h=h.replace(/<details class="qcard"><summary class="note"><b>블록 규칙[\s\S]*?<\/details>/,"")
+       .replace(/<label class="note" for="tim-note">[\s\S]*?<\/textarea>/,"")
+       .replace(/<p class="note">블록을 시작하면 12분 읽기 끝, 요약 시간,[^<]*<\/p>/,"");
+    if(tim){ const se=rdSessOf(tim.ch,tim.sess), lab=esc(rdSessLabel(se));
+      h=h.replace(/<div class="phase">[^<]*<\/div>/,`<div class="phase">${tim.phase==="read"?`읽기 · ${lab}`:tim.phase==="pause"?"블록 끝":tim.phase==="ready"?"쉬는 시간 끝":(tim.longRest?"긴 휴식 10분 (일어나서 움직여요)":"쉬기 2분 (일어나서 움직여요)")}</div>`);
+      if(tim.phase==="read") h=h.replace(/(<div class="phase">[^<]*<\/div>)\s*<div style="text-align:center">[\s\S]*?<\/div>/,`$1<div style="text-align:center"><button class="linkbtn" id="rd-tim-read">아카이브에서 이어 읽기 · ${lab} ›</button></div>`);
+      if(tim.phase==="pause") h=h.replace('<div class="clock" id="tim-clock">✎</div>','<div class="clock" id="tim-clock">✓</div>'); }
+    return h; };
+  const _bt=bindTimer; bindTimer=function(){ _bt(); const $=id=>document.getElementById(id), go=$("tim-go"); if(go){ const f=go.onclick; go.onclick=e=>{ f(e); rdReadTim(); }; } const r=$("rd-tim-read"); if(r) r.onclick=rdReadTim; };
+}
+
+/* ---------- 아카이브 위 막대: 타이머 알약과 장 고르기 ---------- */
+function rdTimPill(){ if(!tim) return "타이머"; if(tim.hold) return "멈춤"; const left=Math.max(0,Math.round((tim.end-Date.now())/1000));
+  return tim.phase==="read"?`<i class="dot" aria-hidden="true"></i>${mmss(left)}`:tim.phase==="pause"?"블록 끝 ›":tim.phase==="rest"?`쉬기 ${mmss(left)}`:"다음 블록 ›"; }
+function rdChGrid(pid,heads){ const k=pid.replace(/^nt-/,""), b=RDB[k]; if(!b) return "";
+  const read=rdReadSet(), cur=rdCur(), todays=new Set(cur?cur.sessions.flatMap(s=>(s.read||[]).filter(([kk])=>kk===k).map(([,ch])=>ch)):[]);
+  return `<p class="note">${esc(b.n)} · ${b.c}장</p><div class="cells">${heads.filter(h=>h.l===2).map(h=>{ const ch=+String(h.id).split("-").pop();
+    return `<a href="#" data-axb="${h.id}" class="${read.has(b.i+":"+ch)?"rd-read":""} ${todays.has(ch)?"rd-today":""}" aria-label="${ch}장${read.has(b.i+":"+ch)?" · 읽음":""}${todays.has(ch)?" · 오늘":""}">${ch}</a>`; }).join("")}</div>
+  <p class="note rd-key"><i class="rd-read"></i>읽음 <i class="rd-today"></i>오늘 읽을 장</p>`; }
+
+/* ---------- 아카이브 첫 화면(통독): 오늘 읽을 장 바로가기 + 책마다 약자·읽은 장 수 ---------- */
+if(RD){ const _ah=axHtml; axHtml=function(){ let h=_ah(); if(!AX.idx||AX.q) return h.replace("(예: 3-way, 인덱스)","(예: 사랑, 목자)");
+  h=h.replace("(예: 3-way, 인덱스)","(예: 사랑, 목자)"); const cut=h.indexOf('<section class="part">'); if(cut>0) h=h.slice(0,cut);
+  const read=rdReadSet(), cur=rdCur(), root=axPages().find(p=>!p.parent);
+  if(cur){ const chs=cur.sessions.flatMap(s=>s.read||[]);
+    h+=`<section class="part"><h2>${cur.num}일째 · 오늘 읽을 장</h2><div class="rd-chips">${chs.map(([k,ch])=>`<button class="rd-chip ${read.has(RDB[k].i+":"+ch)?"rd-read":""}" data-rdk="${k}" data-rdc="${ch}">${esc(RDB[k].a)} ${ch}</button>`).join("")}</div></section>`; }
+  for(const sec of root?axKids(root.id):[]){ const bs=axKids(sec.id).map(p=>RDB[p.id.replace(/^nt-/,"")]&&{p,b:RDB[p.id.replace(/^nt-/,"")]}).filter(Boolean); if(!bs.length) continue;
+    h+=`<section class="part"><h2>${esc(sec.title)}</h2><div class="rows">${bs.map(({p,b})=>{ let n=0; for(let c=1;c<=b.c;c++) if(read.has(b.i+":"+c)) n++;
+      return `<button class="row" data-axp="${p.id}"><span class="num">${esc(b.a)}</span><span class="ttl">${esc(b.n)}</span><span class="chip ${n===b.c?"rd-done":""}">${n?`${n}/${b.c}장`:`${b.c}장`}</span></button>`; }).join("")}</div></section>`; }
+  return h; }; }
 
 {const h=location.hash.slice(1); if(["today","self","rev","tim","prac","ax","stats","qt","dict"].includes(h)){tab=h; shelf=false; history.replaceState(null,"",location.pathname);}}
 if(tim) { shelf=false; tab="tim"; }
